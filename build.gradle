@@ -1,0 +1,62 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.1.5'
+	id 'io.spring.dependency-management' version '1.1.3'
+}
+
+group = 'com.jornada'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	sourceCompatibility = '17'
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+
+	//security
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	testImplementation 'org.springframework.security:spring-security-test'
+
+	//web
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	//webmvc
+	implementation 'org.apache.commons:commons-lang3:3.12.0'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	//lombok
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// Mail
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	implementation 'org.springframework.boot:spring-boot-starter-freemarker'
+
+	//map struct
+	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+
+	// Data spring
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'com.oracle.database.jdbc:ojdbc8'
+
+	//jwts
+	implementation 'javax.xml.bind:jaxb-api:2.1'
+	implementation 'io.jsonwebtoken:jjwt:0.9.1'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
