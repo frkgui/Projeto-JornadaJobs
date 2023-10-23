@@ -15,4 +15,6 @@ public class UsuarioEntity {
     private String email;
     private TipoUsuario tipoUsuario;
     private String senha;
+    private Boolean enabled;
+    private CargosEntity cargos; // momentâneo
 }
