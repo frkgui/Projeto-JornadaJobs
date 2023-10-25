@@ -1,20 +1,33 @@
 package com.jornada.jobapi.entity;
 
 import com.jornada.jobapi.dto.TipoUsuario;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import lombok.Data;
+import jakarta.persistence.*;
+import lombok.*;
 
-@Entity(name = "usuario")
-@Data
+import java.util.Set;
+
+@Entity(name = "Usuario")
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class UsuarioEntity {
 
-    private Integer id;
+    @Id
+    @Column(name = "id_usuario")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gerador_usuario")
+    @SequenceGenerator(name = "gerador_usuario", sequenceName = "seq_usuario", allocationSize = 1)
+    private Integer idUsuario;
     private String nome;
     private String email;
     private TipoUsuario tipoUsuario;
     private String senha;
     private Boolean enabled;
-    private CargosEntity cargos; // momentâneo
+
+
+    @ManyToMany
+    @JoinTable(name = "Usuario_Cargo",
+            joinColumns = @JoinColumn(name = "id_usuario"),
+            inverseJoinColumns = @JoinColumn(name = "id_cargo"))
+    public Set<CargoEntity> cargos;
 }
