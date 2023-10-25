@@ -10,7 +10,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,16 +24,25 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class UsuarioService {
 
     private final UsuarioMapper usuarioMapper;
     private final UsuarioRepository usuarioRepository;
     private final AuthenticationManager authenticationManager;
+
+    @Autowired
+    public UsuarioService(@Lazy UsuarioRepository usuarioRepository,
+                       @Lazy AuthenticationManager authenticationManager,
+                       @Lazy UsuarioMapper usuarioMapper) {
+        this.usuarioRepository = usuarioRepository;
+        this.authenticationManager = authenticationManager;
+        this.usuarioMapper = usuarioMapper;
+    }
 
     @Value("${jwt.validade.token}")
     private String validadeJWT;
@@ -54,33 +65,33 @@ public class UsuarioService {
                 autenticacaoDTO.getEmail(),
                 autenticacaoDTO.getSenha()
         );
-//        try {
-//            Authentication autenticacao = authenticationManager.authenticate(dtoDoSpring);
-//
-//            Object usuarioAutenticado = autenticacao.getPrincipal();
-//            UsuarioEntity usuarioEntity = (UsuarioEntity) usuarioAutenticado;
-//
-//            List<String> nomeDosCargos= usuarioEntity.getCargos().stream()
-//                    .map(cargo -> cargo.getNome()).toList();
-//
-//            Date dataAtual = new Date();
-//            Date dataExpiracao = new Date(dataAtual.getTime() + Long.parseLong(validadeJWT.trim()));
-//
-//            String jwtGerado = Jwts.builder()
-//                    .setIssuer("jornada-job-api")
-//                    .claim("CARGOS", nomeDosCargos)
-//                    .setSubject(usuarioEntity.getId().toString())
-//                    .setIssuedAt(dataAtual)
-//                    .setExpiration(dataExpiracao)
-//                    .signWith(SignatureAlgorithm.HS256, secret)
-//                    .compact();
-//
-//
-//            return jwtGerado;
+        try {
+            Authentication autenticacao = authenticationManager.authenticate(dtoDoSpring);
 
-//        } catch (AuthenticationException ex) {
-//            throw new RegraDeNegocioException("E-mail e/ou senha inválidos");
-//        }
+            Object usuarioAutenticado = autenticacao.getPrincipal();
+            UsuarioEntity usuarioEntity = (UsuarioEntity) usuarioAutenticado;
+
+            List<String> nomeDosCargos= usuarioEntity.getCargos().stream()
+                    .map(cargo -> cargo.getNome()).toList();
+
+            Date dataAtual = new Date();
+            Date dataExpiracao = new Date(dataAtual.getTime() + Long.parseLong(validadeJWT.trim()));
+
+            String jwtGerado = Jwts.builder()
+                    .setIssuer("jornada-job-api")
+                    .claim("CARGOS", nomeDosCargos)
+                    .setSubject(usuarioEntity.getIdUsuario().toString())
+                    .setIssuedAt(dataAtual)
+                    .setExpiration(dataExpiracao)
+                    .signWith(SignatureAlgorithm.HS256, secret)
+                    .compact();
+
+
+            return jwtGerado;
+
+        } catch (AuthenticationException ex) {
+            throw new RegraDeNegocioException("E-mail e/ou senha inválidos");
+        }
     }
 
     public UsernamePasswordAuthenticationToken validarToken(String token) {
