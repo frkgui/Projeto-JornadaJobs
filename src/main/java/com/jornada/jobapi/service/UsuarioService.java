@@ -22,6 +22,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,33 +55,33 @@ public class UsuarioService {
                 autenticacaoDTO.getEmail(),
                 autenticacaoDTO.getSenha()
         );
-//        try {
-//            Authentication autenticacao = authenticationManager.authenticate(dtoDoSpring);
-//
-//            Object usuarioAutenticado = autenticacao.getPrincipal();
-//            UsuarioEntity usuarioEntity = (UsuarioEntity) usuarioAutenticado;
-//
-//            List<String> nomeDosCargos= usuarioEntity.getCargos().stream()
-//                    .map(cargo -> cargo.getNome()).toList();
-//
-//            Date dataAtual = new Date();
-//            Date dataExpiracao = new Date(dataAtual.getTime() + Long.parseLong(validadeJWT.trim()));
-//
-//            String jwtGerado = Jwts.builder()
-//                    .setIssuer("jornada-job-api")
-//                    .claim("CARGOS", nomeDosCargos)
-//                    .setSubject(usuarioEntity.getId().toString())
-//                    .setIssuedAt(dataAtual)
-//                    .setExpiration(dataExpiracao)
-//                    .signWith(SignatureAlgorithm.HS256, secret)
-//                    .compact();
-//
-//
-//            return jwtGerado;
+        try {
+            Authentication autenticacao = authenticationManager.authenticate(dtoDoSpring);
 
-//        } catch (AuthenticationException ex) {
-//            throw new RegraDeNegocioException("E-mail e/ou senha inválidos");
-//        }
+            Object usuarioAutenticado = autenticacao.getPrincipal();
+            UsuarioEntity usuarioEntity = (UsuarioEntity) usuarioAutenticado;
+
+            List<String> nomeDosCargos= usuarioEntity.getCargos().stream()
+                    .map(cargo -> cargo.getNome()).toList();
+
+            Date dataAtual = new Date();
+            Date dataExpiracao = new Date(dataAtual.getTime() + Long.parseLong(validadeJWT.trim()));
+
+            String jwtGerado = Jwts.builder()
+                    .setIssuer("jornada-job-api")
+                    .claim("CARGOS", nomeDosCargos)
+                    .setSubject(usuarioEntity.getIdUsuario().toString())
+                    .setIssuedAt(dataAtual)
+                    .setExpiration(dataExpiracao)
+                    .signWith(SignatureAlgorithm.HS256, secret)
+                    .compact();
+
+
+            return jwtGerado;
+
+        } catch (AuthenticationException ex) {
+            throw new RegraDeNegocioException("E-mail e/ou senha inválidos");
+        }
     }
 
     public UsernamePasswordAuthenticationToken validarToken(String token) {
@@ -105,6 +106,12 @@ public class UsuarioService {
                 = new UsernamePasswordAuthenticationToken(idUser, null, listaDeCargos);
 
         return tokenSpring;
+    }
+
+    public List<UsuarioDTO> listar(){
+        List<UsuarioEntity> listasUsuarios = usuarioRepository.findAll();
+        List<UsuarioDTO> listaDTO = listasUsuarios.stream().map(entity-> usuarioMapper.paraDTO(entity)).toList();
+        return listaDTO;
     }
 
 

@@ -18,10 +18,15 @@ public class UsuarioEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gerador_usuario")
     @SequenceGenerator(name = "gerador_usuario", sequenceName = "seq_usuario", allocationSize = 1)
     private Integer idUsuario;
+    @Column(name = "nome_completo")
     private String nome;
+    @Column(name = "email")
     private String email;
+    @Column(name = "tipo_usuario")
     private TipoUsuario tipoUsuario;
+    @Column(name = "senha")
     private String senha;
+    @Column(name = "")
     private Boolean enabled;
 
 
@@ -30,4 +35,10 @@ public class UsuarioEntity {
             joinColumns = @JoinColumn(name = "id_usuario"),
             inverseJoinColumns = @JoinColumn(name = "id_cargo"))
     public Set<CargoEntity> cargos;
+
+    @ManyToMany
+    @JoinTable(name = "Usuario_Vagas",
+            joinColumns = @JoinColumn(name = "id_usuario"),
+            inverseJoinColumns = @JoinColumn(name = "id_vagas"))
+    public Set<VagasEntity> vagas;
 }
