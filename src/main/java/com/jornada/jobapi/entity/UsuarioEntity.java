@@ -23,22 +23,50 @@ public class UsuarioEntity {
     @Column(name = "email")
     private String email;
     @Column(name = "tipo_usuario")
+    @Enumerated(EnumType.STRING)
     private TipoUsuario tipoUsuario;
     @Column(name = "senha")
     private String senha;
-    @Column(name = "")
-    private Boolean enabled;
 
 
-    @ManyToMany
-    @JoinTable(name = "Usuario_Cargo",
-            joinColumns = @JoinColumn(name = "id_usuario"),
-            inverseJoinColumns = @JoinColumn(name = "id_cargo"))
-    public Set<CargoEntity> cargos;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public String getPassword() {
+        return senha;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 
     @ManyToMany
     @JoinTable(name = "Usuario_Vagas",
             joinColumns = @JoinColumn(name = "id_usuario"),
             inverseJoinColumns = @JoinColumn(name = "id_vagas"))
     public Set<VagasEntity> vagas;
-}
+

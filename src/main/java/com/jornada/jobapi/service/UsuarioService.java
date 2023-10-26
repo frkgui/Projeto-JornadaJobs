@@ -10,7 +10,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,12 +29,20 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class UsuarioService {
 
     private final UsuarioMapper usuarioMapper;
     private final UsuarioRepository usuarioRepository;
     private final AuthenticationManager authenticationManager;
+
+    @Autowired
+    public UsuarioService(@Lazy UsuarioRepository usuarioRepository,
+                       @Lazy AuthenticationManager authenticationManager,
+                       @Lazy UsuarioMapper usuarioMapper) {
+        this.usuarioRepository = usuarioRepository;
+        this.authenticationManager = authenticationManager;
+        this.usuarioMapper = usuarioMapper;
+    }
 
     @Value("${jwt.validade.token}")
     private String validadeJWT;
@@ -45,12 +55,12 @@ public class UsuarioService {
         String senha = autenticacaoDTO.getSenha();
 
         // Verifica se a senha atende aos critérios
-        if (!senha.matches(".*[A-Z].*") || // Pelo menos uma letra maiúscula
-                !senha.matches(".*[a-z].*") || // Pelo menos uma letra minúscula
-                !senha.matches(".*\\d.*") ||   // Pelo menos um número
-                !senha.matches(".*[!@#$%^&*()].*")) { // Pelo menos um caractere especial
-            throw new RegraDeNegocioException("A senha não atende aos critérios de segurança.");
-        }
+//        if (!senha.matches(".*[A-Z].*") || // Pelo menos uma letra maiúscula
+//                !senha.matches(".*[a-z].*") || // Pelo menos uma letra minúscula
+//                !senha.matches(".*\\d.*") ||   // Pelo menos um número
+//                !senha.matches(".*[!@#$%^&*()].*")) { // Pelo menos um caractere especial
+//            throw new RegraDeNegocioException("A senha não atende aos critérios de segurança.");
+//        }
         UsernamePasswordAuthenticationToken dtoDoSpring = new UsernamePasswordAuthenticationToken(
                 autenticacaoDTO.getEmail(),
                 autenticacaoDTO.getSenha()
@@ -61,25 +71,25 @@ public class UsuarioService {
             Object usuarioAutenticado = autenticacao.getPrincipal();
             UsuarioEntity usuarioEntity = (UsuarioEntity) usuarioAutenticado;
 
-            List<String> nomeDosCargos= usuarioEntity.getCargos().stream()
-                    .map(cargo -> cargo.getNome()).toList();
+//            List<String> nomeDosCargos= usuarioEntity.getCargos().stream()
+//                    .map(cargo -> cargo.getNome()).toList();
 
             Date dataAtual = new Date();
             Date dataExpiracao = new Date(dataAtual.getTime() + Long.parseLong(validadeJWT.trim()));
 
             String jwtGerado = Jwts.builder()
                     .setIssuer("jornada-job-api")
-                    .claim("CARGOS", nomeDosCargos)
+//                    .claim("CARGOS", nomeDosCargos)
                     .setSubject(usuarioEntity.getIdUsuario().toString())
                     .setIssuedAt(dataAtual)
                     .setExpiration(dataExpiracao)
                     .signWith(SignatureAlgorithm.HS256, secret)
                     .compact();
 
-
             return jwtGerado;
 
         } catch (AuthenticationException ex) {
+            ex.printStackTrace();
             throw new RegraDeNegocioException("E-mail e/ou senha inválidos");
         }
     }
@@ -108,12 +118,6 @@ public class UsuarioService {
         return tokenSpring;
     }
 
-    public List<UsuarioDTO> listar(){
-        List<UsuarioEntity> listasUsuarios = usuarioRepository.findAll();
-        List<UsuarioDTO> listaDTO = listasUsuarios.stream().map(entity-> usuarioMapper.paraDTO(entity)).toList();
-        return listaDTO;
-    }
-
 
     public UsuarioDTO salvarUsuario(UsuarioDTO usuarioDTO) throws RegraDeNegocioException {
         String senhaSegura = usuarioDTO.getSenha();
@@ -132,7 +136,7 @@ public class UsuarioService {
         String senhaCriptografada = geradorDeSenha(senha);
         entidade.setSenha(senhaCriptografada);
 
-        entidade.setEnabled(true);
+//        entidade.setEnabled(true);
 
         UsuarioEntity salvo = usuarioRepository.save(entidade);
         UsuarioDTO dtoSalvo = usuarioMapper.paraDTO(salvo);
@@ -156,7 +160,7 @@ public class UsuarioService {
         String senhaCriptografada = geradorDeSenha(senha);
         entidade.setSenha(senhaCriptografada);
 
-        entidade.setEnabled(true);
+//        entidade.setEnabled(true);
 
         UsuarioEntity salvo = usuarioRepository.save(entidade);
         UsuarioDTO dtoSalvo = usuarioMapper.paraDTO(salvo);
@@ -198,7 +202,7 @@ public class UsuarioService {
     public void desativarUsuario(Integer idInformado) throws RegraDeNegocioException {
         UsuarioEntity entity = usuarioRepository.findById(idInformado)
                 .orElseThrow(() -> new RegraDeNegocioException("Usuario não encontrado"));
-        entity.setEnabled(false);
+//        entity.setEnabled(false);
         usuarioRepository.save(entity);
     }
 }
