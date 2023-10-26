@@ -86,7 +86,6 @@ public class UsuarioService {
                     .signWith(SignatureAlgorithm.HS256, secret)
                     .compact();
 
-
             return jwtGerado;
 
         } catch (AuthenticationException ex) {
