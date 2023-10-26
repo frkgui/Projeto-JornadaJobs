@@ -1,8 +1,6 @@
 package com.jornada.jobapi.controller;
 
 import com.jornada.jobapi.dto.UsuarioDTO;
-<<<<<<< HEAD
-import com.jornada.jobapi.entity.UsuarioEntity;
 import com.jornada.jobapi.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,17 +8,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-=======
 import com.jornada.jobapi.exception.RegraDeNegocioException;
-import com.jornada.jobapi.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
->>>>>>> origin/main
 
 @RestController
 @RequestMapping("/usuario")
@@ -33,8 +27,6 @@ public class UsuarioController{
     public List<UsuarioDTO> listar(){
         return usuarioService.listar();
     }
-
-    private final UsuarioService usuarioService;
 
     @Operation(summary = "Insere novo Usuário", description = "Este processo realiza a inserção de novo Usuário")
     @ApiResponses(value = {

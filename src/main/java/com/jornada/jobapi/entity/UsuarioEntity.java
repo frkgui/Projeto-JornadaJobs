@@ -3,7 +3,11 @@ package com.jornada.jobapi.entity;
 import com.jornada.jobapi.dto.TipoUsuario;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Set;
 
 @Entity(name = "Usuario")
@@ -11,7 +15,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UsuarioEntity {
+public class UsuarioEntity implements UserDetails {
 
     @Id
     @Column(name = "id_usuario")
@@ -27,6 +31,12 @@ public class UsuarioEntity {
     private TipoUsuario tipoUsuario;
     @Column(name = "senha")
     private String senha;
+
+    @ManyToMany
+    @JoinTable(name = "Usuario_Vagas",
+            joinColumns = @JoinColumn(name = "id_usuario"),
+            inverseJoinColumns = @JoinColumn(name = "id_vagas"))
+    public Set<VagasEntity> vagas;
 
 
     @Override
@@ -64,9 +74,5 @@ public class UsuarioEntity {
         return true;
     }
 
-    @ManyToMany
-    @JoinTable(name = "Usuario_Vagas",
-            joinColumns = @JoinColumn(name = "id_usuario"),
-            inverseJoinColumns = @JoinColumn(name = "id_vagas"))
-    public Set<VagasEntity> vagas;
+}
 

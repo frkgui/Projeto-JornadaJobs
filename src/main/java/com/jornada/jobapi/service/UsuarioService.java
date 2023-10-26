@@ -118,6 +118,13 @@ public class UsuarioService {
         return tokenSpring;
     }
 
+    public List<UsuarioDTO> listar(){
+        List<UsuarioEntity> listaEntity = usuarioRepository.findAll();
+        List<UsuarioDTO> listaDTO = listaEntity.stream().map(entity -> usuarioMapper.paraDTO(entity))
+                .toList();
+        return listaDTO;
+    }
+
 
     public UsuarioDTO salvarUsuario(UsuarioDTO usuarioDTO) throws RegraDeNegocioException {
         String senhaSegura = usuarioDTO.getSenha();
