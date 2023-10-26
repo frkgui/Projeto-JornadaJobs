@@ -21,9 +21,6 @@ public class CargoEntity implements GrantedAuthority {
     private String nome;
 
     @OneToOne
-    @JoinTable(name = "Cargo",
-            joinColumns = @JoinColumn(name = "id_cargo"),
-            inverseJoinColumns = @JoinColumn(name = "id_cargo"))
     public UsuarioEntity usuario;
 
     @Override

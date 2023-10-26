@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 @Entity(name = "Usuario")
@@ -27,13 +28,6 @@ public class UsuarioEntity implements UserDetails {
     @Column(name = "email")
     private String email;
 
-    @OneToOne
-    @JoinTable(name = "Cargo",
-            joinColumns = @JoinColumn(name = "id_cargo"),
-            inverseJoinColumns = @JoinColumn(name = "id_cargo"))
-    @Column(name = "id_cargo")
-    private CargoEntity idCargo;
-
     @Column(name = "senha")
     private String senha;
 
@@ -44,10 +38,17 @@ public class UsuarioEntity implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "id_vagas"))
     public Set<VagasEntity> vagas;
 
+    @OneToOne
+    @PrimaryKeyJoinColumn
+    @Column(name = "id_cargo")
+    private CargoEntity cargo;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return new ArrayList<>();
+        List<GrantedAuthority> lista = new ArrayList<>();
+        lista.add(cargo);
+        return lista;
     }
 
     @Override
