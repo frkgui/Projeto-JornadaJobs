@@ -26,11 +26,11 @@ public class UsuarioEntity implements UserDetails {
     private String nome;
     @Column(name = "email")
     private String email;
-    @Column(name = "tipo_usuario")
-    @Enumerated(EnumType.STRING)
-    private TipoUsuario tipoUsuario;
+    @Column(name = "id_cargo")
+    private Integer idCargo;
     @Column(name = "senha")
     private String senha;
+
 
     @ManyToMany
     @JoinTable(name = "Usuario_Vagas",

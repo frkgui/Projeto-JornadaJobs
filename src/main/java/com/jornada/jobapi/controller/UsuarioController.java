@@ -23,6 +23,12 @@ import org.springframework.web.bind.annotation.*;
 public class UsuarioController{
     private final UsuarioService usuarioService;
 
+    @Operation(summary = "Listar usuarios", description = "Lista todos os usuarios na base de dados")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "Deu certo!"),
+            @ApiResponse(responseCode = "400",description = "Erro na validação de dados"),
+            @ApiResponse(responseCode = "500",description = "Erro do servidor")
+    })
     @GetMapping
     public List<UsuarioDTO> listar(){
         return usuarioService.listar();

@@ -106,7 +106,7 @@ public class UsuarioService {
                 .getBody();
 
         String idUser = claims.getSubject();
-        List<String> cargos = claims.get("CARGOS", List.class);
+        List<String> cargos = claims.get("CARGO", List.class);
 
         List<SimpleGrantedAuthority> listaDeCargos = cargos.stream()
                 .map(cargoStr -> new SimpleGrantedAuthority(cargoStr))

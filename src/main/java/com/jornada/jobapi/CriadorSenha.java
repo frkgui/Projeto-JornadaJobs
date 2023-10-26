@@ -10,6 +10,8 @@ public class CriadorSenha {
           System.out.println(senhaCriptografada);
 //       $2a$10$6V3pi2WO2TYm745F7LYHQ.8BwSIjJRusNh05rvV3W1qbgzZTvchTS
 
+//        $2a$10$dn9nkenLDcY.lCIx.znXIOfjcupLzT.4SF8Mg1TYyQOk7KtZi6U1m CARLOS MEXEU AQUI
+
 
 
 //        boolean senhaCorreta =bCryptPasswordEncoder.matches("Senha-Segura123", "$2a$10$6V3pi2WO2TYm745F7LYHQ.8BwSIjJRusNh05rvV3W1qbgzZTvchTS");
