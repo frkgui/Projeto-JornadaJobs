@@ -26,8 +26,14 @@ public class UsuarioEntity implements UserDetails {
     private String nome;
     @Column(name = "email")
     private String email;
+
+    @OneToOne
+    @JoinTable(name = "Cargo",
+            joinColumns = @JoinColumn(name = "id_cargo"),
+            inverseJoinColumns = @JoinColumn(name = "id_cargo"))
     @Column(name = "id_cargo")
-    private Integer idCargo;
+    private CargoEntity idCargo;
+
     @Column(name = "senha")
     private String senha;
 

@@ -20,12 +20,11 @@ public class CargoEntity implements GrantedAuthority {
     @Column(name = "nome")
     private String nome;
 
-    @JsonIgnore
-    @ManyToMany
-    @JoinTable(name = "Usuario_Cargo",
+    @OneToOne
+    @JoinTable(name = "Cargo",
             joinColumns = @JoinColumn(name = "id_cargo"),
-            inverseJoinColumns = @JoinColumn(name = "id_usuario"))
-    public Set<UsuarioEntity> usuarios;
+            inverseJoinColumns = @JoinColumn(name = "id_cargo"))
+    public UsuarioEntity usuario;
 
     @Override
     public String getAuthority() {
