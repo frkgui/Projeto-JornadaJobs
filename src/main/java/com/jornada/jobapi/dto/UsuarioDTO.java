@@ -9,7 +9,7 @@ import lombok.Data;
 public class UsuarioDTO {
 
     @Schema(description = "Qualquer ID genérico", example = "1")
-    private Integer id;
+    private Integer idUsuario;
 
     @Schema(description = "Nome Completo", example = "Pedro Frank Gonçalves de Ferrazza")
     @NotBlank
