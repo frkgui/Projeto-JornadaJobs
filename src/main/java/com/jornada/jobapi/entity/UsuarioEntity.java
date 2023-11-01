@@ -40,7 +40,6 @@ public class UsuarioEntity implements UserDetails {
 
     @OneToOne
     @PrimaryKeyJoinColumn(name = "id_cargo")
-//    @Column(name = "id_cargo")
     private CargoEntity cargo;
 
 

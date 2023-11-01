@@ -24,6 +24,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -105,14 +106,13 @@ public class UsuarioService {
                 .getBody();
 
         String idUsuario = claims.getSubject();
-        List<String> cargos = claims.get("CARGO", List.class);
+        String cargo = claims.get("CARGO", String.class);
 
-        List<SimpleGrantedAuthority> listaDeCargos = cargos.stream()
-                .map(cargoStr -> new SimpleGrantedAuthority(cargoStr))
-                .toList();
+        SimpleGrantedAuthority cargosSimple = new SimpleGrantedAuthority(cargo);
 
         UsernamePasswordAuthenticationToken tokenSpring
-                = new UsernamePasswordAuthenticationToken(idUsuario, null, listaDeCargos);
+                = new UsernamePasswordAuthenticationToken(
+                        idUsuario, null, Collections.singletonList(cargosSimple));
 
         return tokenSpring;
     }

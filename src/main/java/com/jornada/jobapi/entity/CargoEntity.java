@@ -20,8 +20,7 @@ public class CargoEntity implements GrantedAuthority {
     @Column(name = "nome")
     private String nome;
 
-//    @OneToOne
-//    public UsuarioEntity usuario;
+
 
     @Override
     public String getAuthority() {

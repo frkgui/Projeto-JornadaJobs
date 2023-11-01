@@ -1,12 +1,13 @@
 package com.jornada.jobapi.dto;
 
+import com.jornada.jobapi.entity.CargoEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Data
 public class UsuarioDTO {
-    @Positive
+
     @Schema(description = "Qualquer ID genérico", example = "1")
     private Integer id;
 
@@ -23,8 +24,8 @@ public class UsuarioDTO {
     private String email;
 
     @NotNull
-    @Schema(description = "Tipo do usuario", example = "RECRUTADOR")
-    private TipoUsuario tipoUsuario;
+    @Schema(description = "Cargo do usuario", example = "RECRUTADOR")
+    private CargoEntity cargo;
 
     @Schema(description = "Colocar senha do usuário", example = "Senha-Segura123")
     @NotBlank
