@@ -39,8 +39,8 @@ public class UsuarioEntity implements UserDetails {
     public Set<VagasEntity> vagas;
 
     @OneToOne
-    @PrimaryKeyJoinColumn
-    @Column(name = "id_cargo")
+    @PrimaryKeyJoinColumn(name = "id_cargo")
+//    @Column(name = "id_cargo")
     private CargoEntity cargo;
 
 

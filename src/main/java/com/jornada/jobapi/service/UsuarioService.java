@@ -71,15 +71,14 @@ public class UsuarioService {
             Object usuarioAutenticado = autenticacao.getPrincipal();
             UsuarioEntity usuarioEntity = (UsuarioEntity) usuarioAutenticado;
 
-//            List<String> nomeDosCargos= usuarioEntity.getCargos().stream()
-//                    .map(cargo -> cargo.getNome()).toList();
+            String nomeDosCargos= usuarioEntity.getCargo().getNome();
 
             Date dataAtual = new Date();
             Date dataExpiracao = new Date(dataAtual.getTime() + Long.parseLong(validadeJWT.trim()));
 
             String jwtGerado = Jwts.builder()
                     .setIssuer("jornada-job-api")
-//                    .claim("CARGOS", nomeDosCargos)
+                    .claim("CARGO", nomeDosCargos)
                     .setSubject(usuarioEntity.getIdUsuario().toString())
                     .setIssuedAt(dataAtual)
                     .setExpiration(dataExpiracao)
@@ -105,7 +104,7 @@ public class UsuarioService {
                 .parseClaimsJws(tokenLimpo)
                 .getBody();
 
-        String idUser = claims.getSubject();
+        String idUsuario = claims.getSubject();
         List<String> cargos = claims.get("CARGO", List.class);
 
         List<SimpleGrantedAuthority> listaDeCargos = cargos.stream()
@@ -113,7 +112,7 @@ public class UsuarioService {
                 .toList();
 
         UsernamePasswordAuthenticationToken tokenSpring
-                = new UsernamePasswordAuthenticationToken(idUser, null, listaDeCargos);
+                = new UsernamePasswordAuthenticationToken(idUsuario, null, listaDeCargos);
 
         return tokenSpring;
     }
