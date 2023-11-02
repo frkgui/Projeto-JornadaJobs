@@ -6,15 +6,14 @@ public class CriadorSenha {
     public static void main(String[] args) {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
-//           String senhaCriptografada = bCryptPasswordEncoder.encode("Senha123!");
+//           String senhaCriptografada = bCryptPasswordEncoder.encode("Carlos!123");
 //          System.out.println(senhaCriptografada);
-//       $2a$10$Ig06.xyYseXKcTKKtjxmZONbC.PjxaO3D31OdGpgozKAilUZAPRUK
-
-//        $2a$10$dn9nkenLDcY.lCIx.znXIOfjcupLzT.4SF8Mg1TYyQOk7KtZi6U1m CARLOS MEXEU AQUI
 
 
+        //$2a$10$4pJEttY2LieCN5wOXQGnzOc/qMT2yB3c40XTx0/hupCtgY5LO0uk.
 
-        boolean senhaCorreta =bCryptPasswordEncoder.matches("Senha123!", "$2a$10$Ig06.xyYseXKcTKKtjxmZONbC.PjxaO3D31OdGpgozKAilUZAPRUK");
+
+        boolean senhaCorreta =bCryptPasswordEncoder.matches("Carlos!123", "$2a$10$4pJEttY2LieCN5wOXQGnzOc/qMT2yB3c40XTx0/hupCtgY5LO0uk.");
         System.out.println(senhaCorreta);
     }
 }
