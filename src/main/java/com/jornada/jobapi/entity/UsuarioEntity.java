@@ -28,8 +28,8 @@ public class UsuarioEntity implements UserDetails {
     @Column(name = "email")
     private String email;
 
-    @Column(name = "tipo_usuario")
-    private TipoUsuario tipoUsuario;
+//    @Column(name = "tipo_usuario")
+//    private TipoUsuario tipoUsuario;
 
     @Column(name = "senha")
     private String senha;

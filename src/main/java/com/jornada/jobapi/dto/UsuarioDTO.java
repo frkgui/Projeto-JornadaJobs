@@ -35,5 +35,9 @@ public class UsuarioDTO {
     @NotBlank
     @NotNull
     private String senha;
+
+//    @Schema(description = "Escolha o cargo do usuário (candidato, empresa, recrutador)", example = "candidato")
+//    @NotBlank
+//    private TipoUsuario cargoEscolhido;
 }
 

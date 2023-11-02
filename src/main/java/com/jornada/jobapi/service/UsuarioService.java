@@ -65,7 +65,7 @@ public class UsuarioService {
             //1 dia
 
             String jwtGerado =Jwts.builder()
-                    .setIssuer("ninja-task")
+                    .setIssuer("job-api")
                     .claim("CARGOS", nomeDosCargos)
                     .setSubject(usuarioEntity.getIdUsuario().toString())
                     .setIssuedAt(dataAtual)
