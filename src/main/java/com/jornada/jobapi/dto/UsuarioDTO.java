@@ -24,7 +24,7 @@ public class UsuarioDTO {
     private String email;
 
     @NotNull
-    @Schema(description = "Cargo do usuario", example = "RECRUTADOR")
+    @Schema(description = "Cargo do usuario", example = "ROLE_RECRUTADOR")
     private CargoEntity cargo;
 
     @Schema(description = "Colocar senha do usuário", example = "Senha-Segura123")

@@ -1,6 +1,7 @@
 package com.jornada.jobapi.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.jornada.jobapi.service.UsuarioService;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +20,6 @@ public class CargoEntity implements GrantedAuthority {
     private Integer idCargo;
     @Column(name = "nome")
     private String nome;
-
 
 
     @Override

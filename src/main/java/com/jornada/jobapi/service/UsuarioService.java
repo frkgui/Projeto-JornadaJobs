@@ -2,6 +2,7 @@ package com.jornada.jobapi.service;
 
 import com.jornada.jobapi.dto.AutenticacaoDTO;
 import com.jornada.jobapi.dto.UsuarioDTO;
+import com.jornada.jobapi.entity.CargoEntity;
 import com.jornada.jobapi.entity.UsuarioEntity;
 import com.jornada.jobapi.exception.RegraDeNegocioException;
 import com.jornada.jobapi.mapper.UsuarioMapper;
@@ -9,25 +10,19 @@ import com.jornada.jobapi.repository.UsuarioRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UsuarioService {
@@ -53,15 +48,12 @@ public class UsuarioService {
 
     public String fazerLogin(AutenticacaoDTO autenticacaoDTO) throws RegraDeNegocioException {
 
-        String senha = autenticacaoDTO.getSenha();
-
         // Verifica se a senha atende aos critérios
 //        if (!senha.matches(".*[A-Z].*") || // Pelo menos uma letra maiúscula
 //                !senha.matches(".*[a-z].*") || // Pelo menos uma letra minúscula
 //                !senha.matches(".*\\d.*") ||   // Pelo menos um número
 //                !senha.matches(".*[!@#$%^&*()].*")) { // Pelo menos um caractere especial
-//            throw new RegraDeNegocioException("A senha não atende aos critérios de segurança.");
-//        }
+//            throw new RegraDe
         UsernamePasswordAuthenticationToken dtoDoSpring = new UsernamePasswordAuthenticationToken(
                 autenticacaoDTO.getEmail(),
                 autenticacaoDTO.getSenha()
@@ -72,14 +64,24 @@ public class UsuarioService {
             Object usuarioAutenticado = autenticacao.getPrincipal();
             UsuarioEntity usuarioEntity = (UsuarioEntity) usuarioAutenticado;
 
-            String nomeDosCargos= usuarioEntity.getCargo().getNome();
+
+            List<String> cargos = new ArrayList<>();
+            cargos.add("ROLE_CANDIDATO");
+            cargos.add("ROLE_EMPRESA");
+            cargos.add("ROLE_RECRUTADOR");
+
+//            List<String> nomeDosCargos = usuarioEntity.getCargo().stream()
+//                    .map(cargo -> cargo.getNome()).toList();
+
 
             Date dataAtual = new Date();
-            Date dataExpiracao = new Date(dataAtual.getTime() + Long.parseLong(validadeJWT.trim()));
+            Date dataExpiracao = new Date(dataAtual.getTime() + Long.parseLong(validadeJWT));
 
-            String jwtGerado = Jwts.builder()
-                    .setIssuer("jornada-job-api")
-                    .claim("CARGO", nomeDosCargos)
+            //1 dia
+
+            String jwtGerado =Jwts.builder()
+                    .setIssuer("ninja-task")
+                    .claim("CARGOS", cargos)
                     .setSubject(usuarioEntity.getIdUsuario().toString())
                     .setIssuedAt(dataAtual)
                     .setExpiration(dataExpiracao)
@@ -87,80 +89,110 @@ public class UsuarioService {
                     .compact();
 
             return jwtGerado;
+        }catch (AuthenticationException ex){
+            throw new RegraDeNegocioException("E-mail e Senha Inválidos");
 
-        } catch (AuthenticationException ex) {
-            ex.printStackTrace();
-            throw new RegraDeNegocioException("E-mail e/ou senha inválidos");
         }
     }
 
-    public UsernamePasswordAuthenticationToken validarToken(String token) {
-        if (token == null) {
+    public UsernamePasswordAuthenticationToken validarToken(String token){
+        if(token == null){
             return null;
         }
-        String tokenLimpo = token.replace("Bearer ", "");
-
+        String tokenLimpo = token.replace("Bearer " ,"");
         Claims claims = Jwts.parser()
-                .setSigningKey(secret)
-                .parseClaimsJws(tokenLimpo)
-                .getBody();
+                .setSigningKey(secret) //utiliza a secret
+                .parseClaimsJws(tokenLimpo) //decriptografa e valida o token...
+                .getBody(); //recupera o payload
 
-        String idUsuario = claims.getSubject();
-        String cargo = claims.get("CARGO", String.class);
+        String idUsuario = claims.getSubject(); // id do usuario
+        List<String> cargos = claims.get("CARGOS", List.class);
 
-        SimpleGrantedAuthority cargosSimple = new SimpleGrantedAuthority(cargo);
+        List<SimpleGrantedAuthority> listaDeCargos = cargos.stream()
+                .map(cargoStr -> new SimpleGrantedAuthority(cargoStr))
+                .toList();
 
-        UsernamePasswordAuthenticationToken tokenSpring
-                = new UsernamePasswordAuthenticationToken(
-                        idUsuario, null, Collections.singletonList(cargosSimple));
+        UsernamePasswordAuthenticationToken tokenSpring = new UsernamePasswordAuthenticationToken(idUsuario, null,
+                listaDeCargos);
 
         return tokenSpring;
     }
 
-    public List<UsuarioDTO> listar(){
-        List<UsuarioEntity> listaEntity = usuarioRepository.findAll();
-        List<UsuarioDTO> listaDTO = listaEntity.stream().map(entity -> usuarioMapper.paraDTO(entity))
-                .toList();
-        return listaDTO;
+    public boolean validarEmailExistente(String Email) throws RegraDeNegocioException {
+        Optional<UsuarioEntity> emailExistente = usuarioRepository.findByEmail(Email);
+        if (emailExistente.isPresent()) {
+            throw new RegraDeNegocioException("Email já cadastrado");
+        }
+        return true;
+    }
+
+    public void validarUsuario(UsuarioDTO usuario) throws RegraDeNegocioException {
+        if (!usuario.getEmail().contains("@")){
+            throw new RegraDeNegocioException("Precisa ter @");
+        }
+    }
+
+    public String converterSenha(String senha){
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        String senhaCriptografada = bCryptPasswordEncoder.encode(senha);
+        return senhaCriptografada;
     }
 
 
+
     public UsuarioDTO salvarUsuario(UsuarioDTO usuarioDTO) throws RegraDeNegocioException {
-        String senhaSegura = usuarioDTO.getSenha();
+//        String senhaSegura = usuarioDTO.getSenha();
 
-        if (!senhaSegura.matches(".*[A-Z].*") || // Pelo menos uma letra maiúscula
-                !senhaSegura.matches(".*[a-z].*") || // Pelo menos uma letra minúscula
-                !senhaSegura.matches(".*\\d.*") ||   // Pelo menos um número
-                !senhaSegura.matches(".*[!@#$%^&*()].*")) { // Pelo menos um caractere especial
-            throw new RegraDeNegocioException("A senha não atende aos critérios de segurança.");
-        }
+//        if (!senhaSegura.matches(".*[A-Z].*") || // Pelo menos uma letra maiúscula
+//                !senhaSegura.matches(".*[a-z].*") || // Pelo menos uma letra minúscula
+//                !senhaSegura.matches(".*\\d.*") ||   // Pelo menos um número
+//                !senhaSegura.matches(".*[!@#$%^&*()].*")) { // Pelo menos um caractere especial
+//            throw new RegraDeNegocioException("A senha não atende aos critérios de segurança.");
+//        }
 
-        validarUser(usuarioDTO);
-        UsuarioEntity entidade = usuarioMapper.paraEntity(usuarioDTO);
+        validarUsuario(usuarioDTO);
+        //converter dto para entity
+        UsuarioEntity usuarioEntityConvertido = usuarioMapper.toEntity(usuarioDTO);
+        // Verificar Existência E-mail
+        validarEmailExistente(usuarioDTO.getEmail());
+        //Converter Senha
+        String senha = usuarioEntityConvertido.getSenha();
+        String senhaCriptografada = converterSenha(senha);
+        usuarioEntityConvertido.setSenha(senhaCriptografada);
+        UsuarioEntity usuarioEntitySalvo = usuarioRepository.save(usuarioEntityConvertido);
 
-        String senha = entidade.getSenha();
-        String senhaCriptografada = geradorDeSenha(senha);
-        entidade.setSenha(senhaCriptografada);
+//         Inicialize a lista de cargos se for nula
+//        if (usuarioEntitySalvo.getCargo() == null) {
+//            usuarioEntitySalvo.setCargo();
+//        }
 
-//        entidade.setEnabled(true);
+        // Criar uma instância do CargoEntity com o ID do cargo igual a 3
+        CargoEntity cargo = new CargoEntity();
+        cargo.setIdCargo(3); // Certifique-se de que a entidade CargoEntity tenha um setter para o ID do cargo
 
-        UsuarioEntity salvo = usuarioRepository.save(entidade);
-        UsuarioDTO dtoSalvo = usuarioMapper.paraDTO(salvo);
-        return dtoSalvo;
+        // Adicionar o cargo à lista de cargos do usuário
+        usuarioEntitySalvo.getCargo();
+
+        // Atualizar o usuário para salvar a relação com o cargo
+        usuarioEntitySalvo = usuarioRepository.save(usuarioEntitySalvo);
+
+        // Converter Entity para DTO
+        UsuarioDTO usuarioRetornado = usuarioMapper.toDTO(usuarioEntitySalvo);
+        return usuarioRetornado;
     }
 
     public UsuarioDTO atualizarUsuario(@RequestBody UsuarioDTO usuarioDTO) throws RegraDeNegocioException {
         String senhaSegura = usuarioDTO.getSenha();
 
-        if (!senhaSegura.matches(".*[A-Z].*") || // Pelo menos uma letra maiúscula
-                !senhaSegura.matches(".*[a-z].*") || // Pelo menos uma letra minúscula
-                !senhaSegura.matches(".*\\d.*") ||   // Pelo menos um número
-                !senhaSegura.matches(".*[!@#$%^&*()].*")) { // Pelo menos um caractere especial
-            throw new RegraDeNegocioException("A senha não atende aos critérios de segurança.");
-        }
+//        if (!senhaSegura.matches(".*[A-Z].*") || // Pelo menos uma letra maiúscula
+//                !senhaSegura.matches(".*[a-z].*") || // Pelo menos uma letra minúscula
+//                !senhaSegura.matches(".*\\d.*") ||   // Pelo menos um número
+//                !senhaSegura.matches(".*[!@#$%^&*()].*")) { // Pelo menos um caractere especial
+//            throw new RegraDeNegocioException("A senha não atende aos critérios de segurança.");
+//        }
 
         validarUser(usuarioDTO);
-        UsuarioEntity entidade = usuarioMapper.paraEntity(usuarioDTO);
+        UsuarioEntity entidade = usuarioMapper.toEntity(usuarioDTO);
 
         String senha = entidade.getSenha();
         String senhaCriptografada = geradorDeSenha(senha);
@@ -169,13 +201,20 @@ public class UsuarioService {
 //        entidade.setEnabled(true);
 
         UsuarioEntity salvo = usuarioRepository.save(entidade);
-        UsuarioDTO dtoSalvo = usuarioMapper.paraDTO(salvo);
+        UsuarioDTO dtoSalvo = usuarioMapper.toDTO(salvo);
         return dtoSalvo;    }
 
     public String geradorDeSenha(String senha) {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         String senhaCriptografada = bCryptPasswordEncoder.encode(senha);
         return senhaCriptografada;
+    }
+
+    public List<UsuarioDTO> listar(){
+        List<UsuarioEntity> listaEntity = usuarioRepository.findAll();
+        List<UsuarioDTO> listaDTO = listaEntity.stream().map(entity -> usuarioMapper.toDTO(entity))
+                .toList();
+        return listaDTO;
     }
 
     public void validarUser(UsuarioDTO usuario) throws RegraDeNegocioException {
@@ -211,5 +250,7 @@ public class UsuarioService {
 //        entity.setEnabled(false);
         usuarioRepository.save(entity);
     }
+
+
 }
 
