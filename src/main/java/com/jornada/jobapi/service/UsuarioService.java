@@ -18,6 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -251,6 +252,26 @@ public class UsuarioService {
         usuarioRepository.save(entity);
     }
 
+    public Integer recuperarIdUsuarioLogado(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object idUsuario = authentication.getPrincipal();
+        String idUsuarioString = (String) idUsuario;
+        return Integer.parseInt(idUsuarioString);
+    }
+
+
+    public String recuperarNomeUsuarioLogado(){
+        Integer idUsuarioLogado = recuperarIdUsuarioLogado();
+        Optional<UsuarioEntity> usuario =usuarioRepository.findByIdUsuario(idUsuarioLogado);
+        return usuario.get().getNome();
+    }
+
+    public UsuarioDTO recuperarUsuarioLogado() throws RegraDeNegocioException {
+        Integer idUsuarioLogado =recuperarIdUsuarioLogado();
+        UsuarioEntity idUsuarioEntity = usuarioRepository.findById(idUsuarioLogado).orElseThrow(() -> new RegraDeNegocioException("Usuario não encontrado!"));
+        UsuarioDTO idUsuarioDTOLogado = usuarioMapper.toDTO(idUsuarioEntity);
+        return idUsuarioDTOLogado;
+    }
 
 }
 
