@@ -23,10 +23,6 @@ public class UsuarioDTO {
     @Email
     private String email;
 
-    @NotNull
-    @Schema(description = "Cargo do usuario", example = "RECRUTADOR")
-    private CargoEntity cargo;
-
     @Schema(description = "Colocar senha do usuário", example = "Senha-Segura123")
     @NotBlank
     @NotNull
