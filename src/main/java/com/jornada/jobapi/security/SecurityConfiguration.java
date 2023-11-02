@@ -33,6 +33,7 @@ public class SecurityConfiguration {
         // Permissão de acesso ao "/autenticação"
         http.authorizeHttpRequests((authz)->
                         authz.requestMatchers("/autenticacao/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "usuario/**").hasRole("EMPRESA")
                                 .requestMatchers(HttpMethod.POST, "/usuario/**").hasRole("EMPRESA")
                                 .requestMatchers(HttpMethod.PUT, "/usuario/**").hasRole("EMPRESA")
                                 .requestMatchers(HttpMethod.DELETE, "/usuario/**").hasRole("EMPRESA")
