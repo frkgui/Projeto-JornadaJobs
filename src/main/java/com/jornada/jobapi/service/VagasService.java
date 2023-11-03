@@ -27,7 +27,7 @@ public class VagasService {
         this.authenticationManager = authenticationManager;
     }
 
-    public void candidatarVaga(Integer idVaga) throws RegraDeNegocioException {
+    public Integer candidatarVaga(Integer idVaga) throws RegraDeNegocioException {
         VagasEntity vagaRecuperada = recuperarVaga(idVaga);
         Integer idUser = usuarioService.recuperarIdUsuarioLogado();
 
@@ -44,6 +44,7 @@ public class VagasService {
 
        VagasEntity vagaAtt = vagaRepository.save(vagaRecuperada);
 
+       return 1;
    }
 
     public VagasEntity recuperarVaga(Integer idVaga) throws RegraDeNegocioException {

@@ -30,32 +30,32 @@ public class VagaController {
             @ApiResponse(responseCode = "400",description = "Erro na validação de dados"),
             @ApiResponse(responseCode = "500",description = "Erro do servidor")
     })
-    //Apenas Recrutadores
-    @PostMapping("/cadastrar-vagas")
-    public UsuarioDTO cadastrarVagas(@RequestBody @Valid UsuarioDTO dto) throws RegraDeNegocioException {
-        log.info("Usuario foi inserido");
-        return vagasService.;
-    }
+//    //Apenas Recrutadores
+//    @PostMapping("/cadastrar-vagas")
+//    public UsuarioDTO cadastrarVagas(@RequestBody @Valid UsuarioDTO dto) throws RegraDeNegocioException {
+//        log.info("Usuario foi inserido");
+//        return vagasService.;
+//    }
 
     //Apenas Candidatos
     @PostMapping("/candidatar")
     public Integer candidatarVaga(@RequestBody @Valid Integer idVaga) throws RegraDeNegocioException {
         log.info("Candidatura Realizada com Sucesso");
-        return vagasService.candidatar(idVaga);
+        return vagasService.candidatarVaga(idVaga);
     }
 
-    //Analisar Candidatos - Recrutador & Empresa
-    @GetMapping("/analisar-candidatos")
-    public List<VagasDTO> analisarVaga() throws SQLException {
-        List<VagasDTO> lista = vagasService.;
-        return lista;
-    }
+//    //Analisar Candidatos - Recrutador & Empresa
+//    @GetMapping("/analisar-candidatos")
+//    public List<VagasDTO> analisarVaga() throws SQLException {
+//        List<VagasDTO> lista = vagasService.;
+//        return lista;
+//    }
 
-    //Ver Vagas - Apenas Candidato
-    @GetMapping("/ver-vagas")
-    public List<VagasDTO> analisarVaga() throws SQLException {
-        List<VagasDTO> lista = vagasService.;
-        return lista;
-    }
+//    //Ver Vagas - Apenas Candidato
+//    @GetMapping("/ver-vagas")
+//    public List<VagasDTO> analisarVaga() throws SQLException {
+//        List<VagasDTO> lista = vagasService.;
+//        return lista;
+//    }
 
 }
