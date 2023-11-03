@@ -23,18 +23,16 @@ public class UsuarioDTO {
     @Email
     private String email;
 
-    @Schema(description = "tipo do usuario", example = "EMPRESA")
-    private TipoUsuario tipoUsuario;
-
-
-//    @NotNull
-//    @Schema(description = "Cargo do usuario", example = "ROLE_RECRUTADOR")
-//    private CargoEntity cargo;
+//    @Schema(description = "Tipo do usuario", example = "EMPRESA")
+//    private TipoUsuario tipoUsuario;
 
     @Schema(description = "Colocar senha do usuário", example = "Senha-Segura123")
     @NotBlank
     @NotNull
     private String senha;
+
+    @Schema(description = "Empresa vinculada do usuário", example = "SAP")
+    private String empresaVinculada;
 
 //    @Schema(description = "Escolha o cargo do usuário (candidato, empresa, recrutador)", example = "candidato")
 //    @NotBlank
