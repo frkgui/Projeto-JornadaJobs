@@ -28,6 +28,9 @@ public class UsuarioEntity implements UserDetails {
     @Column(name = "email")
     private String email;
 
+//    @Column(name = "tipo_usuario")
+//    private TipoUsuario tipoUsuario;
+
     @Column(name = "senha")
     private String senha;
 
@@ -38,16 +41,16 @@ public class UsuarioEntity implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "id_vagas"))
     public Set<VagasEntity> vagas;
 
-    @OneToOne
-    @PrimaryKeyJoinColumn(name = "id_cargo")
-    private CargoEntity cargo;
+    @ManyToMany
+    @JoinTable(name = "Usuario_Cargo",
+            joinColumns = @JoinColumn(name = "id_usuario"),
+            inverseJoinColumns = @JoinColumn(name = "id_cargo"))
+    public Set<CargoEntity> cargos;
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> lista = new ArrayList<>();
-        lista.add(cargo);
-        return lista;
+        return cargos;
     }
 
     @Override

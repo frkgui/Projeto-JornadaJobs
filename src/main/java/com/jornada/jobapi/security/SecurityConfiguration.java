@@ -32,15 +32,16 @@ public class SecurityConfiguration {
         http.cors(Customizer.withDefaults());
         // Permissão de acesso ao "/autenticação"
         http.authorizeHttpRequests((authz)->
-                        authz.requestMatchers("/autenticacao/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "usuario/**").hasRole("EMPRESA")
-                                .requestMatchers(HttpMethod.POST, "/usuario/**").hasRole("EMPRESA")
-                                .requestMatchers(HttpMethod.PUT, "/usuario/**").hasRole("EMPRESA")
-                                .requestMatchers(HttpMethod.DELETE, "/usuario/**").hasRole("EMPRESA")
-                                .requestMatchers("/usuario/**").hasAnyRole("CANDIDATO","EMPRESA","RECRUTADOR")
-                                .anyRequest().authenticated());
+//                        authz.requestMatchers("/autenticacao/**").permitAll()
+                authz.anyRequest().permitAll()); //Todos EndPoints Permitidos
+//                                .requestMatchers(HttpMethod.GET, "usuario/**").hasRole("EMPRESA")
+//                                .requestMatchers(HttpMethod.POST, "/usuario/**").hasRole("EMPRESA")
+//                                .requestMatchers(HttpMethod.PUT, "/usuario/**").hasRole("EMPRESA")
+//                                .requestMatchers(HttpMethod.DELETE, "/usuario/**").hasRole("EMPRESA")
+//                                .requestMatchers("/usuario/**").hasAnyRole("CANDIDATO","EMPRESA","RECRUTADOR")
+//                                .anyRequest().authenticated());
         // Filtro de autenticação ao Token
-        http.addFilterBefore(new TokenAuthenticatonFilter(usuarioService), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new TokenAuthenticationFilter(usuarioService), UsernamePasswordAuthenticationFilter.class);
 
        return http.build(); // Retorna a http (requisição)
     }

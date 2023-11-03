@@ -10,7 +10,6 @@ import com.jornada.jobapi.repository.UsuarioRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,7 +31,7 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final AuthenticationManager authenticationManager;
 
-    @Autowired
+
     public UsuarioService(@Lazy UsuarioRepository usuarioRepository,
                        @Lazy AuthenticationManager authenticationManager,
                        @Lazy UsuarioMapper usuarioMapper) {
@@ -48,13 +47,6 @@ public class UsuarioService {
     private String secret;
 
     public String fazerLogin(AutenticacaoDTO autenticacaoDTO) throws RegraDeNegocioException {
-
-        // Verifica se a senha atende aos critérios
-//        if (!senha.matches(".*[A-Z].*") || // Pelo menos uma letra maiúscula
-//                !senha.matches(".*[a-z].*") || // Pelo menos uma letra minúscula
-//                !senha.matches(".*\\d.*") ||   // Pelo menos um número
-//                !senha.matches(".*[!@#$%^&*()].*")) { // Pelo menos um caractere especial
-//            throw new RegraDe
         UsernamePasswordAuthenticationToken dtoDoSpring = new UsernamePasswordAuthenticationToken(
                 autenticacaoDTO.getEmail(),
                 autenticacaoDTO.getSenha()
@@ -65,35 +57,29 @@ public class UsuarioService {
             Object usuarioAutenticado = autenticacao.getPrincipal();
             UsuarioEntity usuarioEntity = (UsuarioEntity) usuarioAutenticado;
 
-
-            List<String> cargos = new ArrayList<>();
-            cargos.add("ROLE_CANDIDATO");
-            cargos.add("ROLE_EMPRESA");
-            cargos.add("ROLE_RECRUTADOR");
-
-//            List<String> nomeDosCargos = usuarioEntity.getCargo().stream()
-//                    .map(cargo -> cargo.getNome()).toList();
-
-
+            List<String> nomeDosCargos = usuarioEntity.getCargos().stream()
+                    .map(cargo -> cargo.getNome()).toList();
             Date dataAtual = new Date();
             Date dataExpiracao = new Date(dataAtual.getTime() + Long.parseLong(validadeJWT));
 
             //1 dia
 
             String jwtGerado =Jwts.builder()
-                    .setIssuer("ninja-task")
-                    .claim("CARGOS", cargos)
+                    .setIssuer("job-api")
+                    .claim("CARGOS", nomeDosCargos)
                     .setSubject(usuarioEntity.getIdUsuario().toString())
                     .setIssuedAt(dataAtual)
                     .setExpiration(dataExpiracao)
                     .signWith(SignatureAlgorithm.HS256, secret)
                     .compact();
-
             return jwtGerado;
         }catch (AuthenticationException ex){
+            ex.printStackTrace(); // Isso imprimirá o rastreamento da pilha no console
             throw new RegraDeNegocioException("E-mail e Senha Inválidos");
 
         }
+
+
     }
 
     public UsernamePasswordAuthenticationToken validarToken(String token){
@@ -141,8 +127,9 @@ public class UsuarioService {
 
 
 
-    public UsuarioDTO salvarUsuario(UsuarioDTO usuarioDTO) throws RegraDeNegocioException {
-//        String senhaSegura = usuarioDTO.getSenha();
+
+    public UsuarioDTO salvarUsuario(UsuarioDTO usuario) throws RegraDeNegocioException{
+        String senhaSegura = usuario.getSenha();
 
 //        if (!senhaSegura.matches(".*[A-Z].*") || // Pelo menos uma letra maiúscula
 //                !senhaSegura.matches(".*[a-z].*") || // Pelo menos uma letra minúscula
@@ -151,28 +138,28 @@ public class UsuarioService {
 //            throw new RegraDeNegocioException("A senha não atende aos critérios de segurança.");
 //        }
 
-        validarUsuario(usuarioDTO);
+        validarUsuario(usuario);
         //converter dto para entity
-        UsuarioEntity usuarioEntityConvertido = usuarioMapper.toEntity(usuarioDTO);
+        UsuarioEntity usuarioEntityConvertido = usuarioMapper.toEntity(usuario);
         // Verificar Existência E-mail
-        validarEmailExistente(usuarioDTO.getEmail());
+//        validarEmailExistente(usuario.getEmail());
         //Converter Senha
         String senha = usuarioEntityConvertido.getSenha();
         String senhaCriptografada = converterSenha(senha);
         usuarioEntityConvertido.setSenha(senhaCriptografada);
         UsuarioEntity usuarioEntitySalvo = usuarioRepository.save(usuarioEntityConvertido);
 
-//         Inicialize a lista de cargos se for nula
-//        if (usuarioEntitySalvo.getCargo() == null) {
-//            usuarioEntitySalvo.setCargo();
-//        }
+        // Inicialize a lista de cargos se for nula
+        if (usuarioEntitySalvo.getCargos() == null) {
+            usuarioEntitySalvo.setCargos(new HashSet<>());
+        }
 
         // Criar uma instância do CargoEntity com o ID do cargo igual a 3
         CargoEntity cargo = new CargoEntity();
-        cargo.setIdCargo(3); // Certifique-se de que a entidade CargoEntity tenha um setter para o ID do cargo
+        cargo.setIdCargo(1); // Certifique-se de que a entidade CargoEntity tenha um setter para o ID do cargo
 
         // Adicionar o cargo à lista de cargos do usuário
-        usuarioEntitySalvo.getCargo();
+        usuarioEntitySalvo.getCargos().add(cargo);
 
         // Atualizar o usuário para salvar a relação com o cargo
         usuarioEntitySalvo = usuarioRepository.save(usuarioEntitySalvo);
