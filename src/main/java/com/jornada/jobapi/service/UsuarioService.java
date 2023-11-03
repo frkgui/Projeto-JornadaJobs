@@ -1,6 +1,7 @@
 package com.jornada.jobapi.service;
 
 import com.jornada.jobapi.dto.AutenticacaoDTO;
+import com.jornada.jobapi.dto.TipoUsuario;
 import com.jornada.jobapi.dto.UsuarioDTO;
 import com.jornada.jobapi.entity.CargoEntity;
 import com.jornada.jobapi.entity.UsuarioEntity;
@@ -148,6 +149,11 @@ public class UsuarioService {
         String senhaCriptografada = converterSenha(senha);
         usuarioEntityConvertido.setSenha(senhaCriptografada);
         UsuarioEntity usuarioEntitySalvo = usuarioRepository.save(usuarioEntityConvertido);
+
+
+//        if (usuarioEntitySalvo.getTipoUsuario() == null) {
+//            usuarioEntitySalvo.setTipoUsuario(TipoUsuario.EMPRESA);
+//        }
 
         // Inicialize a lista de cargos se for nula
         if (usuarioEntitySalvo.getCargos() == null) {

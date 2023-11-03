@@ -29,10 +29,14 @@ public class UsuarioEntity implements UserDetails {
     private String email;
 
 //    @Column(name = "tipo_usuario")
+//    @Enumerated(value = EnumType.STRING)
 //    private TipoUsuario tipoUsuario;
 
     @Column(name = "senha")
     private String senha;
+
+    @Column(name = "empresa_vinculada")
+    private String empresaVinculada;
 
 
     @ManyToMany
