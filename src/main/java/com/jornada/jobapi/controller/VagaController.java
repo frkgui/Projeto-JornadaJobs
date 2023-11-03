@@ -39,9 +39,9 @@ public class VagaController {
 
     //Apenas Candidatos
     @PostMapping("/candidatar")
-    public Integer candidatarVaga(@RequestBody @Valid UsuarioDTO dto) throws RegraDeNegocioException {
-        log.info("Usuario foi inserido");
-        return vagasService.;
+    public Integer candidatarVaga(@RequestBody @Valid Integer idVaga) throws RegraDeNegocioException {
+        log.info("Candidatura Realizada com Sucesso");
+        return vagasService.candidatar(idVaga);
     }
 
     //Analisar Candidatos - Recrutador & Empresa

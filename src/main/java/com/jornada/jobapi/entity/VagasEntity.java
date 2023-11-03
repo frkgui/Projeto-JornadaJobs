@@ -37,6 +37,7 @@ public class VagasEntity {
     @Column(name = "quantidade_candidatos")
     private Integer quantidadeCandidatos;
     @Column(name = "status")
+    @Enumerated(value = EnumType.STRING)
     private StatusVagas status;
 
     @ManyToMany
