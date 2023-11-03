@@ -23,8 +23,6 @@ public class UsuarioDTO {
     @Email
     private String email;
 
-//    @Schema(description = "Tipo do usuario", example = "EMPRESA")
-//    private TipoUsuario tipoUsuario;
 
     @Schema(description = "Colocar senha do usuário", example = "Senha-Segura123")
     @NotBlank
@@ -34,8 +32,5 @@ public class UsuarioDTO {
     @Schema(description = "Empresa vinculada do usuário", example = "SAP")
     private String empresaVinculada;
 
-//    @Schema(description = "Escolha o cargo do usuário (candidato, empresa, recrutador)", example = "candidato")
-//    @NotBlank
-//    private TipoUsuario cargoEscolhido;
 }
 

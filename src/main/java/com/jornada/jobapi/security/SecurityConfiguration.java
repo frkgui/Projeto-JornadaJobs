@@ -34,11 +34,9 @@ public class SecurityConfiguration {
         http.authorizeHttpRequests((authz)->
 //                        authz.requestMatchers("/autenticacao/**").permitAll()
                 authz.anyRequest().permitAll()); //Todos EndPoints Permitidos
-//                                .requestMatchers(HttpMethod.GET, "usuario/**").hasRole("EMPRESA")
-//                                .requestMatchers(HttpMethod.POST, "/usuario/**").hasRole("EMPRESA")
-//                                .requestMatchers(HttpMethod.PUT, "/usuario/**").hasRole("EMPRESA")
-//                                .requestMatchers(HttpMethod.DELETE, "/usuario/**").hasRole("EMPRESA")
-//                                .requestMatchers("/usuario/**").hasAnyRole("CANDIDATO","EMPRESA","RECRUTADOR")
+//                                .requestMatchers(HttpMethod.GET, "Candidato/**").hasRole("CANDIDATO")
+//                                .requestMatchers(HttpMethod.POST, "/RECRUTADOR/**").hasRole("RECRUTADOR")
+//                                .requestMatchers(HttpMethod.PUT, "/EMPRESA/**").hasRole("EMPRESA")
 //                                .anyRequest().authenticated());
         // Filtro de autenticação ao Token
         http.addFilterBefore(new TokenAuthenticationFilter(usuarioService), UsernamePasswordAuthenticationFilter.class);

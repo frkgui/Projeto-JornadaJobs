@@ -17,10 +17,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/usuario")
+@RequestMapping("/candidato")
 @RequiredArgsConstructor
 @Slf4j
-public class UsuarioController{
+public class CandidatoController {
     private final UsuarioService usuarioService;
 
     @Operation(summary = "Listar usuarios", description = "Lista todos os usuarios na base de dados")
@@ -34,17 +34,6 @@ public class UsuarioController{
         return usuarioService.listar();
     }
 
-    @Operation(summary = "Insere novo Usuário", description = "Este processo realiza a inserção de novo Usuário")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",description = "Deu certo!"),
-            @ApiResponse(responseCode = "400",description = "Erro na validação de dados"),
-            @ApiResponse(responseCode = "500",description = "Erro do servidor")
-    })
-    @PostMapping
-    public UsuarioDTO inserirUsuario(@RequestBody @Valid UsuarioDTO dto) throws RegraDeNegocioException {
-        log.info("Usuario foi inserido");
-        return usuarioService.salvarUsuario(dto);
-    }
 
     @Operation(summary = "Atualiza usuários", description = "Atualiza usuários na base de dados")
     @ApiResponses(value = {

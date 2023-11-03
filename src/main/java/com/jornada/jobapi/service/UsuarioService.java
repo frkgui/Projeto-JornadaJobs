@@ -1,7 +1,6 @@
 package com.jornada.jobapi.service;
 
 import com.jornada.jobapi.dto.AutenticacaoDTO;
-import com.jornada.jobapi.dto.TipoUsuario;
 import com.jornada.jobapi.dto.UsuarioDTO;
 import com.jornada.jobapi.entity.CargoEntity;
 import com.jornada.jobapi.entity.UsuarioEntity;
@@ -129,7 +128,7 @@ public class UsuarioService {
 
 
 
-    public UsuarioDTO salvarUsuario(UsuarioDTO usuario) throws RegraDeNegocioException{
+    public UsuarioDTO salvarUsuario(UsuarioDTO usuario,Integer idCargo) throws RegraDeNegocioException{
         String senhaSegura = usuario.getSenha();
 
 //        if (!senhaSegura.matches(".*[A-Z].*") || // Pelo menos uma letra maiúscula
@@ -142,18 +141,15 @@ public class UsuarioService {
         validarUsuario(usuario);
         //converter dto para entity
         UsuarioEntity usuarioEntityConvertido = usuarioMapper.toEntity(usuario);
+
         // Verificar Existência E-mail
-//        validarEmailExistente(usuario.getEmail());
+        validarEmailExistente(usuario.getEmail());
+
         //Converter Senha
         String senha = usuarioEntityConvertido.getSenha();
         String senhaCriptografada = converterSenha(senha);
         usuarioEntityConvertido.setSenha(senhaCriptografada);
         UsuarioEntity usuarioEntitySalvo = usuarioRepository.save(usuarioEntityConvertido);
-
-
-//        if (usuarioEntitySalvo.getTipoUsuario() == null) {
-//            usuarioEntitySalvo.setTipoUsuario(TipoUsuario.EMPRESA);
-//        }
 
         // Inicialize a lista de cargos se for nula
         if (usuarioEntitySalvo.getCargos() == null) {
@@ -162,7 +158,8 @@ public class UsuarioService {
 
         // Criar uma instância do CargoEntity com o ID do cargo igual a 3
         CargoEntity cargo = new CargoEntity();
-        cargo.setIdCargo(1); // Certifique-se de que a entidade CargoEntity tenha um setter para o ID do cargo
+        cargo.setIdCargo(idCargo);
+        // Certifique-se de que a entidade CargoEntity tenha um setter para o ID do cargo
 
         // Adicionar o cargo à lista de cargos do usuário
         usuarioEntitySalvo.getCargos().add(cargo);
@@ -252,12 +249,6 @@ public class UsuarioService {
         return Integer.parseInt(idUsuarioString);
     }
 
-
-    public String recuperarNomeUsuarioLogado(){
-        Integer idUsuarioLogado = recuperarIdUsuarioLogado();
-        Optional<UsuarioEntity> usuario =usuarioRepository.findByIdUsuario(idUsuarioLogado);
-        return usuario.get().getNome();
-    }
 
     public UsuarioDTO recuperarUsuarioLogado() throws RegraDeNegocioException {
         Integer idUsuarioLogado =recuperarIdUsuarioLogado();
