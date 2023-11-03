@@ -10,7 +10,6 @@ import com.jornada.jobapi.repository.UsuarioRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,7 +30,7 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final AuthenticationManager authenticationManager;
 
-    @Autowired
+
     public UsuarioService(@Lazy UsuarioRepository usuarioRepository,
                        @Lazy AuthenticationManager authenticationManager,
                        @Lazy UsuarioMapper usuarioMapper) {
@@ -74,6 +73,7 @@ public class UsuarioService {
                     .compact();
             return jwtGerado;
         }catch (AuthenticationException ex){
+            ex.printStackTrace(); // Isso imprimirá o rastreamento da pilha no console
             throw new RegraDeNegocioException("E-mail e Senha Inválidos");
 
         }
@@ -130,18 +130,18 @@ public class UsuarioService {
     public UsuarioDTO salvarUsuario(UsuarioDTO usuario) throws RegraDeNegocioException{
         String senhaSegura = usuario.getSenha();
 
-        if (!senhaSegura.matches(".*[A-Z].*") || // Pelo menos uma letra maiúscula
-                !senhaSegura.matches(".*[a-z].*") || // Pelo menos uma letra minúscula
-                !senhaSegura.matches(".*\\d.*") ||   // Pelo menos um número
-                !senhaSegura.matches(".*[!@#$%^&*()].*")) { // Pelo menos um caractere especial
-            throw new RegraDeNegocioException("A senha não atende aos critérios de segurança.");
-        }
+//        if (!senhaSegura.matches(".*[A-Z].*") || // Pelo menos uma letra maiúscula
+//                !senhaSegura.matches(".*[a-z].*") || // Pelo menos uma letra minúscula
+//                !senhaSegura.matches(".*\\d.*") ||   // Pelo menos um número
+//                !senhaSegura.matches(".*[!@#$%^&*()].*")) { // Pelo menos um caractere especial
+//            throw new RegraDeNegocioException("A senha não atende aos critérios de segurança.");
+//        }
 
         validarUsuario(usuario);
         //converter dto para entity
         UsuarioEntity usuarioEntityConvertido = usuarioMapper.toEntity(usuario);
         // Verificar Existência E-mail
-        validarEmailExistente(usuario.getEmail());
+//        validarEmailExistente(usuario.getEmail());
         //Converter Senha
         String senha = usuarioEntityConvertido.getSenha();
         String senhaCriptografada = converterSenha(senha);
@@ -155,7 +155,7 @@ public class UsuarioService {
 
         // Criar uma instância do CargoEntity com o ID do cargo igual a 3
         CargoEntity cargo = new CargoEntity();
-        cargo.setIdCargo(3); // Certifique-se de que a entidade CargoEntity tenha um setter para o ID do cargo
+        cargo.setIdCargo(1); // Certifique-se de que a entidade CargoEntity tenha um setter para o ID do cargo
 
         // Adicionar o cargo à lista de cargos do usuário
         usuarioEntitySalvo.getCargos().add(cargo);
