@@ -29,8 +29,8 @@ public class UsuarioDTO {
     @NotNull
     private String senha;
 
-    @Schema(description = "Empresa vinculada do usuário", example = "SAP")
-    private String empresaVinculada;
+//    @Schema(description = "Empresa vinculada do usuário", example = "SAP")
+//    private String empresaVinculada;
 
 }
 

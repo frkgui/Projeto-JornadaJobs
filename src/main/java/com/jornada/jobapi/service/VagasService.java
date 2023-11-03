@@ -1,9 +1,14 @@
 package com.jornada.jobapi.service;
 
+import com.jornada.jobapi.dto.VagasDTO;
+import com.jornada.jobapi.entity.UsuarioEntity;
+import com.jornada.jobapi.entity.VagasEntity;
 import com.jornada.jobapi.mapper.UsuarioMapper;
 import com.jornada.jobapi.repository.UsuarioRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
 
 @Service
 public class VagasService {
@@ -19,9 +24,30 @@ public class VagasService {
         this.authenticationManager = authenticationManager;
     }
 
-    public Integer candidatar(Integer idVaga) {
+    public Integer candidatarVaga(Integer idVaga) {
         Integer idUser = usuarioService.recuperarIdUsuarioLogado();
         //só necessita fazer a relação
-    }
+
+        VagasEntity vagasEntity = new VagasEntity();
+
+
+
+        if (vagasEntity.getUsuarios() == null) {
+            vagasEntity.setUsuarios(new HashSet<>());
+        }
+
+        // Criar uma instância do CargoEntity com o ID do cargo igual a 3
+        UsuarioEntity usuarioEntity = new UsuarioEntity();
+        usuarioEntity.getVagas();
+
+//        cargo.setIdCargo(idCargo);
+//        // Certifique-se de que a entidade CargoEntity tenha um setter para o ID do cargo
+//
+//        // Adicionar o cargo à lista de cargos do usuário
+//        usuarioEntitySalvo.getCargos().add(cargo);
+
+
+
+//    }
 
 }

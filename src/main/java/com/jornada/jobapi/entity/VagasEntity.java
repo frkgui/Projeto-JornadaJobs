@@ -44,5 +44,5 @@ public class VagasEntity {
     @JoinTable(name = "Usuario_Vagas",
             joinColumns = @JoinColumn(name = "id_vagas"),
             inverseJoinColumns = @JoinColumn(name = "id_usuario"))
-    public Set<VagasEntity> usuarios;
+    public Set<UsuarioEntity> usuarios;
 }
