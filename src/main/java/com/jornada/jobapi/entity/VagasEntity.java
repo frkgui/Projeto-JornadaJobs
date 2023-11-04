@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @Entity(name = "Vagas")
@@ -27,15 +28,15 @@ public class VagasEntity {
     @Column(name = "descricao")
     private String descricao;
     @Column(name = "competencias")
-    private String competencias;
+    private List<String> competencias;
     @Column(name = "data_criacao")
     private Date dataCriacao;
     @Column(name = "data_encerramento")
     private Date dataEncerramento;
     @Column(name = "quantidade_vagas")
     private Integer quantidadeVagas;
-    @Column(name = "quantidade_candidatos")
-    private Integer quantidadeCandidatos;
+    @Column(name = "quantidade_maxima_candidatos")
+    private Integer quantidadeMaximaCandidatos;
     @Column(name = "status")
     @Enumerated(value = EnumType.STRING)
     private StatusVagas status;

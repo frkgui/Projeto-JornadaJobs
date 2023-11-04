@@ -23,7 +23,6 @@ public class UsuarioDTO {
     @Email
     private String email;
 
-
     @Schema(description = "Colocar senha do usuário", example = "Senha-Segura123")
     @NotBlank
     @NotNull

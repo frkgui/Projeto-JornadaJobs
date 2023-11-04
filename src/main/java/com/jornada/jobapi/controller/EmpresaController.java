@@ -32,14 +32,25 @@ public class EmpresaController {
         return usuarioService.salvarUsuario(dto,3);
     }
 
+    @Operation(summary = "Desativa um Recrutador", description = "Este processo realiza a desativação de um Recrutador")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "Deu certo!"),
+            @ApiResponse(responseCode = "400",description = "Erro na validação de dados"),
+            @ApiResponse(responseCode = "500",description = "Erro do servidor")
+    })
     @DeleteMapping("/desativar-recrutador")
     public void desativarRecrutador(@PathVariable("id") Integer id) throws RegraDeNegocioException{
         usuarioService.remover(id);
     }
 
+    @Operation(summary = "Deleta uma Empresa", description = "Este processo realiza a remoção de uma Empresa")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "Deu certo!"),
+            @ApiResponse(responseCode = "400",description = "Erro na validação de dados"),
+            @ApiResponse(responseCode = "500",description = "Erro do servidor")
+    })
     @DeleteMapping("/deletar-empresa")
     public void deletarEmpresa(@PathVariable("id") Integer id) throws RegraDeNegocioException{
         usuarioService.remover(id);
     }
-
 }
