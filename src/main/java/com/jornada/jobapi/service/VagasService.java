@@ -1,28 +1,30 @@
 package com.jornada.jobapi.service;
 
-import com.jornada.jobapi.dto.UsuarioDTO;
 import com.jornada.jobapi.dto.VagasDTO;
 import com.jornada.jobapi.entity.UsuarioEntity;
 import com.jornada.jobapi.entity.VagasEntity;
 import com.jornada.jobapi.exception.RegraDeNegocioException;
 import com.jornada.jobapi.mapper.UsuarioMapper;
-import com.jornada.jobapi.repository.UsuarioRepository;
+import com.jornada.jobapi.mapper.VagasMapper;
 import com.jornada.jobapi.repository.VagaRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 
 @Service
 public class VagasService {
     private final UsuarioService usuarioService;
     private final UsuarioMapper usuarioMapper;
+    private final VagasMapper vagasMapper;
     private final VagaRepository vagaRepository;
     private final AuthenticationManager authenticationManager;
 
-    public VagasService(UsuarioService usuarioService, UsuarioMapper usuarioMapper, VagaRepository vagaRepository, AuthenticationManager authenticationManager) {
+    public VagasService(UsuarioService usuarioService, UsuarioMapper usuarioMapper, VagasMapper vagasMapper, VagaRepository vagaRepository, AuthenticationManager authenticationManager) {
         this.usuarioService = usuarioService;
         this.usuarioMapper = usuarioMapper;
+        this.vagasMapper = vagasMapper;
         this.vagaRepository = vagaRepository;
         this.authenticationManager = authenticationManager;
     }
@@ -50,6 +52,13 @@ public class VagasService {
     public VagasEntity recuperarVaga(Integer idVaga) throws RegraDeNegocioException {
         VagasEntity vagaS = vagaRepository.findById(idVaga).orElseThrow(() -> new RegraDeNegocioException("Vaga não encontrado!"));
         return vagaS;
+    }
+
+    public List<VagasDTO> listarVagas(){
+        List<VagasEntity> listaEntity = vagaRepository.findAll();
+        List<VagasDTO> listaDTO = listaEntity.stream().map(entity -> vagasMapper.toDTO(entity))
+                .toList();
+        return listaDTO;
     }
 
 }

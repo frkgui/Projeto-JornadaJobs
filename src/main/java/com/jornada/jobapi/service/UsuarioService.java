@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 @Service
 public class UsuarioService {
@@ -233,10 +234,20 @@ public class UsuarioService {
         return senhaCriptografada;
     }
 
-    public List<UsuarioDTO> listar(){
+    public List<UsuarioDTO> listarUsuarios(){
         List<UsuarioEntity> listaEntity = usuarioRepository.findAll();
         List<UsuarioDTO> listaDTO = listaEntity.stream().map(entity -> usuarioMapper.toDTO(entity))
                 .toList();
+        return listaDTO;
+    }
+
+
+    public Optional<UsuarioDTO> listarDadosDoCandidatoLogado() throws RegraDeNegocioException {
+        Integer idUsuarioLogado = recuperarIdUsuarioLogado();
+        Optional<UsuarioEntity> listaEntities = usuarioRepository.findByIdUsuario(idUsuarioLogado);
+        Optional<UsuarioDTO> listaDTO = listaEntities.map(entity
+                -> usuarioMapper.toDTO(entity));
+
         return listaDTO;
     }
 

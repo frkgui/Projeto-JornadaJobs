@@ -1,9 +1,7 @@
 package com.jornada.jobapi.controller;
 
-import com.jornada.jobapi.dto.UsuarioDTO;
 import com.jornada.jobapi.dto.VagasDTO;
 import com.jornada.jobapi.exception.RegraDeNegocioException;
-import com.jornada.jobapi.service.UsuarioService;
 import com.jornada.jobapi.service.VagasService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -13,23 +11,22 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.SQLException;
 import java.util.List;
 
 @RestController
 @RequestMapping("/vagas")
 @RequiredArgsConstructor
 @Slf4j
-public class VagaController {
+public class VagasController {
 
     private final VagasService vagasService;
 
-    @Operation(summary = "Cadastra Novo Recrutador", description = "Este processo realiza a inserção de Novo Recrutador")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",description = "Deu certo!"),
-            @ApiResponse(responseCode = "400",description = "Erro na validação de dados"),
-            @ApiResponse(responseCode = "500",description = "Erro do servidor")
-    })
+//    @Operation(summary = "Cadastra Novo Recrutador", description = "Este processo realiza a inserção de Novo Recrutador")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200",description = "Deu certo!"),
+//            @ApiResponse(responseCode = "400",description = "Erro na validação de dados"),
+//            @ApiResponse(responseCode = "500",description = "Erro do servidor")
+//    })
 //    //Apenas Recrutadores
 //    @PostMapping("/cadastrar-vagas")
 //    public UsuarioDTO cadastrarVagas(@RequestBody @Valid UsuarioDTO dto) throws RegraDeNegocioException {
@@ -52,10 +49,15 @@ public class VagaController {
 //    }
 
 //    //Ver Vagas - Apenas Candidato
-//    @GetMapping("/ver-vagas")
-//    public List<VagasDTO> analisarVaga() throws SQLException {
-//        List<VagasDTO> lista = vagasService.;
-//        return lista;
-//    }
+    @Operation(summary = "Listar vagas/CANDIDATO", description = "Lista todos as vagas na base de dados")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "Deu certo!"),
+            @ApiResponse(responseCode = "400",description = "Erro na validação de dados"),
+            @ApiResponse(responseCode = "500",description = "Erro do servidor")
+    })
+    @GetMapping
+    public List<VagasDTO> listar(){
+    return vagasService.listarVagas();
+}
 
 }
