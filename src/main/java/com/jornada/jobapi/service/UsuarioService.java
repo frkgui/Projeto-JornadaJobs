@@ -1,10 +1,12 @@
 package com.jornada.jobapi.service;
 
 import com.jornada.jobapi.dto.AutenticacaoDTO;
+import com.jornada.jobapi.dto.CandidatoDTO;
 import com.jornada.jobapi.dto.UsuarioDTO;
 import com.jornada.jobapi.entity.CargoEntity;
 import com.jornada.jobapi.entity.UsuarioEntity;
 import com.jornada.jobapi.exception.RegraDeNegocioException;
+import com.jornada.jobapi.mapper.CandidatoMapper;
 import com.jornada.jobapi.mapper.UsuarioMapper;
 import com.jornada.jobapi.repository.UsuarioRepository;
 import io.jsonwebtoken.Claims;
@@ -28,16 +30,18 @@ import java.util.*;
 public class UsuarioService {
 
     private final UsuarioMapper usuarioMapper;
+    private final CandidatoMapper candidatoMapper;
     private final UsuarioRepository usuarioRepository;
     private final AuthenticationManager authenticationManager;
 
 
     public UsuarioService(@Lazy UsuarioRepository usuarioRepository,
-                       @Lazy AuthenticationManager authenticationManager,
-                       @Lazy UsuarioMapper usuarioMapper) {
+                          @Lazy AuthenticationManager authenticationManager,
+                          @Lazy UsuarioMapper usuarioMapper, CandidatoMapper candidatoMapper) {
         this.usuarioRepository = usuarioRepository;
         this.authenticationManager = authenticationManager;
         this.usuarioMapper = usuarioMapper;
+        this.candidatoMapper = candidatoMapper;
     }
 
     @Value("${jwt.validade.token}")
@@ -193,7 +197,35 @@ public class UsuarioService {
 
         UsuarioEntity salvo = usuarioRepository.save(entidade);
         UsuarioDTO dtoSalvo = usuarioMapper.toDTO(salvo);
-        return dtoSalvo;    }
+        return dtoSalvo;
+    }
+
+    public CandidatoDTO atualizarCandidato(CandidatoDTO candidatoDTO) throws RegraDeNegocioException {
+
+        UsuarioEntity usuarioEntity = new UsuarioEntity();
+        validarCandidato(candidatoDTO);
+
+        usuarioEntity.setNome(candidatoDTO.getNome());
+        String senha = candidatoDTO.getSenha();
+        String senhaCriptografada = geradorDeSenha(senha);
+        usuarioEntity.setSenha(senhaCriptografada);
+
+        // Salve as alterações
+        UsuarioEntity usuarioAtualizado = usuarioRepository.save(usuarioEntity);
+
+        CandidatoDTO usuarioDTOAtualizado = candidatoMapper.toDTO(usuarioAtualizado);
+        return usuarioDTOAtualizado;
+    }
+
+    public void validarCandidato(CandidatoDTO candidatoDTO) throws RegraDeNegocioException {
+        if (candidatoDTO.getNome() == null || candidatoDTO.getNome().isEmpty()) {
+            throw new RegraDeNegocioException("O nome é obrigatório.");
+        }
+        if (candidatoDTO.getSenha() == null || candidatoDTO.getSenha().isEmpty()) {
+            throw new RegraDeNegocioException("A senha é obrigatória.");
+        }
+        // Você pode adicionar mais validações, se necessário
+    }
 
     public String geradorDeSenha(String senha) {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
