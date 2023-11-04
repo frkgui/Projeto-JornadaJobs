@@ -28,7 +28,7 @@ public class VagasEntity {
     @Column(name = "descricao")
     private String descricao;
     @Column(name = "competencias")
-    private List<String> competencias;
+    private String competencias;
     @Column(name = "data_criacao")
     private Date dataCriacao;
     @Column(name = "data_encerramento")
