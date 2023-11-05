@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class UsuarioCandidatoDTO {
+public class UsuarioCandidatoRecrutadorDTO {
 
 
     private Integer idUsuario;

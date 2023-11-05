@@ -1,13 +1,13 @@
 package com.jornada.jobapi.mapper;
 
-import com.jornada.jobapi.dto.UsuarioCandidatoDTO;
+import com.jornada.jobapi.dto.UsuarioCandidatoRecrutadorDTO;
 import com.jornada.jobapi.entity.UsuarioEntity;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface CandidatoMapper {
 
-    UsuarioEntity toEntity(UsuarioCandidatoDTO dto);
+    UsuarioEntity toEntity(UsuarioCandidatoRecrutadorDTO dto);
 
-    UsuarioCandidatoDTO toDTO(UsuarioEntity entity);
+    UsuarioCandidatoRecrutadorDTO toDTO(UsuarioEntity entity);
 }

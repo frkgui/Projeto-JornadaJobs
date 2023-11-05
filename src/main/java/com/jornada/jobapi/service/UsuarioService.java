@@ -1,7 +1,7 @@
 package com.jornada.jobapi.service;
 
 import com.jornada.jobapi.dto.AutenticacaoDTO;
-import com.jornada.jobapi.dto.UsuarioCandidatoDTO;
+import com.jornada.jobapi.dto.UsuarioCandidatoRecrutadorDTO;
 import com.jornada.jobapi.dto.UsuarioDTO;
 import com.jornada.jobapi.entity.CargoEntity;
 import com.jornada.jobapi.entity.UsuarioEntity;
@@ -201,25 +201,28 @@ public class UsuarioService {
     }
 
     //APENAS CANDIDATOS
-    public UsuarioCandidatoDTO atualizarCandidato(UsuarioCandidatoDTO usuarioCandidatoDTO) throws RegraDeNegocioException {
+//    public UsuarioCandidatoRecrutadorDTO atualizarCandidato(UsuarioCandidatoRecrutadorDTO dto) throws RegraDeNegocioException {
+//
+//        UsuarioEntity usuarioEntity = new UsuarioEntity();
+//        validarCandidato(usuarioCandidatoDTO);
+//
+//        usuarioEntity.setNome(usuarioCandidatoDTO.getNome());
+//        String senha = usuarioCandidatoDTO.getSenha();
+//        String senhaCriptografada = geradorDeSenha(senha);
+//        usuarioEntity.setSenha(senhaCriptografada);
+//
+//        // Salve as alterações
+//        UsuarioEntity usuarioAtualizado = usuarioRepository.save(usuarioEntity);
+//
+//        UsuarioCandidatoDTO usuarioDTOAtualizado = candidatoMapper.toDTO(usuarioAtualizado);
+//        return usuarioDTOAtualizado;
+//    }
 
-        UsuarioEntity usuarioEntity = new UsuarioEntity();
-        validarCandidato(usuarioCandidatoDTO);
-
-        usuarioEntity.setNome(usuarioCandidatoDTO.getNome());
-        String senha = usuarioCandidatoDTO.getSenha();
-        String senhaCriptografada = geradorDeSenha(senha);
-        usuarioEntity.setSenha(senhaCriptografada);
-
-        // Salve as alterações
-        UsuarioEntity usuarioAtualizado = usuarioRepository.save(usuarioEntity);
-
-        UsuarioCandidatoDTO usuarioDTOAtualizado = candidatoMapper.toDTO(usuarioAtualizado);
-        return usuarioDTOAtualizado;
-    }
-
-    public UsuarioCandidatoDTO atualizarCandidatoCarlos(@RequestBody UsuarioCandidatoDTO usuario) throws RegraDeNegocioException{
+    public UsuarioCandidatoRecrutadorDTO atualizarCandidatoOuRecrutador(@RequestBody UsuarioCandidatoRecrutadorDTO usuario) throws RegraDeNegocioException{
         validarCandidato(usuario);
+
+        Integer idUsuarioLogado = recuperarIdUsuarioLogado();
+        Optional<UsuarioEntity> entity = usuarioRepository.findByIdUsuario(idUsuarioLogado);
 
         //converter dto para entity
         UsuarioEntity usuarioEntityConvertido = usuarioMapper.candidatoToEntity(usuario);
@@ -227,6 +230,8 @@ public class UsuarioService {
         String senha = usuarioEntityConvertido.getSenha();
         String senhaCriptografada = converterSenha(senha);
         usuarioEntityConvertido.setSenha(senhaCriptografada);
+        usuarioEntityConvertido.setEmail(entity.get().getEmail());
+        usuarioEntityConvertido.setEmpresaVinculada(entity.get().getEmpresaVinculada());
 
 //        usuarioEntityConvertido.setEmail(entityAux.get().getEmail());
 //        usuarioEntityConvertido.setEmpresaVinculada(entityAux.get().getEmpresaVinculada());
@@ -234,11 +239,11 @@ public class UsuarioService {
 
         UsuarioEntity usuarioEntitySalvo = usuarioRepository.save(usuarioEntityConvertido);
         //converter entity para dto
-        UsuarioCandidatoDTO usuarioRetornado = usuarioMapper.candidatoToDTO(usuarioEntitySalvo);
+        UsuarioCandidatoRecrutadorDTO usuarioRetornado = usuarioMapper.candidatoToDTO(usuarioEntitySalvo);
         return usuarioRetornado;
     }
 
-    public void validarCandidato(UsuarioCandidatoDTO usuarioCandidatoDTO) throws RegraDeNegocioException {
+    public void validarCandidato(UsuarioCandidatoRecrutadorDTO usuarioCandidatoDTO) throws RegraDeNegocioException {
         if (usuarioCandidatoDTO.getNome() == null || usuarioCandidatoDTO.getNome().isEmpty()) {
             throw new RegraDeNegocioException("O nome é obrigatório.");
         }
@@ -263,6 +268,15 @@ public class UsuarioService {
 
 
     public Optional<UsuarioDTO> listarDadosDoCandidatoLogado() throws RegraDeNegocioException {
+        Integer idUsuarioLogado = recuperarIdUsuarioLogado();
+        Optional<UsuarioEntity> listaEntities = usuarioRepository.findByIdUsuario(idUsuarioLogado);
+        Optional<UsuarioDTO> listaDTO = listaEntities.map(entity
+                -> usuarioMapper.toDTO(entity));
+
+        return listaDTO;
+    }
+
+    public Optional<UsuarioDTO> listarDadosDoRecrutadorLogado() throws RegraDeNegocioException {
         Integer idUsuarioLogado = recuperarIdUsuarioLogado();
         Optional<UsuarioEntity> listaEntities = usuarioRepository.findByIdUsuario(idUsuarioLogado);
         Optional<UsuarioDTO> listaDTO = listaEntities.map(entity
