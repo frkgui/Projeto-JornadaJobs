@@ -45,7 +45,7 @@ public class CandidatoController {
     })
     @PutMapping
     public UsuarioCandidatoRecrutadorDTO atualizarCandidato(@RequestBody @Valid UsuarioCandidatoRecrutadorDTO dto) throws RegraDeNegocioException {
-        return usuarioService.atualizarCandidatoCarlos(dto);
+        return usuarioService.atualizarCandidatoOuRecrutador(dto);
     }
 
 //    @Operation(summary = "Deletar candidato", description = "Deleta ca na base de dados")

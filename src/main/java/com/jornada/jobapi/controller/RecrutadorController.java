@@ -40,7 +40,7 @@ public class RecrutadorController {
     })
     @PutMapping
     public UsuarioCandidatoRecrutadorDTO atualizarRecrutador(@RequestBody @Valid UsuarioCandidatoRecrutadorDTO dto) throws RegraDeNegocioException {
-        return usuarioService.atualizarCandidatoCarlos(dto);
+        return usuarioService.atualizarCandidatoOuRecrutador(dto);
     }
 
     @Operation(summary = "Desativa um Recrutador", description = "Este processo realiza a desativação de um Recrutador")
