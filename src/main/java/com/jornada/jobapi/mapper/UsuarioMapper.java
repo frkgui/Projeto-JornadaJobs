@@ -2,6 +2,7 @@ package com.jornada.jobapi.mapper;
 
 import com.jornada.jobapi.dto.UsuarioCandidatoRecrutadorDTO;
 import com.jornada.jobapi.dto.UsuarioDTO;
+import com.jornada.jobapi.dto.UsuarioEmpresaDTO;
 import com.jornada.jobapi.entity.UsuarioEntity;
 import org.mapstruct.Mapper;
 
@@ -13,7 +14,10 @@ public interface UsuarioMapper {
     UsuarioDTO toDTO(UsuarioEntity entity);
 
 
-    UsuarioEntity candidatoToEntity(UsuarioCandidatoRecrutadorDTO dto);
+    UsuarioEntity candidatoERecrutadorToEntity(UsuarioCandidatoRecrutadorDTO dto);
 
-    UsuarioCandidatoRecrutadorDTO candidatoToDTO(UsuarioEntity entity);
+    UsuarioCandidatoRecrutadorDTO candidatoERecrutadorToDTO(UsuarioEntity entity);
+
+    UsuarioEntity empresaToEntity(UsuarioEmpresaDTO dto);
+    UsuarioEmpresaDTO empresaToDTO(UsuarioEntity entity);
 }

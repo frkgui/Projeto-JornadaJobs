@@ -1,8 +1,10 @@
 package com.jornada.jobapi.controller;
 
 import com.jornada.jobapi.dto.UsuarioDTO;
+import com.jornada.jobapi.dto.UsuarioEmpresaDTO;
 import com.jornada.jobapi.exception.RegraDeNegocioException;
 import com.jornada.jobapi.service.UsuarioService;
+import freemarker.core.OptInTemplateClassResolver;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -12,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/empresa")
@@ -30,6 +33,17 @@ public class EmpresaController {
     public UsuarioDTO cadastrarRecrutador(@RequestBody @Valid UsuarioDTO dto) throws RegraDeNegocioException {
         log.info("Recrutador foi inserido");
         return usuarioService.salvarUsuario(dto,3);
+    }
+
+    @Operation(summary = "Ver usuarios da empresa", description = "Lista todos os usuarios da empresa")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "Deu certo!"),
+            @ApiResponse(responseCode = "400",description = "Erro na validação de dados"),
+            @ApiResponse(responseCode = "500",description = "Erro do servidor")
+    })
+    @GetMapping
+    public Optional<UsuarioEmpresaDTO> listarUsuariosDaEmpresa() throws RegraDeNegocioException {
+        return usuarioService.listarUsuariosDaEmpresa();
     }
 
     @Operation(summary = "Desativa um Recrutador", description = "Este processo realiza a desativação de um Recrutador")

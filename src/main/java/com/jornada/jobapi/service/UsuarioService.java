@@ -3,6 +3,7 @@ package com.jornada.jobapi.service;
 import com.jornada.jobapi.dto.AutenticacaoDTO;
 import com.jornada.jobapi.dto.UsuarioCandidatoRecrutadorDTO;
 import com.jornada.jobapi.dto.UsuarioDTO;
+import com.jornada.jobapi.dto.UsuarioEmpresaDTO;
 import com.jornada.jobapi.entity.CargoEntity;
 import com.jornada.jobapi.entity.UsuarioEntity;
 import com.jornada.jobapi.exception.RegraDeNegocioException;
@@ -214,7 +215,7 @@ public class UsuarioService {
         Optional<UsuarioEntity> entity = usuarioRepository.findByIdUsuario(idUsuarioLogado);
 
         //converter dto para entity
-        UsuarioEntity usuarioEntityConvertido = usuarioMapper.candidatoToEntity(usuario);
+        UsuarioEntity usuarioEntityConvertido = usuarioMapper.candidatoERecrutadorToEntity(usuario);
         //Converter Senha
         String senha = usuarioEntityConvertido.getSenha();
         String senhaCriptografada = converterSenha(senha);
@@ -229,7 +230,7 @@ public class UsuarioService {
 
         UsuarioEntity usuarioEntitySalvo = usuarioRepository.save(usuarioEntityConvertido);
         //converter entity para dto
-        UsuarioCandidatoRecrutadorDTO usuarioRetornado = usuarioMapper.candidatoToDTO(usuarioEntitySalvo);
+        UsuarioCandidatoRecrutadorDTO usuarioRetornado = usuarioMapper.candidatoERecrutadorToDTO(usuarioEntitySalvo);
         return usuarioRetornado;
     }
 
@@ -275,6 +276,19 @@ public class UsuarioService {
         return listaDTO;
     }
 
+    public Optional<UsuarioEmpresaDTO> listarUsuariosDaEmpresa()  {
+        Integer idUsuarioLogado = recuperarIdUsuarioLogado();
+        Optional<UsuarioEntity> entidadeLogada = usuarioRepository.findByIdUsuario(idUsuarioLogado);
+        String empresaVinculada = entidadeLogada.get().getEmpresaVinculada();
+        Optional<UsuarioEntity> entidade = usuarioRepository.findByEmpresaVinculada(empresaVinculada);
+        Optional<UsuarioEmpresaDTO> empresaDTO = entidade.map(entity
+                -> usuarioMapper.empresaToDTO(entity));
+
+        return empresaDTO;
+    }
+
+
+
     public void validarUser(UsuarioDTO usuario) throws RegraDeNegocioException {
         if (usuario.getEmail().contains("@gmail")
                 || usuario.getEmail().contains("@hotmail")
@@ -302,7 +316,8 @@ public class UsuarioService {
         return usuarioRepository.findByEmail(email);
     }
 
-    public void desativarUsuario(Integer idInformado) throws RegraDeNegocioException {
+    //APENAS EMPRESA
+    public void desabilitarRecrutador(Integer idInformado) throws RegraDeNegocioException {
         UsuarioEntity entity = usuarioRepository.findById(idInformado)
                 .orElseThrow(() -> new RegraDeNegocioException("Usuario não encontrado"));
 //        entity.setEnabled(false);
