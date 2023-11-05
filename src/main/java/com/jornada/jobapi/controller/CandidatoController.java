@@ -1,16 +1,13 @@
 package com.jornada.jobapi.controller;
 
-import com.jornada.jobapi.dto.CandidatoDTO;
+import com.jornada.jobapi.dto.UsuarioCandidatoDTO;
 import com.jornada.jobapi.dto.UsuarioDTO;
-import com.jornada.jobapi.dto.VagasDTO;
 import com.jornada.jobapi.service.UsuarioService;
-import com.jornada.jobapi.service.VagasService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Optional;
 
 import com.jornada.jobapi.exception.RegraDeNegocioException;
@@ -47,8 +44,8 @@ public class CandidatoController {
             @ApiResponse(responseCode = "500",description = "Erro do servidor")
     })
     @PutMapping
-    public UsuarioDTO atualizarUsuario(@RequestBody @Valid UsuarioDTO dto) throws RegraDeNegocioException {
-        return usuarioService.atualizarUsuario(dto);
+    public UsuarioCandidatoDTO atualizarCandidato(@RequestBody @Valid UsuarioCandidatoDTO dto) throws RegraDeNegocioException {
+        return usuarioService.atualizarCandidatoCarlos(dto);
     }
 
 //    @Operation(summary = "Deletar candidato", description = "Deleta ca na base de dados")

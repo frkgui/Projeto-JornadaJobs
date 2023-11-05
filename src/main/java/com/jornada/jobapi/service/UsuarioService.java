@@ -1,7 +1,7 @@
 package com.jornada.jobapi.service;
 
 import com.jornada.jobapi.dto.AutenticacaoDTO;
-import com.jornada.jobapi.dto.CandidatoDTO;
+import com.jornada.jobapi.dto.UsuarioCandidatoDTO;
 import com.jornada.jobapi.dto.UsuarioDTO;
 import com.jornada.jobapi.entity.CargoEntity;
 import com.jornada.jobapi.entity.UsuarioEntity;
@@ -200,42 +200,43 @@ public class UsuarioService {
         return dtoSalvo;
     }
 
-    public CandidatoDTO atualizarCandidato(CandidatoDTO candidatoDTO) throws RegraDeNegocioException {
+    //APENAS CANDIDATOS
+    public UsuarioCandidatoDTO atualizarCandidato(UsuarioCandidatoDTO usuarioCandidatoDTO) throws RegraDeNegocioException {
 
         UsuarioEntity usuarioEntity = new UsuarioEntity();
-        validarCandidato(candidatoDTO);
+        validarCandidato(usuarioCandidatoDTO);
 
-        usuarioEntity.setNome(candidatoDTO.getNome());
-        String senha = candidatoDTO.getSenha();
+        usuarioEntity.setNome(usuarioCandidatoDTO.getNome());
+        String senha = usuarioCandidatoDTO.getSenha();
         String senhaCriptografada = geradorDeSenha(senha);
         usuarioEntity.setSenha(senhaCriptografada);
 
         // Salve as alterações
         UsuarioEntity usuarioAtualizado = usuarioRepository.save(usuarioEntity);
 
-        CandidatoDTO usuarioDTOAtualizado = candidatoMapper.toDTO(usuarioAtualizado);
+        UsuarioCandidatoDTO usuarioDTOAtualizado = candidatoMapper.toDTO(usuarioAtualizado);
         return usuarioDTOAtualizado;
     }
 
-    public UsuarioDTO editarUsuario(UsuarioDTO usuario) throws RegraDeNegocioException{
-        validarUsuario(usuario);
+    public UsuarioCandidatoDTO atualizarCandidatoCarlos(UsuarioCandidatoDTO usuario) throws RegraDeNegocioException{
+        validarCandidato(usuario);
         //converter dto para entity
-        UsuarioEntity usuarioEntityConvertido = usuarioMapper.toEntity(usuario);
+        UsuarioEntity usuarioEntityConvertido = usuarioMapper.candidatoToEntity(usuario);
         //Converter Senha
         String senha = usuarioEntityConvertido.getSenha();
         String senhaCriptografada = converterSenha(senha);
         usuarioEntityConvertido.setSenha(senhaCriptografada);
         UsuarioEntity usuarioEntitySalvo = usuarioRepository.save(usuarioEntityConvertido);
         //converter entity para dto
-        UsuarioDTO usuarioRetornado = usuarioMapper.toDTO(usuarioEntitySalvo);
+        UsuarioCandidatoDTO usuarioRetornado = usuarioMapper.candidatoToDTO(usuarioEntitySalvo);
         return usuarioRetornado;
     }
 
-    public void validarCandidato(CandidatoDTO candidatoDTO) throws RegraDeNegocioException {
-        if (candidatoDTO.getNome() == null || candidatoDTO.getNome().isEmpty()) {
+    public void validarCandidato(UsuarioCandidatoDTO usuarioCandidatoDTO) throws RegraDeNegocioException {
+        if (usuarioCandidatoDTO.getNome() == null || usuarioCandidatoDTO.getNome().isEmpty()) {
             throw new RegraDeNegocioException("O nome é obrigatório.");
         }
-        if (candidatoDTO.getSenha() == null || candidatoDTO.getSenha().isEmpty()) {
+        if (usuarioCandidatoDTO.getSenha() == null || usuarioCandidatoDTO.getSenha().isEmpty()) {
             throw new RegraDeNegocioException("A senha é obrigatória.");
         }
         // Você pode adicionar mais validações, se necessário
