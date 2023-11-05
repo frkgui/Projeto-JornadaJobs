@@ -47,8 +47,8 @@ public class CandidatoController {
             @ApiResponse(responseCode = "500",description = "Erro do servidor")
     })
     @PutMapping
-    public CandidatoDTO atualizarUsuario(@RequestBody @Valid CandidatoDTO dto) throws RegraDeNegocioException {
-        return usuarioService.atualizarCandidato(dto);
+    public UsuarioDTO atualizarUsuario(@RequestBody @Valid UsuarioDTO dto) throws RegraDeNegocioException {
+        return usuarioService.atualizarUsuario(dto);
     }
 
 //    @Operation(summary = "Deletar candidato", description = "Deleta ca na base de dados")

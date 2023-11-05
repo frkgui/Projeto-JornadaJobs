@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 @Service
 public class UsuarioService {
@@ -216,6 +215,20 @@ public class UsuarioService {
 
         CandidatoDTO usuarioDTOAtualizado = candidatoMapper.toDTO(usuarioAtualizado);
         return usuarioDTOAtualizado;
+    }
+
+    public UsuarioDTO editarUsuario(UsuarioDTO usuario) throws RegraDeNegocioException{
+        validarUsuario(usuario);
+        //converter dto para entity
+        UsuarioEntity usuarioEntityConvertido = usuarioMapper.toEntity(usuario);
+        //Converter Senha
+        String senha = usuarioEntityConvertido.getSenha();
+        String senhaCriptografada = converterSenha(senha);
+        usuarioEntityConvertido.setSenha(senhaCriptografada);
+        UsuarioEntity usuarioEntitySalvo = usuarioRepository.save(usuarioEntityConvertido);
+        //converter entity para dto
+        UsuarioDTO usuarioRetornado = usuarioMapper.toDTO(usuarioEntitySalvo);
+        return usuarioRetornado;
     }
 
     public void validarCandidato(CandidatoDTO candidatoDTO) throws RegraDeNegocioException {

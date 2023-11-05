@@ -9,6 +9,7 @@ import lombok.Data;
 @Data
 public class CandidatoDTO {
 
+
     private Integer id;
 
     @Schema(description = "Nome Completo", example = "Pedro Frank Gonçalves de Ferrazza")
