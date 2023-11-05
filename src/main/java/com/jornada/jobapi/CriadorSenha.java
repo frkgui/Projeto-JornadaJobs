@@ -12,8 +12,8 @@ public class CriadorSenha {
 
         //$2a$10$4pJEttY2LieCN5wOXQGnzOc/qMT2yB3c40XTx0/hupCtgY5LO0uk.
 
-
-        boolean senhaCorreta =bCryptPasswordEncoder.matches("Pedro123!", "$2a$10$vDeJYEZot8B/HgDabNMXHuvQzValQzUiLmYX0O11y85nSqRQEXr/O");
+//
+        boolean senhaCorreta =bCryptPasswordEncoder.matches("12345", "$2a$10$C5852ntgXp9caIQI89fw5ulIKHG5yRb7tdNwMQ3Zrs4GSFoEM3.46");
         System.out.println(senhaCorreta);
     }
 }
