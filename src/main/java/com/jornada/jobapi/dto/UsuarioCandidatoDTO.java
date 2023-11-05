@@ -22,6 +22,9 @@ public class UsuarioCandidatoDTO {
     @JsonIgnore
     private String email;
 
+    @JsonIgnore
+    private String empresaVinculada;
+
     @Schema(description = "Colocar senha do usuário", example = "Senha-Segura123")
     @NotBlank
     @NotNull

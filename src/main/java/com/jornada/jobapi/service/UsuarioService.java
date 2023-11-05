@@ -221,19 +221,15 @@ public class UsuarioService {
     public UsuarioCandidatoDTO atualizarCandidatoCarlos(@RequestBody UsuarioCandidatoDTO usuario) throws RegraDeNegocioException{
         validarCandidato(usuario);
 
-        Integer idUsuarioLogado = recuperarIdUsuarioLogado();
-        Optional<UsuarioEntity> entityAux = usuarioRepository.findByIdUsuario(idUsuarioLogado);
-
         //converter dto para entity
         UsuarioEntity usuarioEntityConvertido = usuarioMapper.candidatoToEntity(usuario);
         //Converter Senha
         String senha = usuarioEntityConvertido.getSenha();
         String senhaCriptografada = converterSenha(senha);
         usuarioEntityConvertido.setSenha(senhaCriptografada);
-        usuarioEntityConvertido.setIdUsuario(usuario.getIdUsuario());
 
-        usuarioEntityConvertido.setEmail(entityAux.get().getEmail());
-        usuarioEntityConvertido.setEmpresaVinculada(entityAux.get().getEmpresaVinculada());
+//        usuarioEntityConvertido.setEmail(entityAux.get().getEmail());
+//        usuarioEntityConvertido.setEmpresaVinculada(entityAux.get().getEmpresaVinculada());
 
 
         UsuarioEntity usuarioEntitySalvo = usuarioRepository.save(usuarioEntityConvertido);
