@@ -11,6 +11,7 @@ import lombok.Data;
 public class UsuarioCandidatoRecrutadorDTO {
 
 
+    @JsonIgnore
     private Integer idUsuario;
 
     @Schema(description = "Nome Completo", example = "Pedro Frank Gonçalves de Ferrazza")

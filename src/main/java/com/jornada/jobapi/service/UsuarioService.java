@@ -149,10 +149,15 @@ public class UsuarioService {
         // Verificar Existência E-mail
         validarEmailExistente(usuario.getEmail());
 
+        //Intanciando para saber qual o id logado
+        Integer idUsuarioLogado = recuperarIdUsuarioLogado();
+        Optional<UsuarioEntity> entity = usuarioRepository.findByIdUsuario(idUsuarioLogado);
+
         //Converter Senha
         String senha = usuarioEntityConvertido.getSenha();
         String senhaCriptografada = converterSenha(senha);
         usuarioEntityConvertido.setSenha(senhaCriptografada);
+        usuarioEntityConvertido.setEmpresaVinculada(entity.get().getEmpresaVinculada()); //colocando o nome da empresa no na variavel emprese vinculada
         UsuarioEntity usuarioEntitySalvo = usuarioRepository.save(usuarioEntityConvertido);
 
         // Inicialize a lista de cargos se for nula
@@ -201,26 +206,10 @@ public class UsuarioService {
     }
 
     //APENAS CANDIDATOS
-//    public UsuarioCandidatoRecrutadorDTO atualizarCandidato(UsuarioCandidatoRecrutadorDTO dto) throws RegraDeNegocioException {
-//
-//        UsuarioEntity usuarioEntity = new UsuarioEntity();
-//        validarCandidato(usuarioCandidatoDTO);
-//
-//        usuarioEntity.setNome(usuarioCandidatoDTO.getNome());
-//        String senha = usuarioCandidatoDTO.getSenha();
-//        String senhaCriptografada = geradorDeSenha(senha);
-//        usuarioEntity.setSenha(senhaCriptografada);
-//
-//        // Salve as alterações
-//        UsuarioEntity usuarioAtualizado = usuarioRepository.save(usuarioEntity);
-//
-//        UsuarioCandidatoDTO usuarioDTOAtualizado = candidatoMapper.toDTO(usuarioAtualizado);
-//        return usuarioDTOAtualizado;
-//    }
-
     public UsuarioCandidatoRecrutadorDTO atualizarCandidatoOuRecrutador(@RequestBody UsuarioCandidatoRecrutadorDTO usuario) throws RegraDeNegocioException{
         validarCandidato(usuario);
 
+        //Intanciando para saber qual o id logado
         Integer idUsuarioLogado = recuperarIdUsuarioLogado();
         Optional<UsuarioEntity> entity = usuarioRepository.findByIdUsuario(idUsuarioLogado);
 
@@ -230,6 +219,7 @@ public class UsuarioService {
         String senha = usuarioEntityConvertido.getSenha();
         String senhaCriptografada = converterSenha(senha);
         usuarioEntityConvertido.setSenha(senhaCriptografada);
+        usuarioEntityConvertido.setIdUsuario(entity.get().getIdUsuario());
         usuarioEntityConvertido.setEmail(entity.get().getEmail());
         usuarioEntityConvertido.setEmpresaVinculada(entity.get().getEmpresaVinculada());
 

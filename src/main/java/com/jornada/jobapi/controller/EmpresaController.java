@@ -20,7 +20,7 @@ import java.util.List;
 public class EmpresaController {
     private final UsuarioService usuarioService;
 
-    @Operation(summary = "Cadastra Nova Empresa", description = "Este processo realiza a inserção de nova Empresa")
+    @Operation(summary = "Cadastra um novo Recrutador", description = "Este processo realiza a inserção de um Recrutador")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",description = "Deu certo!"),
             @ApiResponse(responseCode = "400",description = "Erro na validação de dados"),
@@ -28,7 +28,7 @@ public class EmpresaController {
     })
     @PostMapping("/cadastrar-recrutador")
     public UsuarioDTO cadastrarRecrutador(@RequestBody @Valid UsuarioDTO dto) throws RegraDeNegocioException {
-        log.info("Usuario foi inserido");
+        log.info("Recrutador foi inserido");
         return usuarioService.salvarUsuario(dto,3);
     }
 
