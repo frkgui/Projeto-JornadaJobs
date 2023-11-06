@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UsuarioService {
@@ -153,12 +154,15 @@ public class UsuarioService {
         //Intanciando para saber qual o id logado
         Integer idUsuarioLogado = recuperarIdUsuarioLogado();
         Optional<UsuarioEntity> entity = usuarioRepository.findByIdUsuario(idUsuarioLogado);
+        if (usuarioEntityConvertido.getEmpresaVinculada() == null){
+            usuarioEntityConvertido.setEmpresaVinculada(entity.get().getEmpresaVinculada()); //colocando o nome da empresa na variavel empresa vinculada
+        }
+
 
         //Converter Senha
         String senha = usuarioEntityConvertido.getSenha();
         String senhaCriptografada = converterSenha(senha);
         usuarioEntityConvertido.setSenha(senhaCriptografada);
-        usuarioEntityConvertido.setEmpresaVinculada(entity.get().getEmpresaVinculada()); //colocando o nome da empresa no na variavel emprese vinculada
         UsuarioEntity usuarioEntitySalvo = usuarioRepository.save(usuarioEntityConvertido);
 
         // Inicialize a lista de cargos se for nula
@@ -276,14 +280,19 @@ public class UsuarioService {
         return listaDTO;
     }
 
-    public Optional<UsuarioEmpresaDTO> listarUsuariosDaEmpresa()  {
+    //APENAS EMPRESA
+    public List<UsuarioEmpresaDTO> listarUsuariosDaEmpresa()  {
+        //recupera o id que foi logado
         Integer idUsuarioLogado = recuperarIdUsuarioLogado();
         Optional<UsuarioEntity> entidadeLogada = usuarioRepository.findByIdUsuario(idUsuarioLogado);
-        String empresaVinculada = entidadeLogada.get().getEmpresaVinculada();
-        Optional<UsuarioEntity> entidade = usuarioRepository.findByEmpresaVinculada(empresaVinculada);
-        Optional<UsuarioEmpresaDTO> empresaDTO = entidade.map(entity
-                -> usuarioMapper.empresaToDTO(entity));
 
+//      instancia o nome da empresa na variavel
+        String empresaVinculada = entidadeLogada.get().getEmpresaVinculada();
+
+//      procura no banco os usuario que tem a mesma empresa empresa vinculada
+        List<UsuarioEntity> entidade = usuarioRepository.findByEmpresaVinculada(empresaVinculada);
+//      transformando em dto
+        List<UsuarioEmpresaDTO> empresaDTO = entidade.stream().map(entity -> usuarioMapper.empresaToDTO(entity)).collect(Collectors.toList());
         return empresaDTO;
     }
 

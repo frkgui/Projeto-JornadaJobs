@@ -42,7 +42,7 @@ public class EmpresaController {
             @ApiResponse(responseCode = "500",description = "Erro do servidor")
     })
     @GetMapping
-    public Optional<UsuarioEmpresaDTO> listarUsuariosDaEmpresa() throws RegraDeNegocioException {
+    public List<UsuarioEmpresaDTO> listarUsuariosDaEmpresa() throws RegraDeNegocioException {
         return usuarioService.listarUsuariosDaEmpresa();
     }
 
