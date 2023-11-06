@@ -30,12 +30,14 @@ import java.util.*;
 @Service
 public class UsuarioService {
 
+//    -- Variáveis de instância --
     private final UsuarioMapper usuarioMapper;
     private final CandidatoMapper candidatoMapper;
     private final UsuarioRepository usuarioRepository;
     private final AuthenticationManager authenticationManager;
 
 
+//    -- Funções gerais --
     public UsuarioService(@Lazy UsuarioRepository usuarioRepository,
                           @Lazy AuthenticationManager authenticationManager,
                           @Lazy UsuarioMapper usuarioMapper, CandidatoMapper candidatoMapper) {
@@ -66,8 +68,6 @@ public class UsuarioService {
                     .map(cargo -> cargo.getNome()).toList();
             Date dataAtual = new Date();
             Date dataExpiracao = new Date(dataAtual.getTime() + Long.parseLong(validadeJWT));
-
-            //1 dia
 
             String jwtGerado =Jwts.builder()
                     .setIssuer("job-api")
@@ -131,7 +131,7 @@ public class UsuarioService {
     }
 
 
-
+//    -- Funções de CRUD (GERAL) --
 
     public UsuarioDTO salvarUsuario(UsuarioDTO usuario,Integer idCargo) throws RegraDeNegocioException{
         String senhaSegura = usuario.getSenha();
@@ -182,31 +182,11 @@ public class UsuarioService {
         return usuarioRetornado;
     }
 
-    public UsuarioDTO atualizarUsuario(@RequestBody UsuarioDTO usuarioDTO) throws RegraDeNegocioException {
-        String senhaSegura = usuarioDTO.getSenha();
 
-//        if (!senhaSegura.matches(".*[A-Z].*") || // Pelo menos uma letra maiúscula
-//                !senhaSegura.matches(".*[a-z].*") || // Pelo menos uma letra minúscula
-//                !senhaSegura.matches(".*\\d.*") ||   // Pelo menos um número
-//                !senhaSegura.matches(".*[!@#$%^&*()].*")) { // Pelo menos um caractere especial
-//            throw new RegraDeNegocioException("A senha não atende aos critérios de segurança.");
-//        }
+//    -- CRUD DE CANDIDATO E RECRUTADOR --
 
-        validarUser(usuarioDTO);
-        UsuarioEntity entidade = usuarioMapper.toEntity(usuarioDTO);
 
-        String senha = entidade.getSenha();
-        String senhaCriptografada = geradorDeSenha(senha);
-        entidade.setSenha(senhaCriptografada);
 
-//        entidade.setEnabled(true);
-
-        UsuarioEntity salvo = usuarioRepository.save(entidade);
-        UsuarioDTO dtoSalvo = usuarioMapper.toDTO(salvo);
-        return dtoSalvo;
-    }
-
-    //APENAS CANDIDATOS
     public UsuarioCandidatoRecrutadorDTO atualizarCandidatoOuRecrutador(@RequestBody UsuarioCandidatoRecrutadorDTO usuario) throws RegraDeNegocioException{
         validarCandidato(usuario);
 
@@ -224,39 +204,11 @@ public class UsuarioService {
         usuarioEntityConvertido.setEmail(entity.get().getEmail());
         usuarioEntityConvertido.setEmpresaVinculada(entity.get().getEmpresaVinculada());
 
-//        usuarioEntityConvertido.setEmail(entityAux.get().getEmail());
-//        usuarioEntityConvertido.setEmpresaVinculada(entityAux.get().getEmpresaVinculada());
-
-
         UsuarioEntity usuarioEntitySalvo = usuarioRepository.save(usuarioEntityConvertido);
         //converter entity para dto
         UsuarioCandidatoRecrutadorDTO usuarioRetornado = usuarioMapper.candidatoERecrutadorToDTO(usuarioEntitySalvo);
         return usuarioRetornado;
     }
-
-    public void validarCandidato(UsuarioCandidatoRecrutadorDTO usuarioCandidatoDTO) throws RegraDeNegocioException {
-        if (usuarioCandidatoDTO.getNome() == null || usuarioCandidatoDTO.getNome().isEmpty()) {
-            throw new RegraDeNegocioException("O nome é obrigatório.");
-        }
-        if (usuarioCandidatoDTO.getSenha() == null || usuarioCandidatoDTO.getSenha().isEmpty()) {
-            throw new RegraDeNegocioException("A senha é obrigatória.");
-        }
-        // Você pode adicionar mais validações, se necessário
-    }
-
-    public String geradorDeSenha(String senha) {
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        String senhaCriptografada = bCryptPasswordEncoder.encode(senha);
-        return senhaCriptografada;
-    }
-
-    public List<UsuarioDTO> listarUsuarios(){
-        List<UsuarioEntity> listaEntity = usuarioRepository.findAll();
-        List<UsuarioDTO> listaDTO = listaEntity.stream().map(entity -> usuarioMapper.toDTO(entity))
-                .toList();
-        return listaDTO;
-    }
-
 
     public Optional<UsuarioDTO> listarDadosDoCandidatoLogado() throws RegraDeNegocioException {
         Integer idUsuarioLogado = recuperarIdUsuarioLogado();
@@ -276,6 +228,18 @@ public class UsuarioService {
         return listaDTO;
     }
 
+    public void validarCandidato(UsuarioCandidatoRecrutadorDTO usuarioCandidatoDTO) throws RegraDeNegocioException {
+        if (usuarioCandidatoDTO.getNome() == null || usuarioCandidatoDTO.getNome().isEmpty()) {
+            throw new RegraDeNegocioException("O nome é obrigatório.");
+        }
+        if (usuarioCandidatoDTO.getSenha() == null || usuarioCandidatoDTO.getSenha().isEmpty()) {
+            throw new RegraDeNegocioException("A senha é obrigatória.");
+        }
+        // Você pode adicionar mais validações, se necessário
+    }
+
+//    -- CRUD de Empresa --
+
     public Optional<UsuarioEmpresaDTO> listarUsuariosDaEmpresa()  {
         Integer idUsuarioLogado = recuperarIdUsuarioLogado();
         Optional<UsuarioEntity> entidadeLogada = usuarioRepository.findByIdUsuario(idUsuarioLogado);
@@ -287,7 +251,20 @@ public class UsuarioService {
         return empresaDTO;
     }
 
+//    -- Métodos Reutilizáveis --
 
+    public String geradorDeSenha(String senha) {
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        String senhaCriptografada = bCryptPasswordEncoder.encode(senha);
+        return senhaCriptografada;
+    }
+
+    public List<UsuarioDTO> listarUsuarios(){
+        List<UsuarioEntity> listaEntity = usuarioRepository.findAll();
+        List<UsuarioDTO> listaDTO = listaEntity.stream().map(entity -> usuarioMapper.toDTO(entity))
+                .toList();
+        return listaDTO;
+    }
 
     public void validarUser(UsuarioDTO usuario) throws RegraDeNegocioException {
         if (usuario.getEmail().contains("@gmail")
@@ -316,7 +293,7 @@ public class UsuarioService {
         return usuarioRepository.findByEmail(email);
     }
 
-    //APENAS EMPRESA
+//  -- CRUD de Empresa --
     public void desabilitarRecrutador(Integer idInformado) throws RegraDeNegocioException {
         UsuarioEntity entity = usuarioRepository.findById(idInformado)
                 .orElseThrow(() -> new RegraDeNegocioException("Usuario não encontrado"));
