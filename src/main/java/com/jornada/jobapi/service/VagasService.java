@@ -1,5 +1,6 @@
 package com.jornada.jobapi.service;
 
+import com.jornada.jobapi.dto.StatusVagas;
 import com.jornada.jobapi.dto.VagasDTO;
 import com.jornada.jobapi.entity.UsuarioEntity;
 import com.jornada.jobapi.entity.VagasEntity;
@@ -10,6 +11,7 @@ import com.jornada.jobapi.repository.VagaRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -31,21 +33,9 @@ public class VagasService {
 
     public VagasDTO criarVaga(VagasDTO vagas) throws RegraDeNegocioException {
         VagasEntity vagasEntity = vagasMapper.toEntity(vagas);
-        Integer idUser = usuarioService.recuperarIdUsuarioLogado();
-
-
-        if (vagasEntity.getUsuarios() == null) {
-            vagasEntity.setUsuarios(new HashSet<>());
-        }
-
-        // Criar uma instância do CargoEntity com o ID do cargo igual a 3
-        UsuarioEntity usuarioEntity = new UsuarioEntity();
-        usuarioEntity.setIdUsuario(idUser);
-        // Adicionar o cargo à lista de cargos do usuário
-        vagasEntity.getUsuarios().add(usuarioEntity);
-
+        vagasEntity.setDataCriacao(new Date());
+        vagasEntity.setStatus(StatusVagas.ABERTO);
         VagasEntity vagasAtt = vagaRepository.save(vagasEntity);
-
         VagasDTO vagasDTO = vagasMapper.toDTO(vagasAtt);
         return vagasDTO;
     }

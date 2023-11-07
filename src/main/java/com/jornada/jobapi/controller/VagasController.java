@@ -41,7 +41,7 @@ public class VagasController {
         return vagasService.criarVaga(vagasDTO);
     }
     @PostMapping("/candidatar")
-    public Integer candidatarVaga(@RequestBody @Valid Integer idVaga) throws RegraDeNegocioException {
+    public Integer candidatarVaga(@Valid Integer idVaga) throws RegraDeNegocioException {
         log.info("Candidatura Realizada com Sucesso");
         return vagasService.candidatarVaga(idVaga);
     }
