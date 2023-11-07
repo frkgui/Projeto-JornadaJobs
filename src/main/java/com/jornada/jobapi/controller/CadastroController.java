@@ -1,6 +1,8 @@
 package com.jornada.jobapi.controller;
 
+import com.jornada.jobapi.dto.SalvarUsuarioEmpresaDTO;
 import com.jornada.jobapi.dto.UsuarioDTO;
+import com.jornada.jobapi.dto.UsuarioEmpresaDTO;
 import com.jornada.jobapi.exception.RegraDeNegocioException;
 import com.jornada.jobapi.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,9 +42,9 @@ public class CadastroController {
             @ApiResponse(responseCode = "500",description = "Erro do servidor")
     })
     @PostMapping("/cadastrar-empresa")
-    public UsuarioDTO cadastrarEmpresa(@RequestBody @Valid UsuarioDTO dto) throws RegraDeNegocioException {
+    public SalvarUsuarioEmpresaDTO cadastrarEmpresa(@RequestBody @Valid SalvarUsuarioEmpresaDTO dto) throws RegraDeNegocioException {
         log.info("Usuario foi inserido");
-        return usuarioService.salvarUsuario(dto,2);
+        return usuarioService.salvarUsuarioEmpresa(dto,2);
     }
 
     @Operation(summary = "Cadastrar um recrutador", description = "Este processo realiza a inserção de um novo Recrutador")

@@ -1,9 +1,6 @@
 package com.jornada.jobapi.service;
 
-import com.jornada.jobapi.dto.AutenticacaoDTO;
-import com.jornada.jobapi.dto.UsuarioCandidatoRecrutadorDTO;
-import com.jornada.jobapi.dto.UsuarioDTO;
-import com.jornada.jobapi.dto.UsuarioEmpresaDTO;
+import com.jornada.jobapi.dto.*;
 import com.jornada.jobapi.entity.CargoEntity;
 import com.jornada.jobapi.entity.UsuarioEntity;
 import com.jornada.jobapi.exception.RegraDeNegocioException;
@@ -134,7 +131,7 @@ public class UsuarioService {
 
 //    -- Funções de CRUD (GERAL) --
 
-    //USADO PARA CADASTRO SEM AUTENTICAR
+    //USADO PARA CADASTRO DE CANDIDATO SEM AUTENTICAR
     public UsuarioDTO salvarUsuario(UsuarioDTO usuario,Integer idCargo) throws RegraDeNegocioException{
         String senhaSegura = usuario.getSenha();
 
@@ -186,6 +183,7 @@ public class UsuarioService {
         return usuarioRetornado;
     }
 
+    // APENAS EMPRESA
     public UsuarioDTO cadastrarRecrutadorNaEmpresa(UsuarioDTO usuario,Integer idCargo) throws RegraDeNegocioException{
         String senhaSegura = usuario.getSenha();
 
@@ -234,6 +232,57 @@ public class UsuarioService {
 
         // Converter Entity para DTO
         UsuarioDTO usuarioRetornado = usuarioMapper.toDTO(usuarioEntitySalvo);
+        return usuarioRetornado;
+    }
+
+    public SalvarUsuarioEmpresaDTO salvarUsuarioEmpresa(SalvarUsuarioEmpresaDTO usuario, Integer idCargo) throws RegraDeNegocioException{
+        String senhaSegura = usuario.getSenha();
+
+//        if (!senhaSegura.matches(".*[A-Z].*") || // Pelo menos uma letra maiúscula
+//                !senhaSegura.matches(".*[a-z].*") || // Pelo menos uma letra minúscula
+//                !senhaSegura.matches(".*\\d.*") ||   // Pelo menos um número
+//                !senhaSegura.matches(".*[!@#$%^&*()].*")) { // Pelo menos um caractere especial
+//            throw new RegraDeNegocioException("A senha não atende aos critérios de segurança.");
+//        }
+
+//        validarUsuario(usuario);
+        //converter dto para entity
+        UsuarioEntity usuarioEntityConvertido = usuarioMapper.salvarEmpresaToEntity(usuario);
+
+        // Verificar Existência E-mail
+        validarEmailExistente(usuario.getEmail());
+
+        //Converter Senha
+        String senha = usuarioEntityConvertido.getSenha();
+        String senhaCriptografada = converterSenha(senha);
+        usuarioEntityConvertido.setSenha(senhaCriptografada);
+        UsuarioEntity usuarioEntitySalvo = usuarioRepository.save(usuarioEntityConvertido);
+
+        //Intanciando para saber qual o id logado
+//        Integer idUsuarioLogado = recuperarIdUsuarioLogado();
+//        Optional<UsuarioEntity> entity = usuarioRepository.findByIdUsuario(idUsuarioLogado);
+//        if (entity.get().cargos != null) {
+//            usuarioEntityConvertido.setEmpresaVinculada(entity.get().getEmpresaVinculada()); //colocando o nome da empresa na variavel empresa vinculada
+//        }
+
+        // Inicialize a lista de cargos se for nula
+        if (usuarioEntitySalvo.getCargos() == null) {
+            usuarioEntitySalvo.setCargos(new HashSet<>());
+        }
+
+        // Criar uma instância do CargoEntity com o ID do cargo igual a 3
+        CargoEntity cargo = new CargoEntity();
+        cargo.setIdCargo(idCargo);
+        // Certifique-se de que a entidade CargoEntity tenha um setter para o ID do cargo
+
+        // Adicionar o cargo à lista de cargos do usuário
+        usuarioEntitySalvo.getCargos().add(cargo);
+
+        // Atualizar o usuário para salvar a relação com o cargo
+        usuarioEntitySalvo = usuarioRepository.save(usuarioEntitySalvo);
+
+        // Converter Entity para DTO
+        SalvarUsuarioEmpresaDTO usuarioRetornado = usuarioMapper.salvarEmpresaToDTO(usuarioEntitySalvo);
         return usuarioRetornado;
     }
 
