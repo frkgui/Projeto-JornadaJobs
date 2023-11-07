@@ -29,32 +29,33 @@ public class VagasService {
         this.authenticationManager = authenticationManager;
     }
 
-    public Integer candidatarVaga(Integer idVaga) throws RegraDeNegocioException {
-        VagasEntity vagaRecuperada = recuperarVaga(idVaga);
+    public VagasDTO candidatarVaga(VagasDTO vagas) throws RegraDeNegocioException {
+        VagasEntity vagasEntity = vagasMapper.toEntity(vagas);
         Integer idUser = usuarioService.recuperarIdUsuarioLogado();
 
 
-        if (vagaRecuperada.getUsuarios() == null) {
-            vagaRecuperada.setUsuarios(new HashSet<>());
+        if (vagasEntity.getUsuarios() == null) {
+            vagasEntity.setUsuarios(new HashSet<>());
         }
 
         // Criar uma instância do CargoEntity com o ID do cargo igual a 3
         UsuarioEntity usuarioEntity = new UsuarioEntity();
         usuarioEntity.setIdUsuario(idUser);
-       // Adicionar o cargo à lista de cargos do usuário
-        vagaRecuperada.getUsuarios().add(usuarioEntity);
+        // Adicionar o cargo à lista de cargos do usuário
+        vagasEntity.getUsuarios().add(usuarioEntity);
 
-       VagasEntity vagaAtt = vagaRepository.save(vagaRecuperada);
+        VagasEntity vagasAtt = vagaRepository.save(vagasEntity);
 
-       return 1;
-   }
+        VagasDTO vagasDTO = vagasMapper.toDTO(vagasAtt);
+        return vagasDTO;
+    }
 
     public VagasEntity recuperarVaga(Integer idVaga) throws RegraDeNegocioException {
         VagasEntity vagaS = vagaRepository.findById(idVaga).orElseThrow(() -> new RegraDeNegocioException("Vaga não encontrado!"));
         return vagaS;
     }
 
-    public List<VagasDTO> listarVagas(){
+    public List<VagasDTO> listarVagas() {
         List<VagasEntity> listaEntity = vagaRepository.findAll();
         List<VagasDTO> listaDTO = listaEntity.stream().map(entity -> vagasMapper.toDTO(entity))
                 .toList();

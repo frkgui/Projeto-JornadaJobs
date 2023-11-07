@@ -36,6 +36,7 @@ public class SecurityConfiguration {
                                 .requestMatchers("/candidato/**").hasRole("CANDIDATO")
                                 .requestMatchers("/empresa/**").hasRole("EMPRESA")
                                 .requestMatchers("/recrutador/**").hasRole("RECRUTADOR")
+                                .requestMatchers("/vagas/**").hasAnyRole("RECRUTADOR","CANDIDATO")
                                 .anyRequest().authenticated());
 
                 // Filtro de autenticação ao Token
