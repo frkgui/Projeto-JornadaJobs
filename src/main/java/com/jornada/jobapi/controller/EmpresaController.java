@@ -32,7 +32,7 @@ public class EmpresaController {
     @PostMapping("/cadastrar-recrutador")
     public UsuarioDTO cadastrarRecrutador(@RequestBody @Valid UsuarioDTO dto) throws RegraDeNegocioException {
         log.info("Recrutador foi inserido");
-        return usuarioService.salvarUsuario(dto,3);
+        return usuarioService.cadastrarRecrutadorNaEmpresa(dto,3);
     }
 
     @Operation(summary = "Ver usuarios da empresa", description = "Lista todos os usuarios da empresa")
@@ -46,7 +46,7 @@ public class EmpresaController {
         return usuarioService.listarUsuariosDaEmpresa();
     }
 
-    @Operation(summary = "Desativa um Recrutador", description = "Este processo realiza a desativação de um Recrutador")
+    @Operation(summary = "Desativar um recrutador", description = "Este processo realiza a desativação de um Recrutador")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",description = "Deu certo!"),
             @ApiResponse(responseCode = "400",description = "Erro na validação de dados"),
@@ -57,7 +57,7 @@ public class EmpresaController {
         usuarioService.dasativarRecrutador(nome);
     }
 
-    @Operation(summary = "Deleta uma Empresa", description = "Este processo realiza a remoção de uma Empresa")
+    @Operation(summary = "Deletar uma empresa", description = "Este processo realiza a remoção de uma Empresa")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",description = "Deu certo!"),
             @ApiResponse(responseCode = "400",description = "Erro na validação de dados"),
