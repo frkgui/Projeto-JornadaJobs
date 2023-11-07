@@ -219,6 +219,15 @@ public class UsuarioService {
         return listaDTO;
     }
 
+    public void removerCandidato(Integer id) throws RegraDeNegocioException {
+        if (!usuarioRepository.existsById(id)) {
+            throw new RegraDeNegocioException("Candidato não encontrado");
+        }
+        // Realizar a exclusão do candidato
+        usuarioRepository.deleteById(id);
+    }
+
+
     public Optional<UsuarioDTO> listarDadosDoRecrutadorLogado() throws RegraDeNegocioException {
         Integer idUsuarioLogado = recuperarIdUsuarioLogado();
         Optional<UsuarioEntity> listaEntities = usuarioRepository.findByIdUsuario(idUsuarioLogado);
@@ -235,7 +244,7 @@ public class UsuarioService {
         if (usuarioCandidatoDTO.getSenha() == null || usuarioCandidatoDTO.getSenha().isEmpty()) {
             throw new RegraDeNegocioException("A senha é obrigatória.");
         }
-        // Você pode adicionar mais validações, se necessário
+
     }
 
 //    -- CRUD de Empresa --
@@ -249,6 +258,57 @@ public class UsuarioService {
                 -> usuarioMapper.empresaToDTO(entity));
 
         return empresaDTO;
+    }
+
+    public UsuarioEmpresaDTO atualizarEmpresa(UsuarioEmpresaDTO empresaDTO) throws RegraDeNegocioException {
+        validarEmpresa(empresaDTO);
+
+        Integer idUsuarioLogado = recuperarIdUsuarioLogado();
+        Optional<UsuarioEntity> entity = usuarioRepository.findByIdUsuario(idUsuarioLogado);
+
+        //converter dto para entity
+        UsuarioEntity usuarioEntityConvertido = usuarioMapper.empresaToEntity(empresaDTO);
+        //Converter Senha
+        String senha = usuarioEntityConvertido.getSenha();
+        String senhaCriptografada = converterSenha(senha);
+        usuarioEntityConvertido.setSenha(senhaCriptografada);
+        usuarioEntityConvertido.setIdUsuario(entity.get().getIdUsuario());
+        usuarioEntityConvertido.setEmail(entity.get().getEmail());
+        usuarioEntityConvertido.setEmpresaVinculada(entity.get().getEmpresaVinculada());
+
+        UsuarioEntity usuarioEntitySalvo = usuarioRepository.save(usuarioEntityConvertido);
+        //converter entity para dto
+        UsuarioEmpresaDTO usuarioRetornado = usuarioMapper.empresaToDTO(usuarioEntitySalvo);
+        return usuarioRetornado;
+//        UsuarioEntity empresaEntity = usuarioRepository.findById(id)
+//                .orElseThrow(() -> new RegraDeNegocioException("Empresa não encontrada"));
+//
+//        empresaEntity.setNome(empresaDTO.getNome());
+//        empresaEntity.setEmail(empresaDTO.getEmail());
+//        empresaEntity = usuarioRepository.save(empresaEntity);
+//
+//        return usuarioMapper.toDTO(empresaEntity);
+    }
+
+    public void validarEmpresa(UsuarioEmpresaDTO empresaDTO) throws RegraDeNegocioException {
+        if (empresaDTO.getNome() == null || empresaDTO.getNome().isEmpty()) {
+            throw new RegraDeNegocioException("O nome da empresa é obrigatório.");
+        }
+        if (empresaDTO.getEmail() == null || empresaDTO.getEmail().isEmpty()) {
+            throw new RegraDeNegocioException("O e-mail da empresa é obrigatório.");
+        }
+
+        Optional<UsuarioEntity> empresaExistente = findByEmail(empresaDTO.getEmail());
+        if (empresaExistente.isPresent()) {
+            throw new RegraDeNegocioException("Já existe uma empresa com o mesmo e-mail.");
+        }
+    }
+
+    public void deletarEmpresa(Integer id) throws RegraDeNegocioException {
+        if (!usuarioRepository.existsById(id)) {
+            throw new RegraDeNegocioException("Empresa não encontrada");
+        }
+        usuarioRepository.deleteById(id);
     }
 
 //    -- Métodos Reutilizáveis --

@@ -4,7 +4,6 @@ import com.jornada.jobapi.dto.UsuarioDTO;
 import com.jornada.jobapi.dto.UsuarioEmpresaDTO;
 import com.jornada.jobapi.exception.RegraDeNegocioException;
 import com.jornada.jobapi.service.UsuarioService;
-import freemarker.core.OptInTemplateClassResolver;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -13,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -57,6 +55,17 @@ public class EmpresaController {
         usuarioService.remover(id);
     }
 
+    @Operation(summary = "Atualizar Empresa", description = "Atualiza os dados de uma empresa de acordo com a base de dados")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Empresa atualizada com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro na validação de dados"),
+            @ApiResponse(responseCode = "500", description = "Erro no servidor")
+    })
+    @PutMapping("/{id}")
+    public UsuarioEmpresaDTO atualizarEmpresa(@RequestBody @Valid UsuarioEmpresaDTO dto) throws RegraDeNegocioException {
+        return usuarioService.atualizarEmpresa(dto);
+    }
+
     @Operation(summary = "Deleta uma Empresa", description = "Este processo realiza a remoção de uma Empresa")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",description = "Deu certo!"),
@@ -65,6 +74,6 @@ public class EmpresaController {
     })
     @DeleteMapping("/deletar-empresa")
     public void deletarEmpresa(@PathVariable("id") Integer id) throws RegraDeNegocioException{
-        usuarioService.remover(id);
+        usuarioService.deletarEmpresa(id);
     }
 }

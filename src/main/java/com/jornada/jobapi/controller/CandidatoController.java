@@ -48,15 +48,16 @@ public class CandidatoController {
         return usuarioService.atualizarCandidatoOuRecrutador(dto);
     }
 
-//    @Operation(summary = "Deletar candidato", description = "Deleta ca na base de dados")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200",description = "Deu certo!"),
-//            @ApiResponse(responseCode = "400",description = "Erro na validação de dados"),
-//            @ApiResponse(responseCode = "500",description = "Erro do servidor")
-//    })
-//    @DeleteMapping("/{id}")
-//    public void remover(@PathVariable("id") Integer id) throws RegraDeNegocioException{
-//        usuarioService.remover(id);
-//    }
+    @Operation(summary = "Deletar candidato", description = "Remove um candidato da base de dados")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Candidato removido com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Candidato não encontrado"),
+            @ApiResponse(responseCode = "500", description = "Erro no servidor")
+    })
+    @DeleteMapping("/{id}")
+    public void removerCandidato(@PathVariable("id") Integer id) throws RegraDeNegocioException {
+        usuarioService.removerCandidato(id);
+    }
+
 
 }
