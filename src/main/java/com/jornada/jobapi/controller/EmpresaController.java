@@ -32,7 +32,7 @@ public class EmpresaController {
     @PostMapping("/cadastrar-recrutador")
     public UsuarioDTO cadastrarRecrutador(@RequestBody @Valid UsuarioDTO dto) throws RegraDeNegocioException {
         log.info("Recrutador foi inserido");
-        return usuarioService.cadastrarRecrutadorNaEmpresa(dto,3);
+        return usuarioService.salvarUsuario(dto,3);
     }
 
     @Operation(summary = "Ver usuarios da empresa", description = "Lista todos os usuarios da empresa")

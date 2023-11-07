@@ -42,21 +42,8 @@ public class CadastroController {
             @ApiResponse(responseCode = "500",description = "Erro do servidor")
     })
     @PostMapping("/cadastrar-empresa")
-    public SalvarUsuarioEmpresaDTO cadastrarEmpresa(@RequestBody @Valid SalvarUsuarioEmpresaDTO dto) throws RegraDeNegocioException {
+    public UsuarioDTO cadastrarEmpresa(@RequestBody @Valid UsuarioDTO dto) throws RegraDeNegocioException {
         log.info("Usuario foi inserido");
-        return usuarioService.salvarUsuarioEmpresa(dto,2);
+        return usuarioService.salvarUsuario(dto,2);
     }
-
-    @Operation(summary = "Cadastrar um recrutador", description = "Este processo realiza a inserção de um novo Recrutador")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",description = "Deu certo!"),
-            @ApiResponse(responseCode = "400",description = "Erro na validação de dados"),
-            @ApiResponse(responseCode = "500",description = "Erro do servidor")
-    })
-    @PostMapping("/cadastrar-recrutador")
-    public UsuarioDTO cadastrarRecrutador(@RequestBody @Valid UsuarioDTO dto) throws RegraDeNegocioException {
-        log.info("Usuario foi inserido");
-        return usuarioService.salvarUsuario(dto,3);
-    }
-
 }

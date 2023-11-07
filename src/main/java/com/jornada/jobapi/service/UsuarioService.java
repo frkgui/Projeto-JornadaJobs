@@ -155,63 +155,16 @@ public class UsuarioService {
         usuarioEntityConvertido.setSenha(senhaCriptografada);
         UsuarioEntity usuarioEntitySalvo = usuarioRepository.save(usuarioEntityConvertido);
 
-        //Intanciando para saber qual o id logado
-//        Integer idUsuarioLogado = recuperarIdUsuarioLogado();
-//        Optional<UsuarioEntity> entity = usuarioRepository.findByIdUsuario(idUsuarioLogado);
-//        if (entity.get().cargos != null) {
-//            usuarioEntityConvertido.setEmpresaVinculada(entity.get().getEmpresaVinculada()); //colocando o nome da empresa na variavel empresa vinculada
-//        }
-
-        // Inicialize a lista de cargos se for nula
-        if (usuarioEntitySalvo.getCargos() == null) {
-            usuarioEntitySalvo.setCargos(new HashSet<>());
+        if(idCargo == 3){
+            //Intanciando para saber qual o id logado
+            Integer idUsuarioLogado = recuperarIdUsuarioLogado();
+            Optional<UsuarioEntity> entity = usuarioRepository.findByIdUsuario(idUsuarioLogado);
+            if (entity.get().cargos != null) {
+                usuarioEntityConvertido.setEmpresaVinculada(entity.get().getEmpresaVinculada()); //colocando o nome da empresa na variavel empresa vinculada
+            }
         }
-
-        // Criar uma instância do CargoEntity com o ID do cargo igual a 3
-        CargoEntity cargo = new CargoEntity();
-        cargo.setIdCargo(idCargo);
-        // Certifique-se de que a entidade CargoEntity tenha um setter para o ID do cargo
-
-        // Adicionar o cargo à lista de cargos do usuário
-        usuarioEntitySalvo.getCargos().add(cargo);
-
-        // Atualizar o usuário para salvar a relação com o cargo
-        usuarioEntitySalvo = usuarioRepository.save(usuarioEntitySalvo);
-
-        // Converter Entity para DTO
-        UsuarioDTO usuarioRetornado = usuarioMapper.toDTO(usuarioEntitySalvo);
-        return usuarioRetornado;
-    }
-
-    // APENAS EMPRESA
-    public UsuarioDTO cadastrarRecrutadorNaEmpresa(UsuarioDTO usuario,Integer idCargo) throws RegraDeNegocioException{
-        String senhaSegura = usuario.getSenha();
-
-//        if (!senhaSegura.matches(".*[A-Z].*") || // Pelo menos uma letra maiúscula
-//                !senhaSegura.matches(".*[a-z].*") || // Pelo menos uma letra minúscula
-//                !senhaSegura.matches(".*\\d.*") ||   // Pelo menos um número
-//                !senhaSegura.matches(".*[!@#$%^&*()].*")) { // Pelo menos um caractere especial
-//            throw new RegraDeNegocioException("A senha não atende aos critérios de segurança.");
-//        }
-
-        validarUsuario(usuario);
-        //converter dto para entity
-        UsuarioEntity usuarioEntityConvertido = usuarioMapper.toEntity(usuario);
-
-        // Verificar Existência E-mail
-        validarEmailExistente(usuario.getEmail());
-
-        //Converter Senha
-        String senha = usuarioEntityConvertido.getSenha();
-        String senhaCriptografada = converterSenha(senha);
-        usuarioEntityConvertido.setSenha(senhaCriptografada);
-        UsuarioEntity usuarioEntitySalvo = usuarioRepository.save(usuarioEntityConvertido);
-
-        //Intanciando para saber qual o id logado
-        Integer idUsuarioLogado = recuperarIdUsuarioLogado();
-        Optional<UsuarioEntity> entity = usuarioRepository.findByIdUsuario(idUsuarioLogado);
-        if (entity.get().cargos != null) {
-            usuarioEntityConvertido.setEmpresaVinculada(entity.get().getEmpresaVinculada()); //colocando o nome da empresa na variavel empresa vinculada
+        if(idCargo == 2){
+            usuarioEntitySalvo.setEmpresaVinculada(usuario.getNome());
         }
 
         // Inicialize a lista de cargos se for nula
@@ -234,58 +187,6 @@ public class UsuarioService {
         UsuarioDTO usuarioRetornado = usuarioMapper.toDTO(usuarioEntitySalvo);
         return usuarioRetornado;
     }
-
-    public SalvarUsuarioEmpresaDTO salvarUsuarioEmpresa(SalvarUsuarioEmpresaDTO usuario, Integer idCargo) throws RegraDeNegocioException{
-        String senhaSegura = usuario.getSenha();
-
-//        if (!senhaSegura.matches(".*[A-Z].*") || // Pelo menos uma letra maiúscula
-//                !senhaSegura.matches(".*[a-z].*") || // Pelo menos uma letra minúscula
-//                !senhaSegura.matches(".*\\d.*") ||   // Pelo menos um número
-//                !senhaSegura.matches(".*[!@#$%^&*()].*")) { // Pelo menos um caractere especial
-//            throw new RegraDeNegocioException("A senha não atende aos critérios de segurança.");
-//        }
-
-//        validarUsuario(usuario);
-        //converter dto para entity
-        UsuarioEntity usuarioEntityConvertido = usuarioMapper.salvarEmpresaToEntity(usuario);
-
-        // Verificar Existência E-mail
-        validarEmailExistente(usuario.getEmail());
-
-        //Converter Senha
-        String senha = usuarioEntityConvertido.getSenha();
-        String senhaCriptografada = converterSenha(senha);
-        usuarioEntityConvertido.setSenha(senhaCriptografada);
-        UsuarioEntity usuarioEntitySalvo = usuarioRepository.save(usuarioEntityConvertido);
-
-        //Intanciando para saber qual o id logado
-//        Integer idUsuarioLogado = recuperarIdUsuarioLogado();
-//        Optional<UsuarioEntity> entity = usuarioRepository.findByIdUsuario(idUsuarioLogado);
-//        if (entity.get().cargos != null) {
-//            usuarioEntityConvertido.setEmpresaVinculada(entity.get().getEmpresaVinculada()); //colocando o nome da empresa na variavel empresa vinculada
-//        }
-
-        // Inicialize a lista de cargos se for nula
-        if (usuarioEntitySalvo.getCargos() == null) {
-            usuarioEntitySalvo.setCargos(new HashSet<>());
-        }
-
-        // Criar uma instância do CargoEntity com o ID do cargo igual a 3
-        CargoEntity cargo = new CargoEntity();
-        cargo.setIdCargo(idCargo);
-        // Certifique-se de que a entidade CargoEntity tenha um setter para o ID do cargo
-
-        // Adicionar o cargo à lista de cargos do usuário
-        usuarioEntitySalvo.getCargos().add(cargo);
-
-        // Atualizar o usuário para salvar a relação com o cargo
-        usuarioEntitySalvo = usuarioRepository.save(usuarioEntitySalvo);
-
-        // Converter Entity para DTO
-        SalvarUsuarioEmpresaDTO usuarioRetornado = usuarioMapper.salvarEmpresaToDTO(usuarioEntitySalvo);
-        return usuarioRetornado;
-    }
-
 
 //    -- CRUD DE CANDIDATO E RECRUTADOR --
 

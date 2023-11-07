@@ -18,8 +18,6 @@ public class VagasDTO {
     private String descricao;
     @Schema(description = "Competências da vaga", example = "Trabalho em equipe")
     private String competencias;
-    @Schema(description = "Data da criacao da vaga", example = "2023-11-04 14:30:00")
-    private String dataCriacao;
     @Schema(description = "Data de encerramento das vagas", example = "2023-12-31 14:30:00")
     private Date dataEncerramento;
     @Schema(description = "Quantidade de vagas", example = "20")
