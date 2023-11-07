@@ -301,10 +301,10 @@ public class UsuarioService {
     }
 
     //APENAS EMPRESA
-    public void desabilitarRecrutador(Integer idInformado) throws RegraDeNegocioException {
-        UsuarioEntity entity = usuarioRepository.findById(idInformado)
+    public void dasativarRecrutador(String nome) throws RegraDeNegocioException {
+        UsuarioEntity entity = usuarioRepository.findByNome(nome)
                 .orElseThrow(() -> new RegraDeNegocioException("Usuario não encontrado"));
-//        entity.setEnabled(false);
+        entity.setEmpresaVinculada(null);
         usuarioRepository.save(entity);
     }
 

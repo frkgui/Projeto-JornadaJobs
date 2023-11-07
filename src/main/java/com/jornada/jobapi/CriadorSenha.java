@@ -11,13 +11,12 @@ public class CriadorSenha {
 //          System.out.println(senhaCriptografada);
 
 //          -- Senhas salvas no banco  --
-//        $2a$10$4pJEttY2LieCN5wOXQGnzOc/qMT2yB3c40XTx0/hupCtgY5LO0uk. (?   )
-//        $2a$10$D9RzY/9t8Ef3mRVjUIe7R.OJ7LTneoGO7ZltQ7BrpwKmMFcQD8o6K (?)
+//        $2a$10$VcztnROIeRStkOrXhqMm5.duTTttVAD2TM/cXnJMcOBZPFJPjBizi (123)
 //        $10$v6lphh0tajjyYKj.Tflxge3fKPWDrwjP2AOlvA3wkMoGQoIrauZFO (12345)
 
 
 //         -- Verificar se a senha é igual a senha criptografada --
-        boolean senhaCorreta =bCryptPasswordEncoder.matches("12345", "$2a$10$D9RzY/9t8Ef3mRVjUIe7R.OJ7LTneoGO7ZltQ7BrpwKmMFcQD8o6K");
+        boolean senhaCorreta =bCryptPasswordEncoder.matches("123", "$2a$10$VcztnROIeRStkOrXhqMm5.duTTttVAD2TM/cXnJMcOBZPFJPjBizi");
         System.out.println(senhaCorreta);
     }
 }

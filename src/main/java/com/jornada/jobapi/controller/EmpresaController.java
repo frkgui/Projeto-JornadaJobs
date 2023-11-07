@@ -52,9 +52,9 @@ public class EmpresaController {
             @ApiResponse(responseCode = "400",description = "Erro na validação de dados"),
             @ApiResponse(responseCode = "500",description = "Erro do servidor")
     })
-    @DeleteMapping("/desativar-recrutador")
-    public void desativarRecrutador(@PathVariable("id") Integer id) throws RegraDeNegocioException{
-        usuarioService.remover(id);
+    @DeleteMapping("/desativar-recrutador/{nome}")
+    public void desativarRecrutador(@PathVariable("nome") String nome) throws RegraDeNegocioException{
+        usuarioService.dasativarRecrutador(nome);
     }
 
     @Operation(summary = "Deleta uma Empresa", description = "Este processo realiza a remoção de uma Empresa")
