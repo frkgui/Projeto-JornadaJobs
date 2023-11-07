@@ -117,8 +117,11 @@ public class UsuarioService {
     }
 
     public void validarUsuario(UsuarioDTO usuario) throws RegraDeNegocioException {
-        if (!usuario.getEmail().contains("@")){
-            throw new RegraDeNegocioException("Precisa ter @");
+        if (usuario.getEmail().contains("@gmail")
+                || usuario.getEmail().contains("@hotmail")
+                || usuario.getEmail().contains("@outlook")) {
+        } else {
+            throw new RegraDeNegocioException("Precisa ser @gmail, @hotmail ou @outlook");
         }
     }
 
@@ -270,15 +273,6 @@ public class UsuarioService {
         List<UsuarioDTO> listaDTO = listaEntity.stream().map(entity -> usuarioMapper.toDTO(entity))
                 .toList();
         return listaDTO;
-    }
-
-    public void validarUser(UsuarioDTO usuario) throws RegraDeNegocioException {
-        if (usuario.getEmail().contains("@gmail")
-                || usuario.getEmail().contains("@hotmail")
-                || usuario.getEmail().contains("@outlook")) {
-        } else {
-            throw new RegraDeNegocioException("Precisa ser @gmail, @hotmail ou @outlook");
-        }
     }
 
     public boolean validarIdUser(Integer id) throws RegraDeNegocioException {

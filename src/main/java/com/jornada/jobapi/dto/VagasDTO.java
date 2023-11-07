@@ -24,8 +24,4 @@ public class VagasDTO {
     private Integer quantidadeVagas;
     @Schema(description = "Quantidade máxima de candidatos ", example = "10")
     private Integer quantidadeMaximaCandidatos;
-    @Schema(description = "status", example = "ABERTO ou FECHADO")
-    private StatusVagas status;
-
-
 }

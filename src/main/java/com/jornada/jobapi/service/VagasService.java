@@ -29,7 +29,7 @@ public class VagasService {
         this.authenticationManager = authenticationManager;
     }
 
-    public VagasDTO candidatarVaga(VagasDTO vagas) throws RegraDeNegocioException {
+    public VagasDTO criarVaga(VagasDTO vagas) throws RegraDeNegocioException {
         VagasEntity vagasEntity = vagasMapper.toEntity(vagas);
         Integer idUser = usuarioService.recuperarIdUsuarioLogado();
 
@@ -49,6 +49,27 @@ public class VagasService {
         VagasDTO vagasDTO = vagasMapper.toDTO(vagasAtt);
         return vagasDTO;
     }
+
+    public Integer candidatarVaga(Integer idVaga) throws RegraDeNegocioException {
+        VagasEntity vagaRecuperada = recuperarVaga(idVaga);
+        Integer idUser = usuarioService.recuperarIdUsuarioLogado();
+
+
+        if (vagaRecuperada.getUsuarios() == null) {
+            vagaRecuperada.setUsuarios(new HashSet<>());
+        }
+
+        // Criar uma instância do CargoEntity com o ID do cargo igual a 3
+        UsuarioEntity usuarioEntity = new UsuarioEntity();
+        usuarioEntity.setIdUsuario(idUser);
+        // Adicionar o cargo à lista de cargos do usuário
+        vagaRecuperada.getUsuarios().add(usuarioEntity);
+
+        VagasEntity vagaAtt = vagaRepository.save(vagaRecuperada);
+
+        return 1;
+    }
+
 
     public VagasEntity recuperarVaga(Integer idVaga) throws RegraDeNegocioException {
         VagasEntity vagaS = vagaRepository.findById(idVaga).orElseThrow(() -> new RegraDeNegocioException("Vaga não encontrado!"));
