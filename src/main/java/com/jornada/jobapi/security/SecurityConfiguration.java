@@ -36,12 +36,8 @@ public class SecurityConfiguration {
                                 .requestMatchers("/candidato/**").hasRole("CANDIDATO")
                                 .requestMatchers("/empresa/**").hasRole("EMPRESA")
                                 .requestMatchers("/recrutador/**").hasRole("RECRUTADOR")
-
-//                                .requestMatchers(HttpMethod.GET, "Candidato/**").hasRole("CANDIDATO")
-//                                .requestMatchers(HttpMethod.POST, "/RECRUTADOR/**").hasRole("RECRUTADOR")
-//                                .requestMatchers(HttpMethod.PUT, "/EMPRESA/**").hasRole("EMPRESA")
+                                .requestMatchers("/vagas/**").hasAnyRole("RECRUTADOR","CANDIDATO")
                                 .anyRequest().authenticated());
-                //                authz.anyRequest().permitAll()); //Todos EndPoints Permitidos
 
                 // Filtro de autenticação ao Token
         http.addFilterBefore(new TokenAuthenticationFilter(usuarioService), UsernamePasswordAuthenticationFilter.class);

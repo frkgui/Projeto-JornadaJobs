@@ -32,7 +32,7 @@ public class RecrutadorController {
         return usuarioService.listarDadosDoRecrutadorLogado();
     }
 
-    @Operation(summary = "Atualizar nome e senha do Recrutador", description = "Atualiza de acordo com a base de dados")
+    @Operation(summary = "Atualizar nome e senha", description = "Atualiza de acordo com a base de dados")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",description = "Deu certo!"),
             @ApiResponse(responseCode = "400",description = "Erro na validação de dados"),

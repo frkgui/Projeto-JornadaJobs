@@ -4,6 +4,7 @@ import com.jornada.jobapi.dto.UsuarioDTO;
 import com.jornada.jobapi.dto.UsuarioEmpresaDTO;
 import com.jornada.jobapi.exception.RegraDeNegocioException;
 import com.jornada.jobapi.service.UsuarioService;
+import freemarker.core.OptInTemplateClassResolver;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -20,6 +22,17 @@ import java.util.Optional;
 @Slf4j
 public class EmpresaController {
     private final UsuarioService usuarioService;
+
+    @Operation(summary = "Ver usuarios da empresa", description = "Lista todos os usuarios da empresa")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "Deu certo!"),
+            @ApiResponse(responseCode = "400",description = "Erro na validação de dados"),
+            @ApiResponse(responseCode = "500",description = "Erro do servidor")
+    })
+    @GetMapping
+    public List<UsuarioEmpresaDTO> listarUsuariosDaEmpresa() throws RegraDeNegocioException {
+        return usuarioService.listarUsuariosDaEmpresa();
+    }
 
     @Operation(summary = "Cadastra um novo Recrutador", description = "Este processo realiza a inserção de um Recrutador")
     @ApiResponses(value = {
@@ -33,40 +46,19 @@ public class EmpresaController {
         return usuarioService.salvarUsuario(dto,3);
     }
 
-    @Operation(summary = "Ver usuarios da empresa", description = "Lista todos os usuarios da empresa")
+
+    @Operation(summary = "Desativar um recrutador", description = "Este processo realiza a desativação de um Recrutador")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",description = "Deu certo!"),
             @ApiResponse(responseCode = "400",description = "Erro na validação de dados"),
             @ApiResponse(responseCode = "500",description = "Erro do servidor")
     })
-    @GetMapping
-    public Optional<UsuarioEmpresaDTO> listarUsuariosDaEmpresa() throws RegraDeNegocioException {
-        return usuarioService.listarUsuariosDaEmpresa();
+    @DeleteMapping("/desativar-recrutador/{nome}")
+    public void desativarRecrutador(@PathVariable("nome") String nome) throws RegraDeNegocioException{
+        usuarioService.dasativarRecrutador(nome);
     }
 
-    @Operation(summary = "Desativa um Recrutador", description = "Este processo realiza a desativação de um Recrutador")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",description = "Deu certo!"),
-            @ApiResponse(responseCode = "400",description = "Erro na validação de dados"),
-            @ApiResponse(responseCode = "500",description = "Erro do servidor")
-    })
-    @DeleteMapping("/desativar-recrutador")
-    public void desativarRecrutador(@PathVariable("id") Integer id) throws RegraDeNegocioException{
-        usuarioService.remover(id);
-    }
-
-    @Operation(summary = "Atualizar Empresa", description = "Atualiza os dados de uma empresa de acordo com a base de dados")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Empresa atualizada com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Erro na validação de dados"),
-            @ApiResponse(responseCode = "500", description = "Erro no servidor")
-    })
-    @PutMapping("/{id}")
-    public UsuarioEmpresaDTO atualizarEmpresa(@RequestBody @Valid UsuarioEmpresaDTO dto) throws RegraDeNegocioException {
-        return usuarioService.atualizarEmpresa(dto);
-    }
-
-    @Operation(summary = "Deleta uma Empresa", description = "Este processo realiza a remoção de uma Empresa")
+    @Operation(summary = "Deletar uma empresa", description = "Este processo realiza a remoção de uma Empresa")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",description = "Deu certo!"),
             @ApiResponse(responseCode = "400",description = "Erro na validação de dados"),
@@ -74,6 +66,6 @@ public class EmpresaController {
     })
     @DeleteMapping("/deletar-empresa")
     public void deletarEmpresa(@PathVariable("id") Integer id) throws RegraDeNegocioException{
-        usuarioService.deletarEmpresa(id);
+        usuarioService.remover(id);
     }
 }

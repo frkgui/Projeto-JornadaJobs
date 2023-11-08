@@ -25,9 +25,6 @@ public class UsuarioEntity implements UserDetails {
     @Column(name = "email")
     private String email;
 
-//    @Column(name = "tipo_usuario")
-//    @Enumerated(value = EnumType.STRING)
-//    private TipoUsuario tipoUsuario;
 
     @Column(name = "senha")
     private String senha;

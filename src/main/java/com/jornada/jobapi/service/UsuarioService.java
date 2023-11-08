@@ -1,9 +1,6 @@
 package com.jornada.jobapi.service;
 
-import com.jornada.jobapi.dto.AutenticacaoDTO;
-import com.jornada.jobapi.dto.UsuarioCandidatoRecrutadorDTO;
-import com.jornada.jobapi.dto.UsuarioDTO;
-import com.jornada.jobapi.dto.UsuarioEmpresaDTO;
+import com.jornada.jobapi.dto.*;
 import com.jornada.jobapi.entity.CargoEntity;
 import com.jornada.jobapi.entity.UsuarioEntity;
 import com.jornada.jobapi.exception.RegraDeNegocioException;
@@ -26,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UsuarioService {
@@ -119,8 +117,11 @@ public class UsuarioService {
     }
 
     public void validarUsuario(UsuarioDTO usuario) throws RegraDeNegocioException {
-        if (!usuario.getEmail().contains("@")){
-            throw new RegraDeNegocioException("Precisa ter @");
+        if (usuario.getEmail().contains("@gmail")
+                || usuario.getEmail().contains("@hotmail")
+                || usuario.getEmail().contains("@outlook")) {
+        } else {
+            throw new RegraDeNegocioException("Precisa ser @gmail, @hotmail ou @outlook");
         }
     }
 
@@ -133,6 +134,7 @@ public class UsuarioService {
 
 //    -- Funções de CRUD (GERAL) --
 
+    //USADO PARA CADASTRO DE CANDIDATO SEM AUTENTICAR
     public UsuarioDTO salvarUsuario(UsuarioDTO usuario,Integer idCargo) throws RegraDeNegocioException{
         String senhaSegura = usuario.getSenha();
 
@@ -150,16 +152,23 @@ public class UsuarioService {
         // Verificar Existência E-mail
         validarEmailExistente(usuario.getEmail());
 
-        //Intanciando para saber qual o id logado
-        Integer idUsuarioLogado = recuperarIdUsuarioLogado();
-        Optional<UsuarioEntity> entity = usuarioRepository.findByIdUsuario(idUsuarioLogado);
-
         //Converter Senha
         String senha = usuarioEntityConvertido.getSenha();
         String senhaCriptografada = converterSenha(senha);
         usuarioEntityConvertido.setSenha(senhaCriptografada);
-        usuarioEntityConvertido.setEmpresaVinculada(entity.get().getEmpresaVinculada()); //colocando o nome da empresa no na variavel emprese vinculada
         UsuarioEntity usuarioEntitySalvo = usuarioRepository.save(usuarioEntityConvertido);
+
+        if(idCargo == 3){
+            //Intanciando para saber qual o id logado
+            Integer idUsuarioLogado = recuperarIdUsuarioLogado();
+            Optional<UsuarioEntity> entity = usuarioRepository.findByIdUsuario(idUsuarioLogado);
+            if (entity.get().cargos != null) {
+                usuarioEntityConvertido.setEmpresaVinculada(entity.get().getEmpresaVinculada()); //colocando o nome da empresa na variavel empresa vinculada
+            }
+        }
+        if(idCargo == 2){
+            usuarioEntitySalvo.setEmpresaVinculada(usuario.getNome());
+        }
 
         // Inicialize a lista de cargos se for nula
         if (usuarioEntitySalvo.getCargos() == null) {
@@ -182,10 +191,7 @@ public class UsuarioService {
         return usuarioRetornado;
     }
 
-
 //    -- CRUD DE CANDIDATO E RECRUTADOR --
-
-
 
     public UsuarioCandidatoRecrutadorDTO atualizarCandidatoOuRecrutador(@RequestBody UsuarioCandidatoRecrutadorDTO usuario) throws RegraDeNegocioException{
         validarCandidato(usuario);
@@ -247,16 +253,19 @@ public class UsuarioService {
 
     }
 
-//    -- CRUD de Empresa --
-
-    public Optional<UsuarioEmpresaDTO> listarUsuariosDaEmpresa()  {
+    //APENAS EMPRESA
+    public List<UsuarioEmpresaDTO> listarUsuariosDaEmpresa()  {
+        //recupera o id que foi logado
         Integer idUsuarioLogado = recuperarIdUsuarioLogado();
         Optional<UsuarioEntity> entidadeLogada = usuarioRepository.findByIdUsuario(idUsuarioLogado);
-        String empresaVinculada = entidadeLogada.get().getEmpresaVinculada();
-        Optional<UsuarioEntity> entidade = usuarioRepository.findByEmpresaVinculada(empresaVinculada);
-        Optional<UsuarioEmpresaDTO> empresaDTO = entidade.map(entity
-                -> usuarioMapper.empresaToDTO(entity));
 
+//      instancia o nome da empresa na variavel
+        String empresaVinculada = entidadeLogada.get().getEmpresaVinculada();
+
+//      procura no banco os usuario que tem a mesma empresa empresa vinculada
+        List<UsuarioEntity> entidade = usuarioRepository.findByEmpresaVinculada(empresaVinculada);
+//      transformando em dto
+        List<UsuarioEmpresaDTO> empresaDTO = entidade.stream().map(entity -> usuarioMapper.empresaToDTO(entity)).collect(Collectors.toList());
         return empresaDTO;
     }
 
@@ -326,15 +335,6 @@ public class UsuarioService {
         return listaDTO;
     }
 
-    public void validarUser(UsuarioDTO usuario) throws RegraDeNegocioException {
-        if (usuario.getEmail().contains("@gmail")
-                || usuario.getEmail().contains("@hotmail")
-                || usuario.getEmail().contains("@outlook")) {
-        } else {
-            throw new RegraDeNegocioException("Precisa ser @gmail, @hotmail ou @outlook");
-        }
-    }
-
     public boolean validarIdUser(Integer id) throws RegraDeNegocioException {
         if (usuarioRepository.findById(id).isEmpty()) {
             throw new RegraDeNegocioException("ID inválido, usuário não existe!");
@@ -353,11 +353,11 @@ public class UsuarioService {
         return usuarioRepository.findByEmail(email);
     }
 
-//  -- CRUD de Empresa --
-    public void desabilitarRecrutador(Integer idInformado) throws RegraDeNegocioException {
-        UsuarioEntity entity = usuarioRepository.findById(idInformado)
+    //APENAS EMPRESA
+    public void dasativarRecrutador(String nome) throws RegraDeNegocioException {
+        UsuarioEntity entity = usuarioRepository.findByNome(nome)
                 .orElseThrow(() -> new RegraDeNegocioException("Usuario não encontrado"));
-//        entity.setEnabled(false);
+        entity.setEmpresaVinculada(null);
         usuarioRepository.save(entity);
     }
 

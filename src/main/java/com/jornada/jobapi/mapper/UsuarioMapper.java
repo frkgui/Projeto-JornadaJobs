@@ -1,5 +1,6 @@
 package com.jornada.jobapi.mapper;
 
+import com.jornada.jobapi.dto.SalvarUsuarioEmpresaDTO;
 import com.jornada.jobapi.dto.UsuarioCandidatoRecrutadorDTO;
 import com.jornada.jobapi.dto.UsuarioDTO;
 import com.jornada.jobapi.dto.UsuarioEmpresaDTO;
@@ -20,4 +21,7 @@ public interface UsuarioMapper {
 
     UsuarioEntity empresaToEntity(UsuarioEmpresaDTO dto);
     UsuarioEmpresaDTO empresaToDTO(UsuarioEntity entity);
+
+    UsuarioEntity salvarEmpresaToEntity(SalvarUsuarioEmpresaDTO dto);
+    SalvarUsuarioEmpresaDTO salvarEmpresaToDTO(UsuarioEntity entity);
 }
