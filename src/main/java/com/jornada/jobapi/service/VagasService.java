@@ -17,7 +17,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-@Service @EnableScheduling
+@Service
+@EnableScheduling
 public class VagasService {
     private final UsuarioService usuarioService;
     private final UsuarioMapper usuarioMapper;
@@ -78,7 +79,7 @@ public class VagasService {
         return vagaS;
     }
 
-    @Scheduled(cron = "0 0 10 * * *", zone = TIME_ZONE) // Agendador para executar todos os dias às 00:01
+    @Scheduled(cron = "0 1 0 * * *", zone = TIME_ZONE) // Agendador para executar todos os dias às 00:01
     public void verificarDataDeEncerramento() {
         Date hoje = new Date();
         List<VagasEntity> vagas = vagaRepository.findByDataEncerramentoLessThanAndStatus( hoje, StatusVagas.ABERTO);
