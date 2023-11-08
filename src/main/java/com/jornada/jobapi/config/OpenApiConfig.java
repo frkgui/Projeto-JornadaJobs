@@ -8,9 +8,10 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
-@Configuration
-    public class OpenApiConfig {
+@Configuration @EnableScheduling
+public class OpenApiConfig {
     @Bean
     public OpenAPI configurarOpenAPI() {
         String securitySchemeName = "bearerAuth";

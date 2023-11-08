@@ -7,8 +7,8 @@ public class CriadorSenha {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
 //          -- Criptografia de senha --
-//           String senhaCriptografada = bCryptPasswordEncoder.encode("123");
-//          System.out.println(senhaCriptografada);
+           String senhaCriptografada = bCryptPasswordEncoder.encode("123");
+          System.out.println(senhaCriptografada);
 
 //          -- Senhas salvas no banco  --
 //        $2a$10$VcztnROIeRStkOrXhqMm5.duTTttVAD2TM/cXnJMcOBZPFJPjBizi (123)
@@ -16,7 +16,7 @@ public class CriadorSenha {
 
 
 //         -- Verificar se a senha é igual a senha criptografada --
-        boolean senhaCorreta =bCryptPasswordEncoder.matches("123", "$2a$10$VcztnROIeRStkOrXhqMm5.duTTttVAD2TM/cXnJMcOBZPFJPjBizi");
-        System.out.println(senhaCorreta);
+//        boolean senhaCorreta =bCryptPasswordEncoder.matches("123", "$2a$10$VcztnROIeRStkOrXhqMm5.duTTttVAD2TM/cXnJMcOBZPFJPjBizi");
+//        System.out.println(senhaCorreta);
     }
 }

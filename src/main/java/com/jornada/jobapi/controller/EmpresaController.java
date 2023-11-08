@@ -23,6 +23,17 @@ import java.util.Optional;
 public class EmpresaController {
     private final UsuarioService usuarioService;
 
+    @Operation(summary = "Ver usuarios da empresa", description = "Lista todos os usuarios da empresa")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "Deu certo!"),
+            @ApiResponse(responseCode = "400",description = "Erro na validação de dados"),
+            @ApiResponse(responseCode = "500",description = "Erro do servidor")
+    })
+    @GetMapping
+    public List<UsuarioEmpresaDTO> listarUsuariosDaEmpresa() throws RegraDeNegocioException {
+        return usuarioService.listarUsuariosDaEmpresa();
+    }
+
     @Operation(summary = "Cadastra um novo Recrutador", description = "Este processo realiza a inserção de um Recrutador")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",description = "Deu certo!"),
@@ -35,16 +46,6 @@ public class EmpresaController {
         return usuarioService.salvarUsuario(dto,3);
     }
 
-    @Operation(summary = "Ver usuarios da empresa", description = "Lista todos os usuarios da empresa")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",description = "Deu certo!"),
-            @ApiResponse(responseCode = "400",description = "Erro na validação de dados"),
-            @ApiResponse(responseCode = "500",description = "Erro do servidor")
-    })
-    @GetMapping
-    public List<UsuarioEmpresaDTO> listarUsuariosDaEmpresa() throws RegraDeNegocioException {
-        return usuarioService.listarUsuariosDaEmpresa();
-    }
 
     @Operation(summary = "Desativar um recrutador", description = "Este processo realiza a desativação de um Recrutador")
     @ApiResponses(value = {

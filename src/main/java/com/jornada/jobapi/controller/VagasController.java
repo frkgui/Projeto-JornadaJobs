@@ -21,12 +21,19 @@ public class VagasController {
 
     private final VagasService vagasService;
 
-//    @Operation(summary = "Cadastra Novo Recrutador", description = "Este processo realiza a inserção de Novo Recrutador")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200",description = "Deu certo!"),
-//            @ApiResponse(responseCode = "400",description = "Erro na validação de dados"),
-//            @ApiResponse(responseCode = "500",description = "Erro do servidor")
-//    })
+    //    //Ver Vagas - Apenas Candidato
+    @Operation(summary = "Listar vagas", description = "Lista todos as vagas na base de dados")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "Deu certo!"),
+            @ApiResponse(responseCode = "400",description = "Erro na validação de dados"),
+            @ApiResponse(responseCode = "500",description = "Erro do servidor")
+    })
+    @GetMapping
+    public List<VagasDTO> listar(){
+        return vagasService.listarVagas();
+    }
+
+
 //    //Apenas Recrutadores
 //    @PostMapping("/cadastrar-vagas")
 //    public UsuarioDTO cadastrarVagas(@RequestBody @Valid UsuarioDTO dto) throws RegraDeNegocioException {
@@ -53,16 +60,6 @@ public class VagasController {
 //        return lista;
 //    }
 
-//    //Ver Vagas - Apenas Candidato
-    @Operation(summary = "Listar vagas", description = "Lista todos as vagas na base de dados")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",description = "Deu certo!"),
-            @ApiResponse(responseCode = "400",description = "Erro na validação de dados"),
-            @ApiResponse(responseCode = "500",description = "Erro do servidor")
-    })
-    @GetMapping
-    public List<VagasDTO> listar(){
-    return vagasService.listarVagas();
-}
+
 
 }

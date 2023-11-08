@@ -8,6 +8,8 @@ import com.jornada.jobapi.exception.RegraDeNegocioException;
 import com.jornada.jobapi.mapper.UsuarioMapper;
 import com.jornada.jobapi.mapper.VagasMapper;
 import com.jornada.jobapi.repository.VagaRepository;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Service;
 
@@ -15,13 +17,16 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-@Service
+@Service @EnableScheduling
 public class VagasService {
     private final UsuarioService usuarioService;
     private final UsuarioMapper usuarioMapper;
     private final VagasMapper vagasMapper;
     private final VagaRepository vagaRepository;
     private final AuthenticationManager authenticationManager;
+
+    private static final String TIME_ZONE = "America/Sao_Paulo";
+
 
     public VagasService(UsuarioService usuarioService, UsuarioMapper usuarioMapper, VagasMapper vagasMapper, VagaRepository vagaRepository, AuthenticationManager authenticationManager) {
         this.usuarioService = usuarioService;
@@ -30,6 +35,14 @@ public class VagasService {
         this.vagaRepository = vagaRepository;
         this.authenticationManager = authenticationManager;
     }
+
+    public List<VagasDTO> listarVagas() {
+        List<VagasEntity> listaEntity = vagaRepository.findAll();
+        List<VagasDTO> listaDTO = listaEntity.stream().map(entity -> vagasMapper.toDTO(entity))
+                .toList();
+        return listaDTO;
+    }
+
 
     public VagasDTO criarVaga(VagasDTO vagas) throws RegraDeNegocioException {
         VagasEntity vagasEntity = vagasMapper.toEntity(vagas);
@@ -60,17 +73,22 @@ public class VagasService {
         return 1;
     }
 
-
     public VagasEntity recuperarVaga(Integer idVaga) throws RegraDeNegocioException {
         VagasEntity vagaS = vagaRepository.findById(idVaga).orElseThrow(() -> new RegraDeNegocioException("Vaga não encontrado!"));
         return vagaS;
     }
 
-    public List<VagasDTO> listarVagas() {
-        List<VagasEntity> listaEntity = vagaRepository.findAll();
-        List<VagasDTO> listaDTO = listaEntity.stream().map(entity -> vagasMapper.toDTO(entity))
-                .toList();
-        return listaDTO;
+    @Scheduled(cron = "0 0 10 * * *", zone = TIME_ZONE) // Agendador para executar todos os dias às 00:01
+    public void verificarDataDeEncerramento() {
+        Date hoje = new Date();
+        List<VagasEntity> vagas = vagaRepository.findByDataEncerramentoLessThanAndStatus( hoje, StatusVagas.ABERTO);
+
+        for (int i = 0; i < vagas.size(); i++) {
+            VagasEntity vaga = vagas.get(i);
+            vaga.setStatus(StatusVagas.FECHADO);
+            vagaRepository.save(vaga);
+        }
     }
+
 
 }

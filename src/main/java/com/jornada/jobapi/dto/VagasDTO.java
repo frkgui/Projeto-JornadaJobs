@@ -22,6 +22,6 @@ public class VagasDTO {
     private Date dataEncerramento;
     @Schema(description = "Quantidade de vagas", example = "20")
     private Integer quantidadeVagas;
-    @Schema(description = "Quantidade máxima de candidatos ", example = "10")
+    @Schema(description = "Quantidade máxima de candidatos ", example = "100")
     private Integer quantidadeMaximaCandidatos;
 }
