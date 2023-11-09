@@ -1,5 +1,6 @@
 package com.jornada.jobapi.controller;
 
+import com.jornada.jobapi.dto.AtualizarUsuarioDTO;
 import com.jornada.jobapi.dto.UsuarioCandidatoRecrutadorDTO;
 import com.jornada.jobapi.dto.UsuarioDTO;
 import com.jornada.jobapi.service.UsuarioService;
@@ -44,8 +45,8 @@ public class CandidatoController {
             @ApiResponse(responseCode = "500",description = "Erro do servidor")
     })
     @PutMapping
-    public UsuarioCandidatoRecrutadorDTO atualizarCandidato(@RequestBody @Valid UsuarioCandidatoRecrutadorDTO dto) throws RegraDeNegocioException {
-        return usuarioService.atualizarCandidatoOuRecrutador(dto);
+    public AtualizarUsuarioDTO atualizarCandidato(@RequestBody @Valid AtualizarUsuarioDTO dto) throws RegraDeNegocioException {
+        return usuarioService.atualizarUsuario(dto);
     }
 
     @Operation(summary = "Deletar candidato", description = "Remove um candidato da base de dados")

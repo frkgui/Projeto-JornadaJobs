@@ -1,9 +1,6 @@
 package com.jornada.jobapi.mapper;
 
-import com.jornada.jobapi.dto.SalvarUsuarioEmpresaDTO;
-import com.jornada.jobapi.dto.UsuarioCandidatoRecrutadorDTO;
-import com.jornada.jobapi.dto.UsuarioDTO;
-import com.jornada.jobapi.dto.UsuarioEmpresaDTO;
+import com.jornada.jobapi.dto.*;
 import com.jornada.jobapi.entity.UsuarioEntity;
 import org.mapstruct.Mapper;
 
@@ -15,9 +12,9 @@ public interface UsuarioMapper {
     UsuarioDTO toDTO(UsuarioEntity entity);
 
 
-    UsuarioEntity candidatoERecrutadorToEntity(UsuarioCandidatoRecrutadorDTO dto);
+    UsuarioEntity atualizarUsuarioToEntity(AtualizarUsuarioDTO dto);
 
-    UsuarioCandidatoRecrutadorDTO candidatoERecrutadorToDTO(UsuarioEntity entity);
+    AtualizarUsuarioDTO atualizarUsuarioToDTO(UsuarioEntity entity);
 
     UsuarioEntity empresaToEntity(UsuarioEmpresaDTO dto);
     UsuarioEmpresaDTO empresaToDTO(UsuarioEntity entity);

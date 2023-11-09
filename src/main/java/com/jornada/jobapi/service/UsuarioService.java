@@ -193,28 +193,30 @@ public class UsuarioService {
 
 //    -- CRUD DE CANDIDATO E RECRUTADOR --
 
-    public UsuarioCandidatoRecrutadorDTO atualizarCandidatoOuRecrutador(@RequestBody UsuarioCandidatoRecrutadorDTO usuario) throws RegraDeNegocioException{
+    public AtualizarUsuarioDTO atualizarUsuario(@RequestBody AtualizarUsuarioDTO usuario) throws RegraDeNegocioException{
         validarCandidato(usuario);
 
         //Intanciando para saber qual o id logado
         Integer idUsuarioLogado = recuperarIdUsuarioLogado();
         Optional<UsuarioEntity> entity = usuarioRepository.findByIdUsuario(idUsuarioLogado);
+        UsuarioEntity usuarioEntity = new UsuarioEntity();
 
-        //converter dto para entity
-        UsuarioEntity usuarioEntityConvertido = usuarioMapper.candidatoERecrutadorToEntity(usuario);
-        //Converter Senha
-        String senha = usuarioEntityConvertido.getSenha();
-        String senhaCriptografada = converterSenha(senha);
-        usuarioEntityConvertido.setSenha(senhaCriptografada);
-        usuarioEntityConvertido.setIdUsuario(entity.get().getIdUsuario());
-        usuarioEntityConvertido.setEmail(entity.get().getEmail());
-        usuarioEntityConvertido.setEmpresaVinculada(entity.get().getEmpresaVinculada());
+        if (entity.isPresent()) {
+            usuarioEntity = entity.get();
+            usuarioEntity.setNome(usuario.getNome());
 
-        UsuarioEntity usuarioEntitySalvo = usuarioRepository.save(usuarioEntityConvertido);
-        //converter entity para dto
-        UsuarioCandidatoRecrutadorDTO usuarioRetornado = usuarioMapper.candidatoERecrutadorToDTO(usuarioEntitySalvo);
-        return usuarioRetornado;
+            String senha = usuario.getSenha();
+            String senhaCriptografada = converterSenha(senha);
+            usuarioEntity.setSenha(senhaCriptografada);
+
+            usuarioRepository.save(usuarioEntity);
+        }
+
+
+
+        return  usuarioMapper.atualizarUsuarioToDTO(usuarioEntity);
     }
+
 
     public Optional<UsuarioDTO> listarDadosDoCandidatoLogado() {
         Integer idUsuarioLogado = recuperarIdUsuarioLogado();
@@ -243,7 +245,7 @@ public class UsuarioService {
         return listaDTO;
     }
 
-    public void validarCandidato(UsuarioCandidatoRecrutadorDTO usuarioCandidatoDTO) throws RegraDeNegocioException {
+    public void validarCandidato(AtualizarUsuarioDTO usuarioCandidatoDTO) throws RegraDeNegocioException {
         if (usuarioCandidatoDTO.getNome() == null || usuarioCandidatoDTO.getNome().isEmpty()) {
             throw new RegraDeNegocioException("O nome é obrigatório.");
         }
