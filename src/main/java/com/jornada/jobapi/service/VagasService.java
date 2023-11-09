@@ -8,7 +8,6 @@ import com.jornada.jobapi.exception.RegraDeNegocioException;
 import com.jornada.jobapi.mapper.UsuarioMapper;
 import com.jornada.jobapi.mapper.VagasMapper;
 import com.jornada.jobapi.repository.VagaRepository;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Service;
@@ -18,7 +17,6 @@ import java.util.HashSet;
 import java.util.List;
 
 @Service
-@EnableScheduling
 public class VagasService {
     private final UsuarioService usuarioService;
     private final UsuarioMapper usuarioMapper;
@@ -80,6 +78,7 @@ public class VagasService {
     }
 
     @Scheduled(cron = "0 1 0 * * *", zone = TIME_ZONE) // Agendador para executar todos os dias às 00:01
+//    @Scheduled(fixedDelay = 5000)
     public void verificarDataDeEncerramento() {
         Date hoje = new Date();
         List<VagasEntity> vagas = vagaRepository.findByDataEncerramentoLessThanAndStatus( hoje, StatusVagas.ABERTO);

@@ -54,9 +54,9 @@ public class CandidatoController {
             @ApiResponse(responseCode = "404", description = "Candidato não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro no servidor")
     })
-    @DeleteMapping("/{id}")
-    public void removerCandidato(@PathVariable("id") Integer id) throws RegraDeNegocioException {
-        usuarioService.removerCandidato(id);
+    @DeleteMapping
+    public void removerCandidato() throws RegraDeNegocioException {
+        usuarioService.remover();
     }
 
 

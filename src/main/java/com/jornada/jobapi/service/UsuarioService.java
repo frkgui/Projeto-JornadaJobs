@@ -216,7 +216,7 @@ public class UsuarioService {
         return usuarioRetornado;
     }
 
-    public Optional<UsuarioDTO> listarDadosDoCandidatoLogado() throws RegraDeNegocioException {
+    public Optional<UsuarioDTO> listarDadosDoCandidatoLogado() {
         Integer idUsuarioLogado = recuperarIdUsuarioLogado();
         Optional<UsuarioEntity> listaEntities = usuarioRepository.findByIdUsuario(idUsuarioLogado);
         Optional<UsuarioDTO> listaDTO = listaEntities.map(entity
@@ -342,8 +342,9 @@ public class UsuarioService {
         return true;
     }
 
-    public void remover(Integer id) throws RegraDeNegocioException {
-        UsuarioEntity usuario = usuarioRepository.findById(id)
+    public void remover() throws RegraDeNegocioException {
+        Integer idUsuarioLogado = recuperarIdUsuarioLogado();
+        UsuarioEntity usuario = usuarioRepository.findByIdUsuario(idUsuarioLogado)
                 .orElseThrow(() -> new RegraDeNegocioException("Usuário não encontrado"));
 
         usuarioRepository.delete(usuario);
@@ -354,8 +355,8 @@ public class UsuarioService {
     }
 
     //APENAS EMPRESA
-    public void dasativarRecrutador(String nome) throws RegraDeNegocioException {
-        UsuarioEntity entity = usuarioRepository.findByNome(nome)
+    public void dasativarRecrutador(Integer idUsuario) throws RegraDeNegocioException {
+        UsuarioEntity entity = usuarioRepository.findByIdUsuario(idUsuario)
                 .orElseThrow(() -> new RegraDeNegocioException("Usuario não encontrado"));
         entity.setEmpresaVinculada(null);
         usuarioRepository.save(entity);
