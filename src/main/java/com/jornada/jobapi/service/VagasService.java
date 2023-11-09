@@ -47,8 +47,12 @@ public class VagasService {
         VagasEntity vagasEntity = vagasMapper.toEntity(vagas);
         vagasEntity.setDataCriacao(new Date());
         vagasEntity.setStatus(StatusVagas.ABERTO);
-        VagasEntity vagasAtt = vagaRepository.save(vagasEntity);
-        VagasDTO vagasDTO = vagasMapper.toDTO(vagasAtt);
+        if (vagasEntity.getQuantidadeMaximaCandidatos() >= vagasEntity.getQuantidadeVagas()){
+            vagaRepository.save(vagasEntity);
+        }else {
+            throw new RegraDeNegocioException("A quantidade de vagas deve ser menor que a quantidade de candidatos");
+        }
+        VagasDTO vagasDTO = vagasMapper.toDTO(vagasEntity);
         return vagasDTO;
     }
 
