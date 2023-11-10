@@ -74,5 +74,17 @@ public class CandidatoController {
         usuarioService.remover();
     }
 
+    @Operation(summary = "Desistir de Vaga", description = "Remove um candidato da base de dados")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Candidato removido com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Candidato não encontrado"),
+            @ApiResponse(responseCode = "500", description = "Erro no servidor")
+    })
+    @DeleteMapping("/desistir-vaga")
+    public String desistirDaVaga(Integer idVaga) throws RegraDeNegocioException {
+        vagasService.desistirVaga(idVaga);
+        return ("Desistência concluida");
+    }
+
 
 }

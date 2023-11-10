@@ -3,6 +3,7 @@ package com.jornada.jobapi.service;
 import com.jornada.jobapi.dto.*;
 import com.jornada.jobapi.entity.CargoEntity;
 import com.jornada.jobapi.entity.UsuarioEntity;
+import com.jornada.jobapi.entity.VagasEntity;
 import com.jornada.jobapi.exception.RegraDeNegocioException;
 import com.jornada.jobapi.mapper.CandidatoMapper;
 import com.jornada.jobapi.mapper.UsuarioMapper;
@@ -241,7 +242,6 @@ public class UsuarioService {
         Optional<UsuarioEntity> listaEntities = usuarioRepository.findByIdUsuario(idUsuarioLogado);
         Optional<UsuarioDTO> listaDTO = listaEntities.map(entity
                 -> usuarioMapper.toDTO(entity));
-
         return listaDTO;
     }
 

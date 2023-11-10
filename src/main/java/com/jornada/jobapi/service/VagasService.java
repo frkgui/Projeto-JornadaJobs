@@ -7,15 +7,13 @@ import com.jornada.jobapi.entity.VagasEntity;
 import com.jornada.jobapi.exception.RegraDeNegocioException;
 import com.jornada.jobapi.mapper.UsuarioMapper;
 import com.jornada.jobapi.mapper.VagasMapper;
+import com.jornada.jobapi.repository.UsuarioRepository;
 import com.jornada.jobapi.repository.VagaRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,16 +22,18 @@ public class VagasService {
     private final UsuarioMapper usuarioMapper;
     private final VagasMapper vagasMapper;
     private final VagaRepository vagaRepository;
+    private final UsuarioRepository usuarioRepository;
     private final AuthenticationManager authenticationManager;
 
     private static final String TIME_ZONE = "America/Sao_Paulo";
 
 
-    public VagasService(UsuarioService usuarioService, UsuarioMapper usuarioMapper, VagasMapper vagasMapper, VagaRepository vagaRepository, AuthenticationManager authenticationManager) {
+    public VagasService(UsuarioService usuarioService, UsuarioMapper usuarioMapper, VagasMapper vagasMapper, VagaRepository vagaRepository, UsuarioRepository usuarioRepository, AuthenticationManager authenticationManager) {
         this.usuarioService = usuarioService;
         this.usuarioMapper = usuarioMapper;
         this.vagasMapper = vagasMapper;
         this.vagaRepository = vagaRepository;
+        this.usuarioRepository = usuarioRepository;
         this.authenticationManager = authenticationManager;
     }
 
@@ -82,9 +82,9 @@ public class VagasService {
 
         return null;
     }
-    public List<VagasDTO> vagasCandidatadas(){
+    public List<VagasDTO> vagasCandidatadas() throws RegraDeNegocioException {
         UsuarioEntity usuario = new UsuarioEntity();
-        usuario.setIdUsuario(usuarioService.recuperarIdUsuarioLogado()); // ou obtenha o usuário do banco de dados usando o ID
+        usuario = usuarioService.recuperarUsuarioLogado(); // ou obtenha o usuário do banco de dados usando o ID
         List<VagasEntity> vagasEntity = usuario.getVagas().stream().map(this::mapToVagasEntity).collect(Collectors.toList());
         List<VagasDTO> listaDTO = vagasEntity.stream().map(entity -> vagasMapper.toDTO(entity))
                 .toList();
@@ -121,6 +121,17 @@ public class VagasService {
             vagaRepository.save(vaga);
         }
     }
-
+    public Optional<VagasEntity> retornarVaga(Integer idVaga){
+        Optional<VagasEntity> vaga = vagaRepository.findById(idVaga);
+        return vaga;
+    }
+    public Integer desistirVaga(Integer idVaga) throws RegraDeNegocioException {
+        UsuarioEntity usuario = new UsuarioEntity();
+        Optional<VagasEntity> vaga = retornarVaga(idVaga);
+        usuario = usuarioService.recuperarUsuarioLogado();
+        usuario.getVagas().remove(vaga);
+        usuarioRepository.save(usuario);
+        return 1;
+    }
 
 }
