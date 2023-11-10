@@ -37,7 +37,7 @@ public class CandidatoController {
             @ApiResponse(responseCode = "400",description = "Erro na validação de dados"),
             @ApiResponse(responseCode = "500",description = "Erro do servidor")
     })
-    @GetMapping
+    @GetMapping("/dados-pessoais")
     public Optional<UsuarioDTO> listarDadosDoCandidato() throws RegraDeNegocioException {
         return usuarioService.listarDadosDoCandidatoLogado();
     }
@@ -45,6 +45,17 @@ public class CandidatoController {
     public Integer candidatarVaga(@Valid Integer idVaga) throws RegraDeNegocioException {
         log.info("Candidatura Realizada com Sucesso");
         return vagasService.candidatarVaga(idVaga);
+    }
+
+    @Operation(summary = "Listar vagas", description = "Lista todos as vagas na base de dados")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "Deu certo!"),
+            @ApiResponse(responseCode = "400",description = "Erro na validação de dados"),
+            @ApiResponse(responseCode = "500",description = "Erro do servidor")
+    })
+    @GetMapping("/vagas-abertas")
+    public List<VagasDTO> listar(){
+        return vagasService.listarVagas();
     }
 
     @GetMapping("/analisar-candidaturas")

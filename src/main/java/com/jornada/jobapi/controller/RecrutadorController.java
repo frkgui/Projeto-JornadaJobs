@@ -52,6 +52,11 @@ public class RecrutadorController {
     public AtualizarUsuarioDTO atualizarRecrutador(@RequestBody @Valid AtualizarUsuarioDTO dto) throws RegraDeNegocioException {
         return usuarioService.atualizarUsuario(dto);
     }
+    @PostMapping("/criar-vaga")
+    public VagasDTO criarVaga(@RequestBody @Valid VagasDTO vagasDTO) throws RegraDeNegocioException {
+        log.info("Vaga Criada com Sucesso");
+        return vagasService.criarVaga(vagasDTO);
+    }
 
     @Operation(summary = "Envia email para os candidatos aprovados", description = "Este processo realiza o envio de um email automático")
     @ApiResponses(value = {
