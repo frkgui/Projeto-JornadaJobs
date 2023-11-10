@@ -62,6 +62,9 @@ public class VagasService {
         VagasEntity vagaRecuperada = recuperarVaga(idVaga);
         Integer idUser = usuarioService.recuperarIdUsuarioLogado();
 
+        if (vagaRecuperada.getUsuarios() != null && usuarioJaCandidatado(vagaRecuperada, idUser)) {
+            throw new RegraDeNegocioException("Usuário já se candidatou para esta vaga anteriormente");
+        }
 
         if (vagaRecuperada.getUsuarios() == null) {
             vagaRecuperada.setUsuarios(new HashSet<>());
@@ -73,10 +76,18 @@ public class VagasService {
         // Adicionar o cargo à lista de cargos do usuário
         vagaRecuperada.getUsuarios().add(usuarioEntity);
 
-        VagasEntity vagaAtt = vagaRepository.save(vagaRecuperada);
+
+        vagaRepository.save(vagaRecuperada);
 
         return 1;
     }
+
+    private boolean usuarioJaCandidatado(VagasEntity vaga, Integer idUsuario) {
+        return vaga.getUsuarios()
+                .stream()
+                .anyMatch(usuario -> usuario.getIdUsuario().equals(idUsuario));
+    }
+
     public List<VagasDTO> analisarVaga() throws RegraDeNegocioException {
         String empresa = usuarioService.recuperarUsuarioLogado().getEmpresaVinculada();
 
