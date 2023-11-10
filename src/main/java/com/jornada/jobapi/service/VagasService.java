@@ -126,12 +126,16 @@ public class VagasService {
         return vaga;
     }
     public Integer desistirVaga(Integer idVaga) throws RegraDeNegocioException {
-        UsuarioEntity usuario = new UsuarioEntity();
+        UsuarioEntity usuario = usuarioService.recuperarUsuarioLogado();
         Optional<VagasEntity> vaga = retornarVaga(idVaga);
-        usuario = usuarioService.recuperarUsuarioLogado();
-        usuario.getVagas().remove(vaga);
-        usuarioRepository.save(usuario);
-        return 1;
+
+        if (vaga.isPresent()) {
+            usuario.getVagas().remove(vaga.get());
+            usuarioRepository.save(usuario);
+            return 1;
+        } else {
+            throw new RegraDeNegocioException("Vaga não encontrada");
+        }
     }
 
 }
