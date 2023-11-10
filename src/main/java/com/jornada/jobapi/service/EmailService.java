@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-//@Service
+@Service
 @RequiredArgsConstructor
 public class EmailService {
 
