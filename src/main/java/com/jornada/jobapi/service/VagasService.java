@@ -65,6 +65,12 @@ public class VagasService {
         if (vagaRecuperada.getUsuarios() != null && usuarioJaCandidatado(vagaRecuperada, idUser)) {
             throw new RegraDeNegocioException("Usuário já se candidatou para esta vaga anteriormente");
         }
+        if (vagaRecuperada.getUsuarios().size() >= vagaRecuperada.getQuantidadeMaximaCandidatos()){
+            throw new RegraDeNegocioException("Quantidade Maxima de candidatos atingida!");
+        }
+
+//        vagaRecuperada.getQuantidadeMaximaCandidatos();
+//        vagaRecuperada.getUsuarios().size();
 
         if (vagaRecuperada.getUsuarios() == null) {
             vagaRecuperada.setUsuarios(new HashSet<>());
