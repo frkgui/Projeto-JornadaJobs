@@ -63,7 +63,6 @@ public class EmailService {
         }
     }
 
-
     public String gerarConteudoComTemplateAprovado(String nome, String email) throws IOException, TemplateException {
         Map<String, Object> dados = new HashMap<>();
         dados.put("nome", nome);
