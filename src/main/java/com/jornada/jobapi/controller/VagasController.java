@@ -42,11 +42,7 @@ public class VagasController {
 //    }
 
     //Apenas Candidatos
-    @PostMapping("/criar-vaga")
-    public VagasDTO criarVaga(@RequestBody @Valid VagasDTO vagasDTO) throws RegraDeNegocioException {
-        log.info("Vaga Criada com Sucesso");
-        return vagasService.criarVaga(vagasDTO);
-    }
+
 
 
 
