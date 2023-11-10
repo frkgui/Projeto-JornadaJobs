@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class VagasService {
@@ -74,6 +76,32 @@ public class VagasService {
         VagasEntity vagaAtt = vagaRepository.save(vagaRecuperada);
 
         return 1;
+    }
+    public List<VagasDTO> analisarVaga() throws RegraDeNegocioException {
+        String empresa = usuarioService.recuperarUsuarioLogado().getEmpresaVinculada();
+
+        return null;
+    }
+    public List<VagasDTO> vagasCandidatadas(){
+        UsuarioEntity usuario = new UsuarioEntity();
+        usuario.setIdUsuario(usuarioService.recuperarIdUsuarioLogado()); // ou obtenha o usuário do banco de dados usando o ID
+        List<VagasEntity> vagasEntity = usuario.getVagas().stream().map(this::mapToVagasEntity).collect(Collectors.toList());
+        List<VagasDTO> listaDTO = vagasEntity.stream().map(entity -> vagasMapper.toDTO(entity))
+                .toList();
+        return listaDTO;
+    }
+    private VagasEntity mapToVagasEntity(VagasEntity vaga) {
+        VagasEntity vagasEntity = new VagasEntity();
+
+        vagasEntity.setNome(vaga.getNome());
+        vagasEntity.setDescricao(vaga.getDescricao());
+        vagasEntity.setIdVagas(vaga.getIdVagas());
+        vagasEntity.setQuantidadeVagas(vaga.getQuantidadeVagas());
+        vagasEntity.setCompetencias(vaga.getCompetencias());
+        vagasEntity.setDataEncerramento(vaga.getDataEncerramento());
+        vagasEntity.setQuantidadeMaximaCandidatos(vaga.getQuantidadeMaximaCandidatos());
+
+        return vagasEntity;
     }
 
     public VagasEntity recuperarVaga(Integer idVaga) throws RegraDeNegocioException {

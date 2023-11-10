@@ -372,11 +372,11 @@ public class UsuarioService {
     }
 
 
-    public UsuarioDTO recuperarUsuarioLogado() throws RegraDeNegocioException {
+    public UsuarioEntity recuperarUsuarioLogado() throws RegraDeNegocioException {
         Integer idUsuarioLogado =recuperarIdUsuarioLogado();
         UsuarioEntity idUsuarioEntity = usuarioRepository.findById(idUsuarioLogado).orElseThrow(() -> new RegraDeNegocioException("Usuario não encontrado!"));
         UsuarioDTO idUsuarioDTOLogado = usuarioMapper.toDTO(idUsuarioEntity);
-        return idUsuarioDTOLogado;
+        return idUsuarioEntity;
     }
 
 }

@@ -47,18 +47,9 @@ public class VagasController {
         log.info("Vaga Criada com Sucesso");
         return vagasService.criarVaga(vagasDTO);
     }
-    @PostMapping("/candidatar")
-    public Integer candidatarVaga(@Valid Integer idVaga) throws RegraDeNegocioException {
-        log.info("Candidatura Realizada com Sucesso");
-        return vagasService.candidatarVaga(idVaga);
-    }
 
-//    //Analisar Candidatos - Recrutador & Empresa
-//    @GetMapping("/analisar-candidatos")
-//    public List<VagasDTO> analisarVaga() throws SQLException {
-//        List<VagasDTO> lista = vagasService.;
-//        return lista;
-//    }
+
+
 
 
 
