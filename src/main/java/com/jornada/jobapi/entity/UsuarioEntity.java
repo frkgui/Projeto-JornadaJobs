@@ -1,5 +1,6 @@
 package com.jornada.jobapi.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -44,6 +45,10 @@ public class UsuarioEntity implements UserDetails {
             joinColumns = @JoinColumn(name = "id_usuario"),
             inverseJoinColumns = @JoinColumn(name = "id_cargo"))
     public Set<CargoEntity> cargos;
+
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "idRecrutador")
+    private Set<VagasEntity> vagasRecrutador;
 
 
     @Override

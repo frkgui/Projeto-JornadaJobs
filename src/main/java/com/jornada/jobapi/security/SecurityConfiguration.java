@@ -32,7 +32,10 @@ public class SecurityConfiguration {
         http.cors(Customizer.withDefaults());
         // Permissão de acesso ao "/autenticação"
         http.authorizeHttpRequests((authz)->
+//                authz.anyRequest().permitAll());
                         authz.requestMatchers("/autenticacao/**", "/cadastro/**").permitAll()
+                                .requestMatchers("/recrutador/EnviarEmailAprovado", "/recrutador/EnviarEmailReprovado")
+                                .hasRole("RECRUTADOR")
                                 .requestMatchers("/candidato/**").hasRole("CANDIDATO")
                                 .requestMatchers("/empresa/**").hasRole("EMPRESA")
                                 .requestMatchers("/recrutador/**").hasRole("RECRUTADOR")

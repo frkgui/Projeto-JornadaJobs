@@ -16,6 +16,7 @@ import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
@@ -65,6 +66,7 @@ public class RecrutadorController {
             @ApiResponse(responseCode = "500",description = "Erro do servidor")
     })
     @PostMapping("/EnviarEmailAprovado")
+    @PreAuthorize("hasRole('RECRUTADOR')")
     public void EmailAprovados(String para, String assunto, String nome) throws MessagingException {
         this.emailService.enviarEmailComTemplateAprovado(para, assunto, nome);
     }
@@ -76,6 +78,7 @@ public class RecrutadorController {
             @ApiResponse(responseCode = "500",description = "Erro do servidor")
     })
     @PostMapping("/EnviarEmailReprovado")
+    @PreAuthorize("hasRole('RECRUTADOR')")
     public void EmailReprovados(String para, String assunto, String nome) throws MessagingException {
         this.emailService.enviarEmailComTemplateReprovado(para, assunto, nome);
     }

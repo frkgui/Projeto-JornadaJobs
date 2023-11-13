@@ -1,5 +1,6 @@
 package com.jornada.jobapi.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jornada.jobapi.dto.StatusVagas;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -40,6 +41,11 @@ public class VagasEntity {
     @Column(name = "status")
     @Enumerated(value = EnumType.STRING)
     private StatusVagas status;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id_usuario")
+    private UsuarioEntity idRecrutador;
 
     @ManyToMany
     @JoinTable(name = "Usuario_Vagas",
