@@ -1,6 +1,7 @@
 package com.jornada.jobapi.service;
 
 import com.jornada.jobapi.dto.StatusVagas;
+import com.jornada.jobapi.dto.UsuarioDTO;
 import com.jornada.jobapi.dto.VagasDTO;
 import com.jornada.jobapi.entity.UsuarioEntity;
 import com.jornada.jobapi.entity.VagasEntity;
@@ -98,10 +99,15 @@ public class VagasService {
 
     public List<VagasDTO> analisarVaga() throws RegraDeNegocioException {
         List<VagasEntity> vagasEntity = vagaRepository.findByIdRecrutador(usuarioService.recuperarUsuarioLogado());
-        List<VagasDTO> listaDTO = vagasEntity.stream().map(entity -> vagasMapper.toDTO(entity))
-                .toList();
+        List<VagasDTO> listaDTO = vagasEntity.stream()
+                .map(vaga -> {
+                    VagasDTO vagaDTO = vagasMapper.toDTO(vaga);
+                    return vagaDTO;
+                })
+                .collect(Collectors.toList());
         return listaDTO;
     }
+
     public List<VagasDTO> vagasCandidatadas() throws RegraDeNegocioException {
         UsuarioEntity usuario = new UsuarioEntity();
         usuario = usuarioService.recuperarUsuarioLogado(); // ou obtenha o usuário do banco de dados usando o ID

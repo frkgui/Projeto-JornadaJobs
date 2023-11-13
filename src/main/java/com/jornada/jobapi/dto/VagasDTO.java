@@ -1,5 +1,6 @@
 package com.jornada.jobapi.dto;
 
+import com.jornada.jobapi.entity.UsuarioEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
@@ -7,6 +8,8 @@ import jakarta.persistence.Enumerated;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 @Data
 public class VagasDTO {
@@ -24,4 +27,5 @@ public class VagasDTO {
     private Integer quantidadeVagas;
     @Schema(description = "Quantidade máxima de candidatos ", example = "100")
     private Integer quantidadeMaximaCandidatos;
+    public Set<UsuarioDTO> usuarios;
 }
