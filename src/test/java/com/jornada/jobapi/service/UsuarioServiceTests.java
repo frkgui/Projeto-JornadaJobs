@@ -1,13 +1,13 @@
 package com.jornada.jobapi.service;
 
 import com.jornada.jobapi.dto.AutenticacaoDTO;
+import com.jornada.jobapi.dto.UsuarioDTO;
 import com.jornada.jobapi.entity.UsuarioEntity;
 import com.jornada.jobapi.exception.RegraDeNegocioException;
 import com.jornada.jobapi.mapper.UsuarioMapper;
 import com.jornada.jobapi.repository.UsuarioRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,10 +16,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -72,7 +75,58 @@ public class UsuarioServiceTests {
         String autenticacaoDTO = usuarioService.fazerLogin(dto);
 
         // Assert
-        Assertions.assertNotNull(autenticacaoDTO);
+        assertNotNull(autenticacaoDTO);
+    }
+
+    @Test
+    public void deveTestarValidarTokenComSucesso() {
+        //setup
+        String token = "";
+
+        //act
+        UsernamePasswordAuthenticationToken user = usuarioService.validarToken(token);
+        //assert
+
+        assertNotNull(token);
+    }
+//
+//    @Test
+//    public void testarSalvarOuAtualizarUserComSucesso() throws RegraDeNegocioException {
+//
+//        // setup
+//        UsuarioDTO dto = getUsuarioDTO();
+//        UsuarioEntity entity = getUsuarioEntity();
+//
+//        // comportamentos
+//        when(usuarioRepository.save(any())).thenReturn(entity);
+//
+//        // act
+//        UsuarioDTO retorno = usuarioService.salvarUsuario(dto);
+//
+//        // assert
+//        assertNotNull(retorno);
+//        assertEquals(1, retorno.getIdUsuario());
+//        assertEquals("Fulano de Tal", retorno.getNome());
+//        assertEquals("12345", retorno.getSenha());
+//        assertEquals("fulanodetal@gmail.com", retorno.getEmail());
+//    }
+
+    private static UsuarioDTO getUsuarioDTO(){
+        UsuarioDTO dto = new UsuarioDTO();
+        dto.setIdUsuario(1);
+        dto.setNome("Fulano de Tal");
+        dto.setSenha("12345");
+        dto.setEmail("fulanodetal@gmail.com");
+        return dto;
+    }
+
+    private static UsuarioEntity getUsuarioEntity(){
+        UsuarioEntity entity = new UsuarioEntity();
+        entity.setIdUsuario(1);
+        entity.setNome("Fulano de Tal");
+        entity.setSenha("12345");
+        entity.setEmail("fulanodetal@gmail.com");
+        return entity;
     }
 
 }

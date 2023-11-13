@@ -11,6 +11,6 @@ import java.util.List;
 public interface VagaRepository extends JpaRepository<VagasEntity, Integer> {
 
     List<VagasEntity> findByDataEncerramentoLessThanAndStatus(Date dataEncerramento, StatusVagas status);
-    List<VagasEntity> findByIdUsuario(Integer id);
+    List<VagasEntity> findByUsuariosIdUsuario(Integer id);
 
 }
