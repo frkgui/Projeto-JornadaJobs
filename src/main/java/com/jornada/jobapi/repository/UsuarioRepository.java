@@ -14,7 +14,7 @@ public interface UsuarioRepository extends JpaRepository<UsuarioEntity, Integer>
     Optional<UsuarioEntity> findByEmail(String email);
 
     Optional<UsuarioEntity> findByIdUsuario(Integer idLogado);
-    List<UsuarioEntity> findByEmpresaVinculada(String empresa);
+    List<UsuarioEntity> findByEmpresaVinculada(Integer empresa);
 
     List<UsuarioEntity> findByNome(String nome);
 
