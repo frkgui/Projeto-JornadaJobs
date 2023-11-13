@@ -1,13 +1,11 @@
 package com.jornada.jobapi.controller;
 
-import com.jornada.jobapi.dto.AtualizarUsuarioDTO;
-import com.jornada.jobapi.dto.UsuarioCandidatoRecrutadorDTO;
+import com.jornada.jobapi.dto.UsuarioAtualizarDTO;
 import com.jornada.jobapi.dto.UsuarioDTO;
 import com.jornada.jobapi.dto.VagasDTO;
 import com.jornada.jobapi.exception.RegraDeNegocioException;
 import com.jornada.jobapi.service.EmailService;
 import com.jornada.jobapi.service.UsuarioService;
-import com.jornada.jobapi.service.VagasService;
 import com.jornada.jobapi.service.VagasService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -50,7 +48,7 @@ public class RecrutadorController {
             @ApiResponse(responseCode = "500",description = "Erro do servidor")
     })
     @PutMapping
-    public AtualizarUsuarioDTO atualizarRecrutador(@RequestBody @Valid AtualizarUsuarioDTO dto) throws RegraDeNegocioException {
+    public UsuarioAtualizarDTO atualizarRecrutador(@RequestBody @Valid UsuarioAtualizarDTO dto) throws RegraDeNegocioException {
         return usuarioService.atualizarUsuario(dto);
     }
     @PostMapping("/criar-vaga")

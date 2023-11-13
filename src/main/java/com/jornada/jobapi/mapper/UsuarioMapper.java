@@ -12,9 +12,9 @@ public interface UsuarioMapper {
     UsuarioDTO toDTO(UsuarioEntity entity);
 
 
-    UsuarioEntity atualizarUsuarioToEntity(AtualizarUsuarioDTO dto);
+    UsuarioEntity atualizarUsuarioToEntity(UsuarioAtualizarDTO dto);
 
-    AtualizarUsuarioDTO atualizarUsuarioToDTO(UsuarioEntity entity);
+    UsuarioAtualizarDTO atualizarUsuarioToDTO(UsuarioEntity entity);
 
     UsuarioEntity empresaToEntity(UsuarioEmpresaDTO dto);
     UsuarioEmpresaDTO empresaToDTO(UsuarioEntity entity);

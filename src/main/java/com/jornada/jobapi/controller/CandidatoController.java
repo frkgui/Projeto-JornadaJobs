@@ -1,10 +1,8 @@
 package com.jornada.jobapi.controller;
 
-import com.jornada.jobapi.dto.AtualizarUsuarioDTO;
-import com.jornada.jobapi.dto.UsuarioCandidatoRecrutadorDTO;
+import com.jornada.jobapi.dto.UsuarioAtualizarDTO;
 import com.jornada.jobapi.dto.UsuarioDTO;
 import com.jornada.jobapi.dto.VagasDTO;
-import com.jornada.jobapi.entity.VagasEntity;
 import com.jornada.jobapi.service.UsuarioService;
 import com.jornada.jobapi.service.VagasService;
 import lombok.RequiredArgsConstructor;
@@ -70,7 +68,7 @@ public class CandidatoController {
             @ApiResponse(responseCode = "500",description = "Erro do servidor")
     })
     @PutMapping
-    public AtualizarUsuarioDTO atualizarCandidato(@RequestBody @Valid AtualizarUsuarioDTO dto) throws RegraDeNegocioException {
+    public UsuarioAtualizarDTO atualizarCandidato(@RequestBody @Valid UsuarioAtualizarDTO dto) throws RegraDeNegocioException {
         return usuarioService.atualizarUsuario(dto);
     }
 
