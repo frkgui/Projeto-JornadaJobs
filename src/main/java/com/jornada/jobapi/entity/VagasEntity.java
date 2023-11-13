@@ -44,7 +44,7 @@ public class VagasEntity {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_usuario", referencedColumnName = "id_usuario")
+    @JoinColumn(name = "id_recrutador", referencedColumnName = "id_usuario")
     private UsuarioEntity idRecrutador;
 
     @ManyToMany

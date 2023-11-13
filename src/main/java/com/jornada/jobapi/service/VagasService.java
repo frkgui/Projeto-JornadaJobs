@@ -97,7 +97,7 @@ public class VagasService {
     }
 
     public List<VagasDTO> analisarVaga() throws RegraDeNegocioException {
-        List<VagasEntity> vagasEntity = vagaRepository.findByUsuariosIdUsuario(usuarioService.recuperarIdUsuarioLogado());
+        List<VagasEntity> vagasEntity = vagaRepository.findByIdRecrutador(usuarioService.recuperarUsuarioLogado());
         List<VagasDTO> listaDTO = vagasEntity.stream().map(entity -> vagasMapper.toDTO(entity))
                 .toList();
         return listaDTO;
