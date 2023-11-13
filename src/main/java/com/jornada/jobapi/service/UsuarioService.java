@@ -366,17 +366,23 @@ public class UsuarioService {
 
     public Integer recuperarIdUsuarioLogado(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Object idUsuario = authentication.getPrincipal();
-        String idUsuarioString = (String) idUsuario;
-        return Integer.parseInt(idUsuarioString);
+        if (authentication != null && authentication.getPrincipal() != null) {
+            Object idUsuario = authentication.getPrincipal();
+            String idUsuarioString = (String) idUsuario;
+            return Integer.parseInt(idUsuarioString);
+        }
+        return null;
     }
 
-
     public UsuarioEntity recuperarUsuarioLogado() throws RegraDeNegocioException {
-        Integer idUsuarioLogado =recuperarIdUsuarioLogado();
-        UsuarioEntity idUsuarioEntity = usuarioRepository.findById(idUsuarioLogado).orElseThrow(() -> new RegraDeNegocioException("Usuario não encontrado!"));
-        UsuarioDTO idUsuarioDTOLogado = usuarioMapper.toDTO(idUsuarioEntity);
-        return idUsuarioEntity;
+        Integer idUsuarioLogado = recuperarIdUsuarioLogado();
+        if (idUsuarioLogado != null) {
+            UsuarioEntity idUsuarioEntity = usuarioRepository.findById(idUsuarioLogado).orElseThrow(() -> new RegraDeNegocioException("Usuario não encontrado!"));
+            UsuarioDTO idUsuarioDTOLogado = usuarioMapper.toDTO(idUsuarioEntity);
+            return idUsuarioEntity;
+        } else {
+            throw new RegraDeNegocioException("Não foi possível recuperar o ID do usuário logado");
+        }
     }
 
 }
