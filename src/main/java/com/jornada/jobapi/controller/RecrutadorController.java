@@ -1,9 +1,6 @@
 package com.jornada.jobapi.controller;
 
-import com.jornada.jobapi.dto.AtualizarUsuarioDTO;
-import com.jornada.jobapi.dto.UsuarioCandidatoRecrutadorDTO;
-import com.jornada.jobapi.dto.UsuarioDTO;
-import com.jornada.jobapi.dto.VagasDTO;
+import com.jornada.jobapi.dto.*;
 import com.jornada.jobapi.exception.RegraDeNegocioException;
 import com.jornada.jobapi.service.EmailService;
 import com.jornada.jobapi.service.UsuarioService;
@@ -96,13 +93,14 @@ public class RecrutadorController {
 
     //Analisar Candidatos - Recrutador
     @GetMapping("/analisar-candidatos")
-    public List<VagasDTO> analisarVaga() throws SQLException, RegraDeNegocioException {
-        List<VagasDTO> lista = vagasService.analisarVaga();
+    public List<RetornoVagasDTO> analisarVaga() throws SQLException, RegraDeNegocioException {
+        List<RetornoVagasDTO> lista = vagasService.analisarVaga();
         return lista;
     }
 
     @PostMapping("/escolher-candidato")
-    public void escolherCandidato() throws MessagingException {
+    public void escolherCandidato(Integer idVaga, Integer idUsuario) throws RegraDeNegocioException {
+        vagasService.escolherCandidato(idVaga,idUsuario);
     }
 
     @DeleteMapping("/finalizar-vaga")

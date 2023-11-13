@@ -1,7 +1,7 @@
 package com.jornada.jobapi.service;
 
+import com.jornada.jobapi.dto.RetornoVagasDTO;
 import com.jornada.jobapi.dto.StatusVagas;
-import com.jornada.jobapi.dto.UsuarioDTO;
 import com.jornada.jobapi.dto.VagasDTO;
 import com.jornada.jobapi.entity.UsuarioEntity;
 import com.jornada.jobapi.entity.VagasEntity;
@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class VagasService {
+    private final EmailService emailService;
     private final UsuarioService usuarioService;
     private final UsuarioMapper usuarioMapper;
     private final VagasMapper vagasMapper;
@@ -29,7 +30,8 @@ public class VagasService {
     private static final String TIME_ZONE = "America/Sao_Paulo";
 
 
-    public VagasService(UsuarioService usuarioService, UsuarioMapper usuarioMapper, VagasMapper vagasMapper, VagaRepository vagaRepository, UsuarioRepository usuarioRepository, AuthenticationManager authenticationManager) {
+    public VagasService(EmailService emailService, UsuarioService usuarioService, UsuarioMapper usuarioMapper, VagasMapper vagasMapper, VagaRepository vagaRepository, UsuarioRepository usuarioRepository, AuthenticationManager authenticationManager) {
+        this.emailService = emailService;
         this.usuarioService = usuarioService;
         this.usuarioMapper = usuarioMapper;
         this.vagasMapper = vagasMapper;
@@ -97,11 +99,11 @@ public class VagasService {
                 .anyMatch(usuario -> usuario.getIdUsuario().equals(idUsuario));
     }
 
-    public List<VagasDTO> analisarVaga() throws RegraDeNegocioException {
+    public List<RetornoVagasDTO> analisarVaga() throws RegraDeNegocioException {
         List<VagasEntity> vagasEntity = vagaRepository.findByIdRecrutador(usuarioService.recuperarUsuarioLogado());
-        List<VagasDTO> listaDTO = vagasEntity.stream()
+        List<RetornoVagasDTO> listaDTO = vagasEntity.stream()
                 .map(vaga -> {
-                    VagasDTO vagaDTO = vagasMapper.toDTO(vaga);
+                    RetornoVagasDTO vagaDTO = vagasMapper.toRDTO(vaga);
                     return vagaDTO;
                 })
                 .collect(Collectors.toList());
@@ -163,5 +165,29 @@ public class VagasService {
             throw new RegraDeNegocioException("Vaga não encontrada");
         }
     }
+    public Integer escolherCandidato(Integer idVaga, Integer idUsuario) throws RegraDeNegocioException {
+        VagasEntity vaga = vagaRepository.findById(idVaga).orElseThrow(() -> new RegraDeNegocioException("Vaga não encontrado!"));
+        UsuarioEntity usuario = usuarioRepository.findById(idUsuario).orElseThrow(() -> new RegraDeNegocioException("Candidato não encontrado!"));
+
+        Optional<UsuarioEntity> empresa1 = usuarioRepository.findByIdUsuario(idUsuario);
+        Optional<UsuarioEntity> empresa = usuarioRepository.findByIdUsuario(empresa1.get().getEmpresaVinculada());
+
+        String assunto = ("Você foi aprovado no processo seletivo da empresa");
+        emailService.enviarEmailComTemplateAprovado(usuario.getEmail(),assunto,usuario.getNome());
+
+        vaga.getUsuarios().remove(usuario);
+        vagaRepository.save(vaga);
+
+        //Quero pegar todos os usuários que estão relacionados a vaga, e enviar uma mensagem par aeles separadamente
+        // preciso de ajuda na parte de pegar os usuários
+        for (UsuarioEntity usuarioRestante : vaga.getUsuarios()) {
+            String mensagem = ("Infelizmente você não foi aceito na seleção da empresa" +vaga.getIdRecrutador().getEmpresaVinculada());
+            emailService.enviarEmailComTemplateReprovado(usuarioRestante.getEmail(),mensagem,usuario.getNome());
+        }
+
+        vaga.setStatus(StatusVagas.FECHADO);
+        return 1;
+    }
+
 
 }
