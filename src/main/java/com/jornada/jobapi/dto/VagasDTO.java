@@ -24,6 +24,4 @@ public class VagasDTO {
     private Integer quantidadeVagas;
     @Schema(description = "Quantidade máxima de candidatos ", example = "100")
     private Integer quantidadeMaximaCandidatos;
-    @Schema(description = "id do recrutador que criou a vaga ", example = "100")
-    private UsuarioRetornoVagasDTO idRecrutador;
 }

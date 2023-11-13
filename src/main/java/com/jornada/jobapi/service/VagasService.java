@@ -49,6 +49,8 @@ public class VagasService {
         VagasEntity vagasEntity = vagasMapper.toEntity(vagas);
         vagasEntity.setDataCriacao(new Date());
         vagasEntity.setStatus(StatusVagas.ABERTO);
+        vagasEntity.setIdRecrutador(usuarioService.recuperarUsuarioLogado());
+
         if (vagasEntity.getQuantidadeMaximaCandidatos() >= vagasEntity.getQuantidadeVagas()){
             vagaRepository.save(vagasEntity);
         }else {
@@ -95,9 +97,10 @@ public class VagasService {
     }
 
     public List<VagasDTO> analisarVaga() throws RegraDeNegocioException {
-        String empresa = usuarioService.recuperarUsuarioLogado().getEmpresaVinculada();
-
-        return null;
+        List<VagasEntity> vagasEntity = vagaRepository.findByIdUsuario(usuarioService.recuperarIdUsuarioLogado());
+        List<VagasDTO> listaDTO = vagasEntity.stream().map(entity -> vagasMapper.toDTO(entity))
+                .toList();
+        return listaDTO;
     }
     public List<VagasDTO> vagasCandidatadas() throws RegraDeNegocioException {
         UsuarioEntity usuario = new UsuarioEntity();
