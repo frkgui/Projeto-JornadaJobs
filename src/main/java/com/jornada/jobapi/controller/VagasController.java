@@ -21,7 +21,7 @@ public class VagasController {
 
     private final VagasService vagasService;
 
-    //    //Ver Vagas - Apenas Candidato
+    //Ver Vagas - Apenas Candidato
     @Operation(summary = "Listar vagas", description = "Lista todos as vagas na base de dados")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",description = "Deu certo!"),

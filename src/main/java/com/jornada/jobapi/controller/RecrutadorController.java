@@ -98,4 +98,13 @@ public class RecrutadorController {
         return lista;
     }
 
+    @PostMapping("/escolher-candidato")
+    public void escolherCandidato() throws MessagingException {
+    }
+
+    @DeleteMapping("/finalizar-vaga")
+    public void finalizarVaga() throws RegraDeNegocioException{
+        usuarioService.remover();
+    }
+
 }
