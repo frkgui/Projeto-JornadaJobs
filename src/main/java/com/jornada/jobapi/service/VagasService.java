@@ -41,7 +41,7 @@ public class VagasService {
     }
 
     public List<VagasDTO> listarVagas() {
-        List<VagasEntity> listaEntity = vagaRepository.findAll();
+        List<VagasEntity> listaEntity = vagaRepository.findByStatus(StatusVagas.ABERTO);
         List<VagasDTO> listaDTO = listaEntity.stream().map(entity -> vagasMapper.toDTO(entity))
                 .toList();
         return listaDTO;
@@ -63,10 +63,13 @@ public class VagasService {
         return vagasDTO;
     }
 
-    public Integer candidatarVaga(Integer idVaga) throws RegraDeNegocioException {
+    public String candidatarVaga(Integer idVaga) throws RegraDeNegocioException {
         VagasEntity vagaRecuperada = recuperarVaga(idVaga);
         Integer idUser = usuarioService.recuperarIdUsuarioLogado();
 
+        if(vagaRecuperada.getStatus() == StatusVagas.FECHADO){
+            throw new RegraDeNegocioException("Vaga Fechada!");
+        }
         if (vagaRecuperada.getUsuarios() != null && usuarioJaCandidatado(vagaRecuperada, idUser)) {
             throw new RegraDeNegocioException("Usuário já se candidatou para esta vaga anteriormente");
         }
@@ -90,7 +93,7 @@ public class VagasService {
 
         vagaRepository.save(vagaRecuperada);
 
-        return 1;
+        return ("Candidatura Realizada com sucesso");
     }
 
     private boolean usuarioJaCandidatado(VagasEntity vaga, Integer idUsuario) {
@@ -100,21 +103,28 @@ public class VagasService {
     }
 
     public List<RetornoVagasDTO> analisarVaga() throws RegraDeNegocioException {
-        List<VagasEntity> vagasEntity = vagaRepository.findByIdRecrutador(usuarioService.recuperarUsuarioLogado());
+        UsuarioEntity recrutador = usuarioService.recuperarUsuarioLogado();
+
+        List<VagasEntity> vagasEntity = vagaRepository.findByIdRecrutador(recrutador);
+
         List<RetornoVagasDTO> listaDTO = vagasEntity.stream()
-                .map(vaga -> {
-                    RetornoVagasDTO vagaDTO = vagasMapper.toRDTO(vaga);
-                    return vagaDTO;
-                })
+                .filter(vaga -> StatusVagas.ABERTO.equals(vaga.getStatus())) // Filtrar vagas com status ABERTO
+                .map(vaga -> vagasMapper.toRDTO(vaga))
                 .collect(Collectors.toList());
+
         return listaDTO;
     }
 
     public List<VagasDTO> vagasCandidatadas() throws RegraDeNegocioException {
         UsuarioEntity usuario = new UsuarioEntity();
         usuario = usuarioService.recuperarUsuarioLogado(); // ou obtenha o usuário do banco de dados usando o ID
-        List<VagasEntity> vagasEntity = usuario.getVagas().stream().map(this::mapToVagasEntity).collect(Collectors.toList());
-        List<VagasDTO> listaDTO = vagasEntity.stream().map(entity -> vagasMapper.toDTO(entity))
+        List<VagasEntity> vagasEntity = usuario.getVagas().stream()
+                .filter(vaga -> StatusVagas.ABERTO.equals(vaga.getStatus())) // Filtrar vagas com status ABERTO
+                .map(this::mapToVagasEntity)
+                .collect(Collectors.toList());
+
+        List<VagasDTO> listaDTO = vagasEntity.stream()
+                .map(entity -> vagasMapper.toDTO(entity))
                 .toList();
         return listaDTO;
     }
@@ -182,10 +192,32 @@ public class VagasService {
         // preciso de ajuda na parte de pegar os usuários
         for (UsuarioEntity usuarioRestante : vaga.getUsuarios()) {
             String mensagem = ("Infelizmente você não foi aceito na seleção da empresa" +vaga.getIdRecrutador().getEmpresaVinculada());
-            emailService.enviarEmailComTemplateReprovado(usuarioRestante.getEmail(),mensagem,usuario.getNome());
+            emailService.enviarEmailComTemplateReprovado(usuarioRestante.getEmail(),mensagem,usuarioRestante.getNome());
         }
 
         vaga.setStatus(StatusVagas.FECHADO);
+        return 1;
+    }
+    public String finalizarVaga(Integer idVaga) throws RegraDeNegocioException {
+        VagasEntity vaga = vagaRepository.findById(idVaga).orElseThrow(() -> new RegraDeNegocioException("Vaga não encontrado!"));
+        if(usuarioService.recuperarIdUsuarioLogado() == vaga.getIdRecrutador().getIdUsuario()){
+            vaga.setStatus(StatusVagas.FECHADO);
+            vagaRepository.save(vaga);
+        }else{
+            new RegraDeNegocioException("Vaga não pertence a você");
+        }
+        vagaFechada(vaga);
+        return ("Vaga Fechada");
+    }
+
+    public Integer vagaFechada(VagasEntity vaga) throws RegraDeNegocioException {
+
+        //Quero pegar todos os usuários que estão relacionados a vaga, e enviar uma mensagem par aeles separadamente
+        // preciso de ajuda na parte de pegar os usuários
+        for (UsuarioEntity usuarioRestante : vaga.getUsuarios()) {
+            String mensagem = ("Infelizmente você não foi aceito na seleção da empresa" +vaga.getIdRecrutador().getEmpresaVinculada());
+            emailService.enviarEmailComTemplateReprovado(usuarioRestante.getEmail(),mensagem,usuarioRestante.getNome());
+        }
         return 1;
     }
 

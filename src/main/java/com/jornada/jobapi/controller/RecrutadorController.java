@@ -5,15 +5,12 @@ import com.jornada.jobapi.exception.RegraDeNegocioException;
 import com.jornada.jobapi.service.EmailService;
 import com.jornada.jobapi.service.UsuarioService;
 import com.jornada.jobapi.service.VagasService;
-import com.jornada.jobapi.service.VagasService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
@@ -27,7 +24,6 @@ import java.util.Optional;
 public class RecrutadorController {
     private final UsuarioService usuarioService;
     private final VagasService vagasService;
-    private final EmailService emailService;
 
     @Operation(summary = "Ver dados", description = "Lista todos os usuarios na base de dados")
     @ApiResponses(value = {
@@ -56,30 +52,6 @@ public class RecrutadorController {
         return vagasService.criarVaga(vagasDTO);
     }
 
-    @Operation(summary = "Envia email para os candidatos aprovados", description = "Este processo realiza o envio de um email automático")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",description = "Deu certo!"),
-            @ApiResponse(responseCode = "400",description = "Erro na validação de dados"),
-            @ApiResponse(responseCode = "500",description = "Erro do servidor")
-    })
-    @PostMapping("/EnviarEmailAprovado")
-    @PreAuthorize("hasRole('RECRUTADOR')")
-    public void EmailAprovados(String para, String assunto, String nome) throws MessagingException {
-        this.emailService.enviarEmailComTemplateAprovado(para, assunto, nome);
-    }
-
-    @Operation(summary = "Envia email para os candidatos reprovados", description = "Este processo realiza o envio de um email automático")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",description = "Deu certo!"),
-            @ApiResponse(responseCode = "400",description = "Erro na validação de dados"),
-            @ApiResponse(responseCode = "500",description = "Erro do servidor")
-    })
-    @PostMapping("/EnviarEmailReprovado")
-    @PreAuthorize("hasRole('RECRUTADOR')")
-    public void EmailReprovados(String para, String assunto, String nome) throws MessagingException {
-        this.emailService.enviarEmailComTemplateReprovado(para, assunto, nome);
-    }
-
     @Operation(summary = "Deletar um recrutador", description = "Este processo realiza a remoção de um Recrutador")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",description = "Deu certo!"),
@@ -104,8 +76,8 @@ public class RecrutadorController {
     }
 
     @DeleteMapping("/finalizar-vaga")
-    public void finalizarVaga() throws RegraDeNegocioException{
-        usuarioService.remover();
+    public String finalizarVaga(Integer idVaga) throws RegraDeNegocioException{
+        return vagasService.finalizarVaga(idVaga);
     }
 
 }

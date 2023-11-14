@@ -42,8 +42,7 @@ public class CandidatoController {
         return usuarioService.listarDadosDoCandidatoLogado();
     }
     @PostMapping("/candidatar")
-    public Integer candidatarVaga(@Valid Integer idVaga) throws RegraDeNegocioException {
-        log.info("Candidatura Realizada com Sucesso");
+    public String candidatarVaga(@Valid Integer idVaga) throws RegraDeNegocioException {
         return vagasService.candidatarVaga(idVaga);
     }
 
