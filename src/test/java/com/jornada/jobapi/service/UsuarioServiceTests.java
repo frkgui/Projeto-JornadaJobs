@@ -4,6 +4,7 @@ import com.jornada.jobapi.dto.UsuarioAtualizarDTO;
 import com.jornada.jobapi.dto.AutenticacaoDTO;
 import com.jornada.jobapi.dto.UsuarioDTO;
 import com.jornada.jobapi.dto.UsuarioEmpresaDTO;
+import com.jornada.jobapi.entity.CargoEntity;
 import com.jornada.jobapi.entity.UsuarioEntity;
 import com.jornada.jobapi.exception.RegraDeNegocioException;
 import com.jornada.jobapi.mapper.UsuarioMapper;
@@ -27,9 +28,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -90,7 +89,7 @@ public class UsuarioServiceTests {
     }
 
     @Test
-    public void deveTestarFazerLoginComErro() throws RegraDeNegocioException {
+    public void deveTestarFazerLoginComErro() {
         //setup
         AutenticacaoDTO dto = new AutenticacaoDTO();
         dto.setEmail("joao@gmail.com");
@@ -143,7 +142,7 @@ public class UsuarioServiceTests {
     }
 
     @Test
-        public void deveTestarValidarEmailComErro() throws RegraDeNegocioException {
+        public void deveTestarValidarEmailComErro() {
         //setup
         String email = "joao@gmail.com";
         UsuarioEntity entity= getUsuarioEntity();
@@ -170,7 +169,7 @@ public class UsuarioServiceTests {
         Assertions.assertEquals(usuario, usuario);
     }
     @Test
-    public void deveTestarValidarUsuarioComErro() throws RegraDeNegocioException {
+    public void deveTestarValidarUsuarioComErro() {
         //setup
         UsuarioDTO usuario = new UsuarioDTO();
         usuario.setEmail("joaogmail.com");
@@ -222,6 +221,35 @@ public class UsuarioServiceTests {
         assertEquals("Fulano de Tal", retorno.getNome());
         assertEquals("@Senha123", retorno.getSenha());
         assertEquals("fulanodetal@gmail.com", retorno.getEmail());
+    }
+    @Test
+    public void deveTestarSalvarUsuarioSenhaComErro() {
+        // setup
+        UsuarioDTO dto = getUsuarioDTO();
+        dto.setSenha("123");
+        Integer idCargo = 1;
+
+
+        Assertions.assertThrows(RegraDeNegocioException.class, ()-> {
+            //act
+            usuarioService.salvarUsuario(dto, idCargo);
+        });
+    }
+//    @Test
+    public void deveTestarSalvarUsuarioCargoComErro() throws RegraDeNegocioException {
+        // setup
+        UsuarioDTO dto = getUsuarioDTO();
+        CargoEntity cargo = new CargoEntity();
+        UsuarioEntity entity = getUsuarioEntity();
+        entity.getCargos().add(cargo);
+
+        UsernamePasswordAuthenticationToken tokenPass = new UsernamePasswordAuthenticationToken("0", null,
+                new ArrayList<>());
+        SecurityContextHolder.getContext().setAuthentication(tokenPass);
+
+        when(usuarioRepository.findByIdUsuario(any())).thenReturn(Optional.of(entity));
+
+        usuarioService.salvarUsuario(dto,entity.getIdUsuario());
     }
     @Test
     public void deveTestarAtualizarUsuarioComSucesso() throws RegraDeNegocioException {
@@ -287,10 +315,21 @@ public class UsuarioServiceTests {
     }
 
     @Test
-    public void deveTestarValidarCandidatoComErro(){
+    public void deveTestarValidarCandidatoNomeComErro(){
         //setup
         UsuarioAtualizarDTO dto = getUsuarioAtualizarDTO();
         dto.setNome(null);
+
+        Assertions.assertThrows(RegraDeNegocioException.class, ()-> {
+            //act
+            usuarioService.validarCandidato(dto);
+        });
+
+    }
+    @Test
+    public void deveTestarValidarCandidatoSenhaComErro(){
+        //setup
+        UsuarioAtualizarDTO dto = getUsuarioAtualizarDTO();
         dto.setSenha(null);
 
         Assertions.assertThrows(RegraDeNegocioException.class, ()-> {
@@ -360,18 +399,28 @@ public class UsuarioServiceTests {
     }
 
     @Test
-    public void deveTestarRemoverComErro() {
-        Optional<UsuarioEntity> usuarioEntityOptional = null;
+    public void deveTestarDesativarRecrutadorComSucesso() throws RegraDeNegocioException {
+        //
+        UsuarioEntity usuarioEntity = getUsuarioEntity();
+        UsernamePasswordAuthenticationToken tokenPass = new UsernamePasswordAuthenticationToken("0", null,
+                new ArrayList<>());
+        SecurityContextHolder.getContext().setAuthentication(tokenPass);
 
 
-        when(usuarioRepository.findByIdUsuario(anyInt())).thenReturn(usuarioEntityOptional);
+        // comportamentos
+        when(usuarioRepository.findByIdUsuario(any())).thenReturn(Optional.of(usuarioEntity));
+        when(usuarioRepository.save(any())).thenReturn(usuarioEntity);
+
+
+        //act
+        usuarioService.dasativarRecrutador(usuarioEntity.getIdUsuario());
 
         //assert
-        Assertions.assertThrows(RegraDeNegocioException.class, () -> {
-            //act
-            usuarioService.remover();
-        });
+        verify(usuarioRepository, times(1)).save(any());
+        assertNotNull(usuarioEntity.getIdUsuario());
     }
+
+
 
     @Test
     public void deveTestarRecuperarIdUsuarioLogadoComSucesso(){
@@ -418,8 +467,6 @@ public class UsuarioServiceTests {
 
     }
 
-
-
     private static UsuarioEntity getUsuarioEntity(){
         UsuarioEntity entity = new UsuarioEntity();
         entity.setIdUsuario(1);
@@ -453,6 +500,12 @@ public class UsuarioServiceTests {
         usuarioEmpresaDTO.setSenha("@Senha123");
         usuarioEmpresaDTO.setEmpresaVinculada("DBC");
         return usuarioEmpresaDTO;
+    }
+
+    private static Set<CargoEntity> getCargoEntityTres() {
+        CargoEntity cargo = new CargoEntity();
+        cargo.setIdCargo(1);
+        return (Set<CargoEntity>) cargo;
     }
 
 }
