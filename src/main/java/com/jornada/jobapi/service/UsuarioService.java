@@ -193,7 +193,7 @@ public class UsuarioService {
 
 //    -- CRUD DE CANDIDATO E RECRUTADOR --
 
-    public UsuarioAtualizarDTO atualizarUsuario(@RequestBody UsuarioAtualizarDTO usuario) throws RegraDeNegocioException{
+    public AtualizarUsuarioDTO atualizarUsuario(@RequestBody AtualizarUsuarioDTO usuario) throws RegraDeNegocioException{
         validarCandidato(usuario);
 
         //Intanciando para saber qual o id logado
@@ -233,7 +233,7 @@ public class UsuarioService {
         return listaDTO;
     }
 
-    public void validarCandidato(UsuarioAtualizarDTO usuarioCandidatoDTO) throws RegraDeNegocioException {
+    public void validarCandidato(AtualizarUsuarioDTO usuarioCandidatoDTO) throws RegraDeNegocioException {
         if (usuarioCandidatoDTO.getNome() == null || usuarioCandidatoDTO.getNome().isEmpty()) {
             throw new RegraDeNegocioException("O nome é obrigatório.");
         }

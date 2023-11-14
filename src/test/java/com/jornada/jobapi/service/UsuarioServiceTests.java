@@ -1,6 +1,6 @@
 package com.jornada.jobapi.service;
 
-import com.jornada.jobapi.dto.UsuarioAtualizarDTO;
+import com.jornada.jobapi.dto.AtualizarUsuarioDTO;
 import com.jornada.jobapi.dto.AutenticacaoDTO;
 import com.jornada.jobapi.dto.UsuarioDTO;
 import com.jornada.jobapi.dto.UsuarioEmpresaDTO;
@@ -11,7 +11,6 @@ import com.jornada.jobapi.mapper.UsuarioMapper;
 import com.jornada.jobapi.repository.UsuarioRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import jakarta.validation.constraints.Null;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,7 +32,6 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 
@@ -255,7 +253,7 @@ public class UsuarioServiceTests {
     public void deveTestarAtualizarUsuarioComSucesso() throws RegraDeNegocioException {
 
         // setup
-        UsuarioAtualizarDTO dto = getUsuarioAtualizarDTO();
+        AtualizarUsuarioDTO dto = getUsuarioAtualizarDTO();
         UsuarioEntity entity = getUsuarioEntity();
         UsernamePasswordAuthenticationToken tokenPass = new UsernamePasswordAuthenticationToken("0", null,
                 new ArrayList<>());
@@ -268,7 +266,7 @@ public class UsuarioServiceTests {
         when(usuarioRepository.save(any())).thenReturn(entity);
 
         // act
-        UsuarioAtualizarDTO retorno = usuarioService.atualizarUsuario(dto);
+        AtualizarUsuarioDTO retorno = usuarioService.atualizarUsuario(dto);
 
         // assert
         assertNotNull(retorno);
@@ -302,7 +300,7 @@ public class UsuarioServiceTests {
     @Test
     public void deveTestarValidarCandidatoComSucesso() throws RegraDeNegocioException {
         //setup
-        UsuarioAtualizarDTO dto = getUsuarioAtualizarDTO();
+        AtualizarUsuarioDTO dto = getUsuarioAtualizarDTO();
         UsuarioEntity entity = getUsuarioEntity();
 
 
@@ -317,7 +315,7 @@ public class UsuarioServiceTests {
     @Test
     public void deveTestarValidarCandidatoNomeComErro(){
         //setup
-        UsuarioAtualizarDTO dto = getUsuarioAtualizarDTO();
+        AtualizarUsuarioDTO dto = getUsuarioAtualizarDTO();
         dto.setNome(null);
 
         Assertions.assertThrows(RegraDeNegocioException.class, ()-> {
@@ -329,7 +327,7 @@ public class UsuarioServiceTests {
     @Test
     public void deveTestarValidarCandidatoSenhaComErro(){
         //setup
-        UsuarioAtualizarDTO dto = getUsuarioAtualizarDTO();
+        AtualizarUsuarioDTO dto = getUsuarioAtualizarDTO();
         dto.setSenha(null);
 
         Assertions.assertThrows(RegraDeNegocioException.class, ()-> {
@@ -485,8 +483,8 @@ public class UsuarioServiceTests {
         return dto;
     }
 
-    private static UsuarioAtualizarDTO getUsuarioAtualizarDTO(){
-        UsuarioAtualizarDTO atualizarDTOdto = new UsuarioAtualizarDTO();
+    private static AtualizarUsuarioDTO getUsuarioAtualizarDTO(){
+        AtualizarUsuarioDTO atualizarDTOdto = new AtualizarUsuarioDTO();
         atualizarDTOdto.setNome("Fulano de Tal");
         atualizarDTOdto.setSenha("@Senha123");
         return atualizarDTOdto;

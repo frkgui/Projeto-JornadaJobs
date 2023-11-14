@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class UsuarioAtualizarDTO {
+public class AtualizarUsuarioDTO {
 
     @Schema(description = "Nome Completo", example = "Fulano da Silva")
     @NotBlank
