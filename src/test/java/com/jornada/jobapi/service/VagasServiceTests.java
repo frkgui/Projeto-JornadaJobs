@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -35,7 +36,7 @@ import static org.mockito.Mockito.times;
 public class VagasServiceTests {
     @InjectMocks
     private VagasService vagasService;
-    @InjectMocks
+    @Mock
     private UsuarioService usuarioService;
     @InjectMocks
     private EmailService emailService;
@@ -108,7 +109,7 @@ public class VagasServiceTests {
         when(usuarioService.recuperarIdUsuarioLogado()).thenReturn(1);
 
         // Act
-        Integer result = vagasService.candidatarVaga(idVaga);
+        Integer result = Integer.valueOf(vagasService.candidatarVaga(idVaga));
 
         // Assert
         assertEquals(1, result);
