@@ -31,7 +31,7 @@ public class UsuarioEntity implements UserDetails {
     private String senha;
 
     @Column(name = "empresa_vinculada")
-    private String empresaVinculada;
+    private Integer empresaVinculada;
 
 
     @ManyToMany

@@ -163,11 +163,11 @@ public class UsuarioService {
             Integer idUsuarioLogado = recuperarIdUsuarioLogado();
             Optional<UsuarioEntity> entity = usuarioRepository.findByIdUsuario(idUsuarioLogado);
             if (entity.get().cargos != null) {
-                usuarioEntityConvertido.setEmpresaVinculada(entity.get().getEmpresaVinculada()); //colocando o nome da empresa na variavel empresa vinculada
+                usuarioEntitySalvo.setEmpresaVinculada(entity.get().getEmpresaVinculada()); //colocando o nome da empresa na variavel empresa vinculada
             }
         }
         if(idCargo == 2){
-            usuarioEntitySalvo.setEmpresaVinculada(usuario.getNome());
+            usuarioEntitySalvo.setEmpresaVinculada(usuarioEntitySalvo.getIdUsuario());
         }
 
         // Inicialize a lista de cargos se for nula
@@ -250,7 +250,7 @@ public class UsuarioService {
         Optional<UsuarioEntity> entidadeLogada = usuarioRepository.findByIdUsuario(idUsuarioLogado);
 
 //      instancia o nome da empresa na variavel
-        String empresaVinculada = entidadeLogada.get().getEmpresaVinculada();
+        Integer empresaVinculada = entidadeLogada.get().getEmpresaVinculada();
 
 //      procura no banco os usuario que tem a mesma empresa empresa vinculada
         List<UsuarioEntity> entidade = usuarioRepository.findByEmpresaVinculada(empresaVinculada);

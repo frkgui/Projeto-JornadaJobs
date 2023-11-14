@@ -1,11 +1,10 @@
 package com.jornada.jobapi.controller;
 
-import com.jornada.jobapi.dto.UsuarioAtualizarDTO;
-import com.jornada.jobapi.dto.UsuarioDTO;
-import com.jornada.jobapi.dto.VagasDTO;
+import com.jornada.jobapi.dto.*;
 import com.jornada.jobapi.exception.RegraDeNegocioException;
 import com.jornada.jobapi.service.EmailService;
 import com.jornada.jobapi.service.UsuarioService;
+import com.jornada.jobapi.service.VagasService;
 import com.jornada.jobapi.service.VagasService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -48,7 +47,7 @@ public class RecrutadorController {
             @ApiResponse(responseCode = "500",description = "Erro do servidor")
     })
     @PutMapping
-    public UsuarioAtualizarDTO atualizarRecrutador(@RequestBody @Valid UsuarioAtualizarDTO dto) throws RegraDeNegocioException {
+    public AtualizarUsuarioDTO atualizarRecrutador(@RequestBody @Valid AtualizarUsuarioDTO dto) throws RegraDeNegocioException {
         return usuarioService.atualizarUsuario(dto);
     }
     @PostMapping("/criar-vaga")
@@ -94,13 +93,14 @@ public class RecrutadorController {
 
     //Analisar Candidatos - Recrutador
     @GetMapping("/analisar-candidatos")
-    public List<VagasDTO> analisarVaga() throws SQLException, RegraDeNegocioException {
-        List<VagasDTO> lista = vagasService.analisarVaga();
+    public List<RetornoVagasDTO> analisarVaga() throws SQLException, RegraDeNegocioException {
+        List<RetornoVagasDTO> lista = vagasService.analisarVaga();
         return lista;
     }
 
     @PostMapping("/escolher-candidato")
-    public void escolherCandidato() throws MessagingException {
+    public void escolherCandidato(Integer idVaga, Integer idUsuario) throws RegraDeNegocioException {
+        vagasService.escolherCandidato(idVaga,idUsuario);
     }
 
     @DeleteMapping("/finalizar-vaga")
