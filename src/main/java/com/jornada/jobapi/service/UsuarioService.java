@@ -3,7 +3,6 @@ package com.jornada.jobapi.service;
 import com.jornada.jobapi.dto.*;
 import com.jornada.jobapi.entity.CargoEntity;
 import com.jornada.jobapi.entity.UsuarioEntity;
-import com.jornada.jobapi.entity.VagasEntity;
 import com.jornada.jobapi.exception.RegraDeNegocioException;
 import com.jornada.jobapi.mapper.CandidatoMapper;
 import com.jornada.jobapi.mapper.UsuarioMapper;
@@ -139,12 +138,12 @@ public class UsuarioService {
     public UsuarioDTO salvarUsuario(UsuarioDTO usuario,Integer idCargo) throws RegraDeNegocioException{
         String senhaSegura = usuario.getSenha();
 
-//        if (!senhaSegura.matches(".*[A-Z].*") || // Pelo menos uma letra maiúscula
-//                !senhaSegura.matches(".*[a-z].*") || // Pelo menos uma letra minúscula
-//                !senhaSegura.matches(".*\\d.*") ||   // Pelo menos um número
-//                !senhaSegura.matches(".*[!@#$%^&*()].*")) { // Pelo menos um caractere especial
-//            throw new RegraDeNegocioException("A senha não atende aos critérios de segurança.");
-//        }
+        if (!senhaSegura.matches(".*[A-Z].*") || // Pelo menos uma letra maiúscula
+                !senhaSegura.matches(".*[a-z].*") || // Pelo menos uma letra minúscula
+                !senhaSegura.matches(".*\\d.*") ||   // Pelo menos um número
+                !senhaSegura.matches(".*[!@#$%^&*()].*")) { // Pelo menos um caractere especial
+            throw new RegraDeNegocioException("A senha não atende aos critérios de segurança.");
+        }
 
         validarUsuario(usuario);
         //converter dto para entity
@@ -212,9 +211,6 @@ public class UsuarioService {
 
             usuarioRepository.save(usuarioEntity);
         }
-
-
-
         return  usuarioMapper.atualizarUsuarioToDTO(usuarioEntity);
     }
 
@@ -228,16 +224,8 @@ public class UsuarioService {
         return listaDTO;
     }
 
-    public void removerCandidato(Integer id) throws RegraDeNegocioException {
-        if (!usuarioRepository.existsById(id)) {
-            throw new RegraDeNegocioException("Candidato não encontrado");
-        }
-        // Realizar a exclusão do candidato
-        usuarioRepository.deleteById(id);
-    }
 
-
-    public Optional<UsuarioDTO> listarDadosDoRecrutadorLogado() throws RegraDeNegocioException {
+    public Optional<UsuarioDTO> listarDadosDoRecrutadorLogado() {
         Integer idUsuarioLogado = recuperarIdUsuarioLogado();
         Optional<UsuarioEntity> listaEntities = usuarioRepository.findByIdUsuario(idUsuarioLogado);
         Optional<UsuarioDTO> listaDTO = listaEntities.map(entity
@@ -271,35 +259,35 @@ public class UsuarioService {
         return empresaDTO;
     }
 
-    public UsuarioEmpresaDTO atualizarEmpresa(UsuarioEmpresaDTO empresaDTO) throws RegraDeNegocioException {
-        validarEmpresa(empresaDTO);
-
-        Integer idUsuarioLogado = recuperarIdUsuarioLogado();
-        Optional<UsuarioEntity> entity = usuarioRepository.findByIdUsuario(idUsuarioLogado);
-
-        //converter dto para entity
-        UsuarioEntity usuarioEntityConvertido = usuarioMapper.empresaToEntity(empresaDTO);
-        //Converter Senha
-        String senha = usuarioEntityConvertido.getSenha();
-        String senhaCriptografada = converterSenha(senha);
-        usuarioEntityConvertido.setSenha(senhaCriptografada);
-        usuarioEntityConvertido.setIdUsuario(entity.get().getIdUsuario());
-        usuarioEntityConvertido.setEmail(entity.get().getEmail());
-        usuarioEntityConvertido.setEmpresaVinculada(entity.get().getEmpresaVinculada());
-
-        UsuarioEntity usuarioEntitySalvo = usuarioRepository.save(usuarioEntityConvertido);
-        //converter entity para dto
-        UsuarioEmpresaDTO usuarioRetornado = usuarioMapper.empresaToDTO(usuarioEntitySalvo);
-        return usuarioRetornado;
-//        UsuarioEntity empresaEntity = usuarioRepository.findById(id)
-//                .orElseThrow(() -> new RegraDeNegocioException("Empresa não encontrada"));
+//    public UsuarioEmpresaDTO atualizarEmpresa(UsuarioEmpresaDTO empresaDTO) throws RegraDeNegocioException {
+//        validarEmpresa(empresaDTO);
 //
-//        empresaEntity.setNome(empresaDTO.getNome());
-//        empresaEntity.setEmail(empresaDTO.getEmail());
-//        empresaEntity = usuarioRepository.save(empresaEntity);
+//        Integer idUsuarioLogado = recuperarIdUsuarioLogado();
+//        Optional<UsuarioEntity> entity = usuarioRepository.findByIdUsuario(idUsuarioLogado);
 //
-//        return usuarioMapper.toDTO(empresaEntity);
-    }
+//        //converter dto para entity
+//        UsuarioEntity usuarioEntityConvertido = usuarioMapper.empresaToEntity(empresaDTO);
+//        //Converter Senha
+//        String senha = usuarioEntityConvertido.getSenha();
+//        String senhaCriptografada = converterSenha(senha);
+//        usuarioEntityConvertido.setSenha(senhaCriptografada);
+//        usuarioEntityConvertido.setIdUsuario(entity.get().getIdUsuario());
+//        usuarioEntityConvertido.setEmail(entity.get().getEmail());
+//        usuarioEntityConvertido.setEmpresaVinculada(entity.get().getEmpresaVinculada());
+//
+//        UsuarioEntity usuarioEntitySalvo = usuarioRepository.save(usuarioEntityConvertido);
+//        //converter entity para dto
+//        UsuarioEmpresaDTO usuarioRetornado = usuarioMapper.empresaToDTO(usuarioEntitySalvo);
+//        return usuarioRetornado;
+////        UsuarioEntity empresaEntity = usuarioRepository.findById(id)
+////                .orElseThrow(() -> new RegraDeNegocioException("Empresa não encontrada"));
+////
+////        empresaEntity.setNome(empresaDTO.getNome());
+////        empresaEntity.setEmail(empresaDTO.getEmail());
+////        empresaEntity = usuarioRepository.save(empresaEntity);
+////
+////        return usuarioMapper.toDTO(empresaEntity);
+//    }
 
     public void validarEmpresa(UsuarioEmpresaDTO empresaDTO) throws RegraDeNegocioException {
         if (empresaDTO.getNome() == null || empresaDTO.getNome().isEmpty()) {
@@ -314,36 +302,6 @@ public class UsuarioService {
             throw new RegraDeNegocioException("Já existe uma empresa com o mesmo e-mail.");
         }
     }
-
-    public void deletarEmpresa(Integer id) throws RegraDeNegocioException {
-        if (!usuarioRepository.existsById(id)) {
-            throw new RegraDeNegocioException("Empresa não encontrada");
-        }
-        usuarioRepository.deleteById(id);
-    }
-
-//    -- Métodos Reutilizáveis --
-
-    public String geradorDeSenha(String senha) {
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        String senhaCriptografada = bCryptPasswordEncoder.encode(senha);
-        return senhaCriptografada;
-    }
-
-    public List<UsuarioDTO> listarUsuarios(){
-        List<UsuarioEntity> listaEntity = usuarioRepository.findAll();
-        List<UsuarioDTO> listaDTO = listaEntity.stream().map(entity -> usuarioMapper.toDTO(entity))
-                .toList();
-        return listaDTO;
-    }
-
-    public boolean validarIdUser(Integer id) throws RegraDeNegocioException {
-        if (usuarioRepository.findById(id).isEmpty()) {
-            throw new RegraDeNegocioException("ID inválido, usuário não existe!");
-        }
-        return true;
-    }
-
     public void remover() throws RegraDeNegocioException {
         Integer idUsuarioLogado = recuperarIdUsuarioLogado();
         UsuarioEntity usuario = usuarioRepository.findByIdUsuario(idUsuarioLogado)
