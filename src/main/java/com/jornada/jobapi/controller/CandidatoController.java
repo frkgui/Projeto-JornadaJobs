@@ -5,7 +5,9 @@ import com.jornada.jobapi.dto.UsuarioDTO;
 import com.jornada.jobapi.dto.VagasDTO;
 import com.jornada.jobapi.service.UsuarioService;
 import com.jornada.jobapi.service.VagasService;
+import com.jornada.jobapi.storage.Disco;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,14 +22,17 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/candidato")
 @RequiredArgsConstructor
 @Slf4j
 public class CandidatoController {
+
     private final UsuarioService usuarioService;
     private final VagasService vagasService;
+    private final Disco disco;
 
     @Operation(summary = "Ver dados", description = "Lista todos os usuarios na base de dados")
     @ApiResponses(value = {
@@ -94,5 +99,10 @@ public class CandidatoController {
         return ("Desistência concluida");
     }
 
+
+    @PostMapping(value = "/upload-curriculo", consumes = "multipart/form-data")
+    public void uploadCurriculo(@RequestParam MultipartFile curriculoEmPdf) {
+        disco.salvarCurriculo(curriculoEmPdf);
+    }
 
 }
