@@ -10,6 +10,7 @@ import com.jornada.jobapi.mapper.UsuarioMapper;
 import com.jornada.jobapi.mapper.VagasMapper;
 import com.jornada.jobapi.repository.UsuarioRepository;
 import com.jornada.jobapi.repository.VagaRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,15 @@ public class VagasService {
     private static final String TIME_ZONE = "America/Sao_Paulo";
 
     public VagasService(EmailService emailService, UsuarioService usuarioService, UsuarioMapper usuarioMapper, VagasMapper vagasMapper, VagaRepository vagaRepository, UsuarioRepository usuarioRepository, AuthenticationManager authenticationManager) {
+    @Value("${jwt.validade.token}")
+    private String validadeJWT;
+
+    @Value("${jwt.secret}")
+    private String secret;
+
+    public VagasService(EmailService emailService, UsuarioService usuarioService, UsuarioMapper usuarioMapper,
+                        VagasMapper vagasMapper, VagaRepository vagaRepository, UsuarioRepository usuarioRepository,
+                        AuthenticationManager authenticationManager) {
         this.emailService = emailService;
         this.usuarioService = usuarioService;
         this.usuarioMapper = usuarioMapper;
@@ -45,7 +55,6 @@ public class VagasService {
                 .toList();
         return listaDTO;
     }
-
 
     public VagasDTO criarVaga(VagasDTO vagas) throws RegraDeNegocioException {
         VagasEntity vagasEntity = vagasMapper.toEntity(vagas);
