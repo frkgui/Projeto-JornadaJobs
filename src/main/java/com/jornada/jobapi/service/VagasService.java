@@ -244,15 +244,6 @@ public class VagasService {
         }
         usuarioService.remover();
     }
-    public void setarVagaFechado(Integer idVaga) throws RegraDeNegocioException {
-        VagasEntity vaga = vagaRepository.findById(idVaga).orElseThrow(() -> new RegraDeNegocioException("Vaga não encontrado!"));
-        if(usuarioService.recuperarIdUsuarioLogado() == vaga.getIdRecrutador().getIdUsuario()){
-            vaga.setStatus(StatusVagas.FECHADO);
-            vagaRepository.save(vaga);
-        }else{
-            throw new RegraDeNegocioException("Vaga não pertence a você");
-        }
-    }
     public void excluirDependenciaRecrutador(Integer idVaga) throws RegraDeNegocioException {
         VagasEntity vaga = vagaRepository.findById(idVaga).orElseThrow(() -> new RegraDeNegocioException("Vaga não encontrado!"));
         if(usuarioService.recuperarIdUsuarioLogado() == vaga.getIdRecrutador().getIdUsuario()){
