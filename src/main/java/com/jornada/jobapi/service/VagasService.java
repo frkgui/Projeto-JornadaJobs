@@ -30,7 +30,6 @@ public class VagasService {
 
     private static final String TIME_ZONE = "America/Sao_Paulo";
 
-    public VagasService(EmailService emailService, UsuarioService usuarioService, UsuarioMapper usuarioMapper, VagasMapper vagasMapper, VagaRepository vagaRepository, UsuarioRepository usuarioRepository, AuthenticationManager authenticationManager) {
     @Value("${jwt.validade.token}")
     private String validadeJWT;
 
