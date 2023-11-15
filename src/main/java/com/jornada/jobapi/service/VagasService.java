@@ -212,7 +212,7 @@ public class VagasService {
         return 1;
     }
     public String finalizarVaga(Integer idVaga) throws RegraDeNegocioException {
-        VagasEntity vaga = vagaRepository.findById(idVaga).orElseThrow(() -> new RegraDeNegocioException("Vaga não encontrado!"));
+        VagasEntity vaga = vagaRepository.findById(idVaga).orElseThrow(() -> new RegraDeNegocioException("Vaga não encontrada!"));
         if(usuarioService.recuperarIdUsuarioLogado() == vaga.getIdRecrutador().getIdUsuario()){
             vaga.setStatus(StatusVagas.FECHADO);
             vagaRepository.save(vaga);
@@ -223,7 +223,7 @@ public class VagasService {
         return ("Vaga Fechada");
     }
 
-    public Integer vagaFechada(VagasEntity vaga) throws RegraDeNegocioException {
+    public Integer vagaFechada(VagasEntity vaga) {
         for (UsuarioEntity usuarioRestante : vaga.getUsuarios()) {
             String mensagem = ("Infelizmente você não foi aceito na seleção da empresa" +vaga.getIdRecrutador().getEmpresaVinculada());
             emailService.enviarEmailComTemplateReprovado(usuarioRestante.getEmail(),mensagem,usuarioRestante.getNome());

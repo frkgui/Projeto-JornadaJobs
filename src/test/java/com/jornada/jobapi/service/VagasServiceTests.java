@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -38,7 +39,7 @@ public class VagasServiceTests {
     private VagasService vagasService;
     @Mock
     private UsuarioService usuarioService;
-    @InjectMocks
+    @Mock
     private EmailService emailService;
     @Mock
     private AuthenticationManager authenticationManager;
@@ -286,21 +287,23 @@ public class VagasServiceTests {
 
     @Test
     public void deveTestarVerificarDataDeEncerramento() throws RegraDeNegocioException, ParseException {
-        //setup
-        VagasEntity vagasEntity = getVagasEntity();
-        List<VagasEntity> vagasEntities =null;
-        Date hoje = new Date();
 
+        // Setup
+        ArgumentCaptor<Date> dateCaptor = ArgumentCaptor.forClass(Date.class);
+        ArgumentCaptor<StatusVagas> statusCaptor = ArgumentCaptor.forClass(StatusVagas.class);
 
-        when(vagaRepository.findByDataEncerramentoLessThanAndStatus(hoje, StatusVagas.ABERTO)).thenReturn(vagasEntities);
+        when(vagaRepository.findByDataEncerramentoLessThanAndStatus(dateCaptor.capture(), statusCaptor.capture()))
+                .thenReturn(new ArrayList<>());
 
-        //act
+        // Act
         vagasService.verificarDataDeEncerramento();
 
-        //assert
-//        Assertions.assertNotNull(vagasEntity);
+        Date capturedDate = dateCaptor.getValue();
+        StatusVagas capturedStatus = statusCaptor.getValue();
 
-
+        // assert
+        Assertions.assertNotNull(capturedStatus);
+        Assertions.assertNotNull(capturedDate);
     }
 
 
@@ -358,6 +361,46 @@ public class VagasServiceTests {
 
         // Verifique se o método do mock foi chamado conforme esperado
         verify(vagaRepository, times(1)).findById(eq(idVaga));
+    }
+
+    //CARLOS
+    @Test
+    public void deveTestarFinalizarVaga() throws ParseException, RegraDeNegocioException {
+        // Configuração de dados de teste
+        Integer idVaga = 2;
+        VagasEntity vagasEntity = getVagasEntity();
+        UsuarioEntity usuarioEntity = getUsuarioEntity();
+        vagasEntity.setIdRecrutador(usuarioEntity);
+
+        // Configuração de comportamento esperado para o mock
+        when(vagaRepository.findById(idVaga)).thenReturn(Optional.of(vagasEntity));
+
+        // Execute o método que você está testando
+        vagasService.finalizarVaga(idVaga);
+
+        // Verifique os resultados esperados
+//        assertFalse(resultado.isPresent());
+
+        // Verifique se o método do mock foi chamado conforme esperado
+        verify(vagaRepository, times(1)).findById(eq(idVaga));
+    }
+
+    //CARLOS
+    @Test
+    public void deveTestarVagaFechada() throws ParseException{
+        // Configuração de dados de teste
+        VagasEntity vagasEntity = getVagasEntity();
+        UsuarioEntity usuarioEntity = getUsuarioEntity();
+        vagasEntity.setIdRecrutador(usuarioEntity);
+
+//        when(emailService.enviarEmailComTemplateReprovado()).thenReturn(vagasEntity);
+
+        // Execute o método que você está testando
+        vagasService.vagaFechada(vagasEntity);
+
+
+        // Verifique se o método do mock foi chamado conforme esperado
+//        verify(vagaRepository, times(1)).findById(eq(idVaga));
     }
 
     @Test
