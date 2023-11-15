@@ -44,9 +44,9 @@ public class CandidatoController {
     public Optional<UsuarioDTO> listarDadosDoCandidato() throws RegraDeNegocioException {
         return usuarioService.listarDadosDoCandidatoLogado();
     }
-    @PostMapping("/candidatar")
-    public String candidatarVaga(@Valid Integer idVaga,Integer pretensao) throws RegraDeNegocioException {
-        return vagasService.candidatarVaga(idVaga,pretensao);
+    @PostMapping(value = "/candidatar", consumes = "multipart/form-data")
+    public String candidatarVaga(@Valid Integer idVaga,Integer pretensao,@RequestParam MultipartFile curriculoEmPdf) throws RegraDeNegocioException {
+        return vagasService.candidatarVaga(idVaga,pretensao,curriculoEmPdf);
     }
 
     @Operation(summary = "Listar vagas", description = "Lista todos as vagas na base de dados")

@@ -10,11 +10,13 @@ import com.jornada.jobapi.mapper.UsuarioMapper;
 import com.jornada.jobapi.mapper.VagasMapper;
 import com.jornada.jobapi.repository.UsuarioRepository;
 import com.jornada.jobapi.repository.VagaRepository;
+import com.jornada.jobapi.storage.Disco;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,6 +30,7 @@ public class VagasService {
     private final VagaRepository vagaRepository;
     private final UsuarioRepository usuarioRepository;
     private final AuthenticationManager authenticationManager;
+    private final Disco disco;
 
     private static final String TIME_ZONE = "America/Sao_Paulo";
 
@@ -39,7 +42,7 @@ public class VagasService {
 
     public VagasService(EmailService emailService, UsuarioService usuarioService, UsuarioMapper usuarioMapper,
                         VagasMapper vagasMapper, VagaRepository vagaRepository, UsuarioRepository usuarioRepository,
-                        AuthenticationManager authenticationManager) {
+                        AuthenticationManager authenticationManager, Disco disco) {
         this.emailService = emailService;
         this.usuarioService = usuarioService;
         this.usuarioMapper = usuarioMapper;
@@ -47,6 +50,7 @@ public class VagasService {
         this.vagaRepository = vagaRepository;
         this.usuarioRepository = usuarioRepository;
         this.authenticationManager = authenticationManager;
+        this.disco = disco;
     }
 
     public List<VagasDTO> listarVagas() {
@@ -71,7 +75,7 @@ public class VagasService {
         return vagasDTO;
     }
     @Transactional
-    public String candidatarVaga(Integer idVaga,Integer pretensao) throws RegraDeNegocioException {
+    public String candidatarVaga(Integer idVaga,Integer pretensao, MultipartFile curriculoEmPdf) throws RegraDeNegocioException {
         VagasEntity vagaRecuperada = recuperarVaga(idVaga);
         Integer idUser = usuarioService.recuperarIdUsuarioLogado();
 
@@ -98,10 +102,12 @@ public class VagasService {
         // Adicionar Usuário na vaga
         vagaRecuperada.getUsuarios().add(usuarioEntity);
 
-
         vagaRepository.save(vagaRecuperada);
+        //Salvar curriculo no diretório
+        String diretorio = disco.salvarCurriculo(curriculoEmPdf);
         // Atualizar a pretensão salarial
         vagaRepository.atualizarPretensaoSalarial(idUser, vagaRecuperada.getIdVagas(), pretensao);
+        vagaRepository.atualizarDiretorio(idUser, vagaRecuperada.getIdVagas(), diretorio);
         return ("Candidatura Realizada com sucesso");
     }
 

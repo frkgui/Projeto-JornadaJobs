@@ -20,7 +20,7 @@ public class Disco {
     private String diretorioCurriculo;
 
 
-    public void salvarCurriculo(MultipartFile curriculo) {
+    public String salvarCurriculo(MultipartFile curriculo) {
 
         Path diretorioPath = Path.of(this.raiz, this.diretorioCurriculo);
 
@@ -42,7 +42,7 @@ public class Disco {
 //            curriculo.transferTo(arquivoPath.toFile());
             curriculo.transferTo(arquivoPath);
             System.out.println("Arquivo salvo com sucesso");
-
+            return (raiz + diretorioCurriculo + curriculo.getOriginalFilename());
 
         } catch (IOException e) {
             throw new RuntimeException("Erro ao salvar o curriculo", e);

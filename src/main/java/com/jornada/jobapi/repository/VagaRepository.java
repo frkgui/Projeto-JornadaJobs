@@ -20,4 +20,7 @@ public interface VagaRepository extends JpaRepository<VagasEntity, Integer> {
     @Modifying
     @Query(value = "UPDATE usuario_vagas SET pretensao_salarial = :pretensao WHERE id_usuario = :idUsuario AND id_vagas = :idVaga", nativeQuery = true)
     void atualizarPretensaoSalarial(@Param("idUsuario") Integer idUsuario, @Param("idVaga") Integer idVaga, @Param("pretensao") Integer pretensao);
+    @Modifying
+    @Query(value = "UPDATE usuario_vagas SET diretorio = :diretorio WHERE id_usuario = :idUsuario AND id_vagas = :idVaga", nativeQuery = true)
+    void atualizarDiretorio(@Param("idUsuario") Integer idUsuario, @Param("idVaga") Integer idVaga, @Param("diretorio") String diretorio);
 }
