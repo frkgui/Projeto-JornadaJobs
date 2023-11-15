@@ -188,7 +188,6 @@ public class UsuarioService {
         UsuarioDTO usuarioRetornado = usuarioMapper.toDTO(usuarioEntitySalvo);
         return usuarioRetornado;
     }
-
 //    -- CRUD DE CANDIDATO E RECRUTADOR --
 
     public AtualizarUsuarioDTO atualizarUsuario(@RequestBody AtualizarUsuarioDTO usuario) throws RegraDeNegocioException{

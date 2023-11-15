@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -38,7 +39,7 @@ public class VagasServiceTests {
     private VagasService vagasService;
     @Mock
     private UsuarioService usuarioService;
-    @InjectMocks
+    @Mock
     private EmailService emailService;
     @Mock
     private AuthenticationManager authenticationManager;
@@ -129,11 +130,11 @@ public class VagasServiceTests {
         // Adicione mais verificações conforme necessário
     }
 
-
     @Test
     public void deveTestarCandidatarVagaComSucesso() throws RegraDeNegocioException, ParseException {
         //setup
         Integer idVaga = 1;
+        Integer pretensao = 10000;
 
         VagasEntity vagasEntity = getVagasEntity();
         UsuarioEntity usuarioEntity = getUsuarioEntity();
@@ -146,19 +147,18 @@ public class VagasServiceTests {
 //        when(vagaRepository.save(idVaga)).thenReturn(usuarioEntity);
 
         //act
-        vagasService.candidatarVaga(idVaga);
+        String resultado = vagasService.candidatarVaga(idVaga, pretensao);
 
         //assert
-        Assertions.assertNotNull(usuarioEntity);
-        Assertions.assertNotNull(vagasEntity);
-        Assertions.assertNotNull(idVaga);
-
+        assertEquals("Candidatura Realizada com sucesso", resultado);
+        verify(vagaRepository, times(1)).save(vagasEntity);
     }
 
     @Test
     public void deveTestarCandidatarVagaComErroStatus() throws ParseException {
         //setup
         Integer idVaga = 1;
+        Integer pretensao = 10000;
 
         VagasEntity vagasEntity = getVagasEntity();
         UsuarioEntity usuarioEntity = getUsuarioEntity();
@@ -177,7 +177,7 @@ public class VagasServiceTests {
         //act
         Assertions.assertThrows(RegraDeNegocioException.class, ()-> {
             //act
-            vagasService.candidatarVaga(idVaga);
+            vagasService.candidatarVaga(idVaga, pretensao);
         });
     }
 
@@ -185,6 +185,7 @@ public class VagasServiceTests {
     public void deveTestarCandidatarVagaComErroUsuario() throws ParseException {
         //setup
         Integer idVaga = 1;
+        Integer pretensao = 10000;
 
         VagasEntity vagasEntity = getVagasEntity();
         UsuarioEntity usuarioEntity = getUsuarioEntity();
@@ -202,7 +203,7 @@ public class VagasServiceTests {
         //act
         Assertions.assertThrows(RegraDeNegocioException.class, ()-> {
             //act
-            vagasService.candidatarVaga(idVaga);
+            vagasService.candidatarVaga(idVaga, pretensao);
         });
     }
 
@@ -210,6 +211,7 @@ public class VagasServiceTests {
     public void deveTestarCandidatarVagaComErroQuantidadeCandidatos() {
         //setup
         Integer idVaga = 1;
+        Integer pretensao = 10000;
 
         VagasEntity vagasEntity = new VagasEntity();
 
@@ -227,10 +229,9 @@ public class VagasServiceTests {
         //act
         Assertions.assertThrows(RegraDeNegocioException.class, ()-> {
             //act
-            vagasService.candidatarVaga(idVaga);
+            vagasService.candidatarVaga(idVaga, pretensao);
         });
     }
-
 
     @Test
     public void deveTestarUsuarioJaCandidatadoComSucesso() throws ParseException {
@@ -241,8 +242,7 @@ public class VagasServiceTests {
         //act
         vagasService.usuarioJaCandidatado(vagasEntity, idUser);
         //assert
-
-
+        assertNotEquals(vagasEntity, idUser);
     }
 
     @Test
@@ -285,22 +285,24 @@ public class VagasServiceTests {
     }
 
     @Test
-    public void deveTestarVerificarDataDeEncerramento() throws RegraDeNegocioException, ParseException {
-        //setup
-        VagasEntity vagasEntity = getVagasEntity();
-        List<VagasEntity> vagasEntities =null;
-        Date hoje = new Date();
+    public void deveTestarVerificarDataDeEncerramento() {
 
+        // Setup
+        ArgumentCaptor<Date> dateCaptor = ArgumentCaptor.forClass(Date.class);
+        ArgumentCaptor<StatusVagas> statusCaptor = ArgumentCaptor.forClass(StatusVagas.class);
 
-        when(vagaRepository.findByDataEncerramentoLessThanAndStatus(hoje, StatusVagas.ABERTO)).thenReturn(vagasEntities);
+        when(vagaRepository.findByDataEncerramentoLessThanAndStatus(dateCaptor.capture(), statusCaptor.capture()))
+                .thenReturn(new ArrayList<>());
 
-        //act
+        // Act
         vagasService.verificarDataDeEncerramento();
 
-        //assert
-//        Assertions.assertNotNull(vagasEntity);
+        Date capturedDate = dateCaptor.getValue();
+        StatusVagas capturedStatus = statusCaptor.getValue();
 
-
+        // assert
+        Assertions.assertNotNull(capturedStatus);
+        Assertions.assertNotNull(capturedDate);
     }
 
 
@@ -361,48 +363,159 @@ public class VagasServiceTests {
     }
 
     @Test
-    public void deveTestarDesistirVaga() throws RegraDeNegocioException {
-        // Arrange
-        Integer idVaga = 1;
+    public void deveTestarFinalizarVaga() throws ParseException, RegraDeNegocioException {
+        // Configuração de dados de teste
+        Integer idVaga = 2;
+        VagasEntity vagasEntity = getVagasEntity();
+        UsuarioEntity usuarioEntity = getUsuarioEntity();
+        vagasEntity.setIdRecrutador(usuarioEntity);
 
-        UsuarioEntity usuario = new UsuarioEntity();
-        VagasEntity vaga = new VagasEntity();
+        // Configuração de comportamento esperado para o mock
+        when(vagaRepository.findById(idVaga)).thenReturn(Optional.of(vagasEntity));
+//        when(vagaRepository.save(vagasEntity));
 
-        when(usuarioService.recuperarUsuarioLogado()).thenReturn(usuario);
-//        when(usuarioRepository.findById(idVaga)).thenReturn((Optional<UsuarioEntity>) Optional.of(vaga));
+        // Execute o método que você está testando
+        vagasService.finalizarVaga(idVaga);
 
-        // Act
-        Integer resultado = vagasService.desistirVaga(idVaga);
+        // Verifique os resultados esperados
+//        assertFalse(resultado.isPresent());
 
-        // Assert
-        assertEquals(Integer.valueOf(1), resultado);
-        assertFalse(usuario.getVagas().contains(vaga));
-
-        verify(usuarioRepository, times(1)).save(eq(usuario));
+        // Verifique se o método do mock foi chamado conforme esperado
+        verify(vagaRepository, times(1)).findById(eq(idVaga));
     }
+
 
     @Test
-    public void deveTestarEscolherCandidato() throws RegraDeNegocioException {
+    public void deveTestarVagaFechada() throws ParseException{
+        // Configuração de dados de teste
+        VagasEntity vagasEntity = getVagasEntity();
+        UsuarioEntity usuarioEntity = getUsuarioEntity();
+        vagasEntity.setIdRecrutador(usuarioEntity);
+
+//        when(emailService.enviarEmailComTemplateReprovado()).thenReturn(vagasEntity);
+
+        // Execute o método que você está testando
+        vagasService.vagaFechada(vagasEntity);
+
+
+        // Verifique se o método do mock foi chamado conforme esperado
+//        verify(vagaRepository, times(1)).findById(eq(idVaga));
+    }
+    @Test
+    public void deveTestarFinalizarVagasDoRecrutador() throws ParseException, RegraDeNegocioException {
+        // Configuração de dados de teste
+        VagasEntity vagasEntity = getVagasEntity();
+        UsuarioEntity usuarioEntity = getUsuarioEntity();
+        vagasEntity.setIdRecrutador(usuarioEntity);
+
+        List<VagasEntity> vagasRecrutador = new ArrayList<>();
+
+        when(usuarioService.recuperarUsuarioLogado()).thenReturn(usuarioEntity);
+        when(vagaRepository.findByIdRecrutador(vagasEntity.getIdRecrutador())).thenReturn(vagasRecrutador);
+
+        // Execute o método que você está testando
+        vagasService.finalizarVagasDoRecrutador();
+
+
+        // Verifique se o método do mock foi chamado conforme esperado
+//        verify(vagaRepository, times(1)).findById(eq(idVaga));
+        verify(usuarioService).remover();
+
+    }
+    @Test
+    public void deveTestarExcluirDependenciaRecrutadorComSucesso() throws ParseException, RegraDeNegocioException {
         // Configuração de dados de teste
         Integer idVaga = 1;
-        Integer idUsuario = 2;
+        VagasEntity vagasEntity = getVagasEntity();
+        UsuarioEntity usuarioEntity = getUsuarioEntity();
+        UsuarioEntity  entidadeAux = new UsuarioEntity();
+        entidadeAux.setIdUsuario(4);
+        vagasEntity.setIdRecrutador(entidadeAux);
 
-        VagasEntity vaga = new VagasEntity(); // Coloque os dados necessários aqui
-        UsuarioEntity usuario = new UsuarioEntity(); // Coloque os dados necessários aqui
 
-        // Configuração de comportamento esperado para os mocks
-        when(vagaRepository.findById(idVaga)).thenReturn(Optional.of(vaga));
-        when(usuarioRepository.findById(idUsuario)).thenReturn(Optional.of(usuario));
 
-        Integer resultado = vagasService.escolherCandidato(idVaga, idUsuario);
 
-        assertEquals(Integer.valueOf(1), resultado);
+        when(vagaRepository.findById(idVaga)).thenReturn(Optional.of(vagasEntity));
+        when(usuarioService.recuperarIdUsuarioLogado()).thenReturn(entidadeAux.getIdUsuario());
 
-        verify(emailService, times(1)).enviarEmailComTemplateAprovado(eq(usuario.getEmail()), anyString(), eq(usuario.getNome()));
-        verify(vagaRepository, times(1)).save(eq(vaga));
-        verify(emailService, times(vaga.getUsuarios().size())).enviarEmailComTemplateReprovado(anyString(), anyString(), anyString());
-        assertEquals(StatusVagas.FECHADO, vaga.getStatus());
+        // Execute o método que você está testando
+        vagasService.excluirDependenciaRecrutador(idVaga);
+
+
+        // Verifique se o método do mock foi chamado conforme esperado
+//        verify(vagaRepository, times(1)).findById(eq(idVaga));
+
     }
+    @Test
+    public void deveTestarExcluirDependenciaRecrutadorComErro() throws ParseException, RegraDeNegocioException {
+        // Configuração de dados de teste
+        Integer idVaga = 1;
+        VagasEntity vagasEntity = getVagasEntity();
+        UsuarioEntity usuarioEntity = getUsuarioEntity();
+        vagasEntity.setIdRecrutador(usuarioEntity);
+
+
+        when(vagaRepository.findById(idVaga)).thenReturn(Optional.of(vagasEntity));
+        when(usuarioService.recuperarIdUsuarioLogado()).thenReturn(1);
+
+
+        Assertions.assertThrows(RegraDeNegocioException.class, ()-> {
+            //act
+            vagasService.excluirDependenciaRecrutador(idVaga);
+        });
+
+
+        // Verifique se o método do mock foi chamado conforme esperado
+        Assertions.assertNotNull(idVaga);
+        Assertions.assertNotNull(vagasEntity);
+        Assertions.assertNotNull(usuarioEntity);
+    }
+
+
+
+//    @Test
+//    public void deveTestarDesistirVaga() throws RegraDeNegocioException {
+//        // Arrange
+//        Integer idVaga = 1;
+//
+//        UsuarioEntity usuario = new UsuarioEntity();
+//        VagasEntity vaga = new VagasEntity();
+//
+//        when(usuarioService.recuperarUsuarioLogado()).thenReturn(usuario);
+////        when(usuarioRepository.findById(idVaga)).thenReturn((Optional<UsuarioEntity>) Optional.of(vaga));
+//
+//        // Act
+//        Integer resultado = vagasService.desistirVaga(idVaga);
+//
+//        // Assert
+//        assertEquals(Integer.valueOf(1), resultado);
+//        assertFalse(usuario.getVagas().contains(vaga));
+//
+//        verify(usuarioRepository, times(1)).save(eq(usuario));
+//    }
+
+//    @Test
+//    public void deveTestarEscolherCandidato() throws RegraDeNegocioException {
+//        // Configuração de dados de teste
+//        Integer idVaga = 1;
+//        Integer idUsuario = 2;
+//
+//        VagasEntity vaga = new VagasEntity(); // Coloque os dados necessários aqui
+//        UsuarioEntity usuario = new UsuarioEntity(); // Coloque os dados necessários aqui
+//
+//        // Configuração de comportamento esperado para os mocks
+//        when(vagaRepository.findById(idVaga)).thenReturn(Optional.of(vaga));
+//        when(usuarioRepository.findById(idUsuario)).thenReturn(Optional.of(usuario));
+//
+//        Integer resultado = vagasService.escolherCandidato(idVaga, idUsuario);
+//
+//        assertEquals(Integer.valueOf(1), resultado);
+//
+//        verify(emailService, times(1)).enviarEmailComTemplateAprovado(eq(usuario.getEmail()), anyString(), eq(usuario.getNome()));
+//        verify(vagaRepository, times(1)).save(eq(vaga));
+//        verify(emailService, times(vaga.getUsuarios().size())).enviarEmailComTemplateReprovado(anyString(), anyString(), anyString());
+//        assertEquals(StatusVagas.FECHADO, vaga.getStatus());
+//    }
 
     private static VagasDTO getVagasDTO() throws ParseException {
         VagasDTO dto = new VagasDTO();

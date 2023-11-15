@@ -186,8 +186,8 @@ public class VagasService {
     }
     public Integer escolherCandidato(Integer idVaga, Integer idUsuario) throws RegraDeNegocioException {
         VagasEntity vaga = vagaRepository.findById(idVaga).orElseThrow(() -> new RegraDeNegocioException("Vaga não encontrado!"));
-        if(usuarioService.recuperarIdUsuarioLogado() != vaga.getIdRecrutador().getIdUsuario()){
-            new RegraDeNegocioException("Vaga não pertence a você");
+        if(vaga.getIdRecrutador() == null || usuarioService.recuperarIdUsuarioLogado() != vaga.getIdRecrutador().getIdUsuario()){
+            throw new RegraDeNegocioException("Vaga não pertence a você");
         }
         UsuarioEntity usuario = usuarioRepository.findById(idUsuario).orElseThrow(() -> new RegraDeNegocioException("Candidato não encontrado!"));
         if (!vaga.getUsuarios().contains(usuario)) {
@@ -215,7 +215,7 @@ public class VagasService {
         return 1;
     }
     public String finalizarVaga(Integer idVaga) throws RegraDeNegocioException {
-        VagasEntity vaga = vagaRepository.findById(idVaga).orElseThrow(() -> new RegraDeNegocioException("Vaga não encontrado!"));
+        VagasEntity vaga = vagaRepository.findById(idVaga).orElseThrow(() -> new RegraDeNegocioException("Vaga não encontrada!"));
         if(usuarioService.recuperarIdUsuarioLogado() == vaga.getIdRecrutador().getIdUsuario()){
             vaga.setStatus(StatusVagas.FECHADO);
             vagaRepository.save(vaga);
@@ -226,7 +226,7 @@ public class VagasService {
         return ("Vaga Fechada");
     }
 
-    public Integer vagaFechada(VagasEntity vaga) throws RegraDeNegocioException {
+    public Integer vagaFechada(VagasEntity vaga) {
         for (UsuarioEntity usuarioRestante : vaga.getUsuarios()) {
             String mensagem = ("Infelizmente você não foi aceito na seleção da empresa" +vaga.getIdRecrutador().getEmpresaVinculada());
             emailService.enviarEmailComTemplateReprovado(usuarioRestante.getEmail(),mensagem,usuarioRestante.getNome());
@@ -237,7 +237,6 @@ public class VagasService {
     public void finalizarVagasDoRecrutador() throws RegraDeNegocioException {
         UsuarioEntity recrutador = usuarioService.recuperarUsuarioLogado();
         List<VagasEntity> vagasDoRecrutador = vagaRepository.findByIdRecrutador(recrutador);
-
         for (VagasEntity vaga : vagasDoRecrutador) {
            finalizarVaga(vaga.getIdVagas());
            excluirDependenciaRecrutador(vaga.getIdVagas());
@@ -250,7 +249,7 @@ public class VagasService {
             vaga.setIdRecrutador(null);
             vagaRepository.save(vaga);
         }else{
-            throw new RegraDeNegocioException("Vaga não pertence a você");
+            throw new RegraDeNegocioException("Esta Vaga não pertence a você");
         }
     }
 
