@@ -105,7 +105,7 @@ public class VagasService {
         return ("Candidatura Realizada com sucesso");
     }
 
-    private boolean usuarioJaCandidatado(VagasEntity vaga, Integer idUsuario) {
+    public boolean usuarioJaCandidatado(VagasEntity vaga, Integer idUsuario) {
         return vaga.getUsuarios()
                 .stream()
                 .anyMatch(usuario -> usuario.getIdUsuario().equals(idUsuario));
@@ -152,7 +152,7 @@ public class VagasService {
     }
 
     public VagasEntity recuperarVaga(Integer idVaga) throws RegraDeNegocioException {
-        VagasEntity vagaS = vagaRepository.findById(idVaga).orElseThrow(() -> new RegraDeNegocioException("Vaga não encontrado!"));
+        VagasEntity vagaS = vagaRepository.findById(idVaga).orElseThrow(() -> new RegraDeNegocioException("Vaga não encontrada!"));
         return vagaS;
     }
 
