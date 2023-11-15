@@ -10,6 +10,7 @@ import com.jornada.jobapi.mapper.UsuarioMapper;
 import com.jornada.jobapi.mapper.VagasMapper;
 import com.jornada.jobapi.repository.UsuarioRepository;
 import com.jornada.jobapi.repository.VagaRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
+@Transactional
 @Service
 public class VagasService {
     private final EmailService emailService;
@@ -69,8 +70,8 @@ public class VagasService {
         VagasDTO vagasDTO = vagasMapper.toDTO(vagasEntity);
         return vagasDTO;
     }
-
-    public String candidatarVaga(Integer idVaga) throws RegraDeNegocioException {
+    @Transactional
+    public String candidatarVaga(Integer idVaga,Integer pretensao) throws RegraDeNegocioException {
         VagasEntity vagaRecuperada = recuperarVaga(idVaga);
         Integer idUser = usuarioService.recuperarIdUsuarioLogado();
 
@@ -99,7 +100,8 @@ public class VagasService {
 
 
         vagaRepository.save(vagaRecuperada);
-
+        // Atualizar a pretensão salarial
+        vagaRepository.atualizarPretensaoSalarial(idUser, vagaRecuperada.getIdVagas(), pretensao);
         return ("Candidatura Realizada com sucesso");
     }
 
@@ -207,6 +209,7 @@ public class VagasService {
             emailService.enviarEmailComTemplateReprovado(usuarioRestante.getEmail(),mensagem,usuarioRestante.getNome());
         }
 
+        vaga.getUsuarios().add(usuario);
         vaga.setStatus(StatusVagas.FECHADO);
         vagaRepository.save(vaga);
         return 1;
