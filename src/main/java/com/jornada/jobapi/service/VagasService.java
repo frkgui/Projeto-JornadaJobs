@@ -186,8 +186,8 @@ public class VagasService {
     }
     public Integer escolherCandidato(Integer idVaga, Integer idUsuario) throws RegraDeNegocioException {
         VagasEntity vaga = vagaRepository.findById(idVaga).orElseThrow(() -> new RegraDeNegocioException("Vaga não encontrado!"));
-        if(usuarioService.recuperarIdUsuarioLogado() != vaga.getIdRecrutador().getIdUsuario()){
-            new RegraDeNegocioException("Vaga não pertence a você");
+        if(vaga.getIdRecrutador() == null || usuarioService.recuperarIdUsuarioLogado() != vaga.getIdRecrutador().getIdUsuario()){
+            throw new RegraDeNegocioException("Vaga não pertence a você");
         }
         UsuarioEntity usuario = usuarioRepository.findById(idUsuario).orElseThrow(() -> new RegraDeNegocioException("Candidato não encontrado!"));
         if (!vaga.getUsuarios().contains(usuario)) {

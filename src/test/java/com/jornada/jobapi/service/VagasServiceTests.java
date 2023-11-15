@@ -130,108 +130,108 @@ public class VagasServiceTests {
         // Adicione mais verificações conforme necessário
     }
 
+    @Test
+    public void deveTestarCandidatarVagaComSucesso() throws RegraDeNegocioException, ParseException {
+        //setup
+        Integer idVaga = 1;
+        Integer pretensao = 10000;
 
-//    @Test
-//    public void deveTestarCandidatarVagaComSucesso() throws RegraDeNegocioException, ParseException {
-//        //setup
-//        Integer idVaga = 1;
-//
-//        VagasEntity vagasEntity = getVagasEntity();
-//        UsuarioEntity usuarioEntity = getUsuarioEntity();
-//
-//        vagasEntity.setUsuarios(new HashSet<>());
-//
-//        //comportamentos
-//        when(vagaRepository.findById(idVaga)).thenReturn(Optional.of(vagasEntity));
+        VagasEntity vagasEntity = getVagasEntity();
+        UsuarioEntity usuarioEntity = getUsuarioEntity();
+
+        vagasEntity.setUsuarios(new HashSet<>());
+
+        //comportamentos
+        when(vagaRepository.findById(idVaga)).thenReturn(Optional.of(vagasEntity));
+        when(usuarioService.recuperarIdUsuarioLogado()).thenReturn(usuarioEntity.getIdUsuario());
+//        when(vagaRepository.save(idVaga)).thenReturn(usuarioEntity);
+
+        //act
+        String resultado = vagasService.candidatarVaga(idVaga, pretensao);
+
+        //assert
+        assertEquals("Candidatura Realizada com sucesso", resultado);
+        verify(vagaRepository, times(1)).save(vagasEntity);
+    }
+
+    @Test
+    public void deveTestarCandidatarVagaComErroStatus() throws ParseException {
+        //setup
+        Integer idVaga = 1;
+        Integer pretensao = 10000;
+
+        VagasEntity vagasEntity = getVagasEntity();
+        UsuarioEntity usuarioEntity = getUsuarioEntity();
+        vagasEntity.setStatus(StatusVagas.FECHADO);
+
+        Integer idUser = usuarioService.recuperarIdUsuarioLogado();
+        usuarioEntity.setIdUsuario(idUser);
+
+        vagasEntity.setUsuarios(Collections.singleton((usuarioEntity)));
+
+        //comportamentos
+        when(vagaRepository.findById(idVaga)).thenReturn(Optional.of(vagasEntity));
 //        when(usuarioService.recuperarIdUsuarioLogado()).thenReturn(usuarioEntity.getIdUsuario());
-////        when(vagaRepository.save(idVaga)).thenReturn(usuarioEntity);
-//
-//        //act
-//        vagasService.candidatarVaga(idVaga);
-//
-//        //assert
-//        Assertions.assertNotNull(usuarioEntity);
-//        Assertions.assertNotNull(vagasEntity);
-//        Assertions.assertNotNull(idVaga);
-//
-//    }
+//        when(vagaRepository.save(idVaga)).thenReturn(usuarioEntity);
 
-//    @Test
-//    public void deveTestarCandidatarVagaComErroStatus() throws ParseException {
-//        //setup
-//        Integer idVaga = 1;
-//
-//        VagasEntity vagasEntity = getVagasEntity();
-//        UsuarioEntity usuarioEntity = getUsuarioEntity();
-//        vagasEntity.setStatus(StatusVagas.FECHADO);
-//
-//        Integer idUser = usuarioService.recuperarIdUsuarioLogado();
-//        usuarioEntity.setIdUsuario(idUser);
-//
-//        vagasEntity.setUsuarios(Collections.singleton((usuarioEntity)));
-//
-//        //comportamentos
-//        when(vagaRepository.findById(idVaga)).thenReturn(Optional.of(vagasEntity));
-////        when(usuarioService.recuperarIdUsuarioLogado()).thenReturn(usuarioEntity.getIdUsuario());
-////        when(vagaRepository.save(idVaga)).thenReturn(usuarioEntity);
-//
-//        //act
-//        Assertions.assertThrows(RegraDeNegocioException.class, ()-> {
-//            //act
-//            vagasService.candidatarVaga(idVaga);
-//        });
-//    }
+        //act
+        Assertions.assertThrows(RegraDeNegocioException.class, ()-> {
+            //act
+            vagasService.candidatarVaga(idVaga, pretensao);
+        });
+    }
 
-//    @Test
-//    public void deveTestarCandidatarVagaComErroUsuario() throws ParseException {
-//        //setup
-//        Integer idVaga = 1;
-//
-//        VagasEntity vagasEntity = getVagasEntity();
-//        UsuarioEntity usuarioEntity = getUsuarioEntity();
-//
-//        Integer idUser = usuarioService.recuperarIdUsuarioLogado();
-//        usuarioEntity.setIdUsuario(idUser);
-//
-//        vagasEntity.setUsuarios(Collections.singleton((usuarioEntity)));
-//
-//        //comportamentos
-//        when(vagaRepository.findById(idVaga)).thenReturn(Optional.of(vagasEntity));
+    @Test
+    public void deveTestarCandidatarVagaComErroUsuario() throws ParseException {
+        //setup
+        Integer idVaga = 1;
+        Integer pretensao = 10000;
+
+        VagasEntity vagasEntity = getVagasEntity();
+        UsuarioEntity usuarioEntity = getUsuarioEntity();
+
+        Integer idUser = usuarioService.recuperarIdUsuarioLogado();
+        usuarioEntity.setIdUsuario(idUser);
+
+        vagasEntity.setUsuarios(Collections.singleton((usuarioEntity)));
+
+        //comportamentos
+        when(vagaRepository.findById(idVaga)).thenReturn(Optional.of(vagasEntity));
+        when(usuarioService.recuperarIdUsuarioLogado()).thenReturn(usuarioEntity.getIdUsuario());
+//        when(vagaRepository.save(idVaga)).thenReturn(usuarioEntity);
+
+        //act
+        Assertions.assertThrows(RegraDeNegocioException.class, ()-> {
+            //act
+            vagasService.candidatarVaga(idVaga, pretensao);
+        });
+    }
+
+    @Test
+    public void deveTestarCandidatarVagaComErroQuantidadeCandidatos() {
+        //setup
+        Integer idVaga = 1;
+        Integer pretensao = 10000;
+
+        VagasEntity vagasEntity = new VagasEntity();
+
+        vagasEntity.setQuantidadeMaximaCandidatos(0);
+
+
+        vagasEntity.setUsuarios(new HashSet<>());
+
+
+        //comportamentos
+        when(vagaRepository.findById(idVaga)).thenReturn(Optional.of(vagasEntity));
 //        when(usuarioService.recuperarIdUsuarioLogado()).thenReturn(usuarioEntity.getIdUsuario());
-////        when(vagaRepository.save(idVaga)).thenReturn(usuarioEntity);
-//
-//        //act
-//        Assertions.assertThrows(RegraDeNegocioException.class, ()-> {
-//            //act
-//            vagasService.candidatarVaga(idVaga);
-//        });
-//    }
+//        when(vagaRepository.save(idVaga)).thenReturn(usuarioEntity);
 
-//    @Test
-//    public void deveTestarCandidatarVagaComErroQuantidadeCandidatos() {
-//        //setup
-//        Integer idVaga = 1;
-//
-//        VagasEntity vagasEntity = new VagasEntity();
-//
-//        vagasEntity.setQuantidadeMaximaCandidatos(0);
-//
-//
-//        vagasEntity.setUsuarios(new HashSet<>());
-//
-//
-//        //comportamentos
-//        when(vagaRepository.findById(idVaga)).thenReturn(Optional.of(vagasEntity));
-////        when(usuarioService.recuperarIdUsuarioLogado()).thenReturn(usuarioEntity.getIdUsuario());
-////        when(vagaRepository.save(idVaga)).thenReturn(usuarioEntity);
-//
-//        //act
-//        Assertions.assertThrows(RegraDeNegocioException.class, ()-> {
-//            //act
-//            vagasService.candidatarVaga(idVaga);
-//        });
-//    }
-
+        //act
+        Assertions.assertThrows(RegraDeNegocioException.class, ()-> {
+            //act
+            vagasService.candidatarVaga(idVaga, pretensao);
+        });
+    }
 
     @Test
     public void deveTestarUsuarioJaCandidatadoComSucesso() throws ParseException {
@@ -242,8 +242,7 @@ public class VagasServiceTests {
         //act
         vagasService.usuarioJaCandidatado(vagasEntity, idUser);
         //assert
-
-
+        assertNotEquals(vagasEntity, idUser);
     }
 
     @Test
