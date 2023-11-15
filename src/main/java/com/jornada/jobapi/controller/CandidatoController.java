@@ -40,8 +40,8 @@ public class CandidatoController {
         return usuarioService.listarDadosDoCandidatoLogado();
     }
     @PostMapping("/candidatar")
-    public String candidatarVaga(@Valid Integer idVaga) throws RegraDeNegocioException {
-        return vagasService.candidatarVaga(idVaga);
+    public String candidatarVaga(@Valid Integer idVaga,Integer pretensao) throws RegraDeNegocioException {
+        return vagasService.candidatarVaga(idVaga,pretensao);
     }
 
     @Operation(summary = "Listar vagas", description = "Lista todos as vagas na base de dados")
