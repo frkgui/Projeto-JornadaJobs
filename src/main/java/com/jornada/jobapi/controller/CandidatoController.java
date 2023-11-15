@@ -100,9 +100,4 @@ public class CandidatoController {
     }
 
 
-    @PostMapping(value = "/upload-curriculo", consumes = "multipart/form-data")
-    public void uploadCurriculo(@RequestParam MultipartFile curriculoEmPdf) {
-        disco.salvarCurriculo(curriculoEmPdf);
-    }
-
 }
