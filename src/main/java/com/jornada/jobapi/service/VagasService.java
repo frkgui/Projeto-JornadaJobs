@@ -184,8 +184,13 @@ public class VagasService {
     }
     public Integer escolherCandidato(Integer idVaga, Integer idUsuario) throws RegraDeNegocioException {
         VagasEntity vaga = vagaRepository.findById(idVaga).orElseThrow(() -> new RegraDeNegocioException("Vaga não encontrado!"));
+        if(usuarioService.recuperarIdUsuarioLogado() != vaga.getIdRecrutador().getIdUsuario()){
+            new RegraDeNegocioException("Vaga não pertence a você");
+        }
         UsuarioEntity usuario = usuarioRepository.findById(idUsuario).orElseThrow(() -> new RegraDeNegocioException("Candidato não encontrado!"));
-
+        if (!vaga.getUsuarios().contains(usuario)) {
+            throw new RegraDeNegocioException("Usuário não encontrado");
+        }
         Optional<UsuarioEntity> empresa1 = usuarioRepository.findByIdUsuario(idUsuario);
         Optional<UsuarioEntity> empresa = usuarioRepository.findByIdUsuario(empresa1.get().getEmpresaVinculada());
 
@@ -203,6 +208,7 @@ public class VagasService {
         }
 
         vaga.setStatus(StatusVagas.FECHADO);
+        vagaRepository.save(vaga);
         return 1;
     }
     public String finalizarVaga(Integer idVaga) throws RegraDeNegocioException {
@@ -231,7 +237,7 @@ public class VagasService {
 
         for (VagasEntity vaga : vagasDoRecrutador) {
            finalizarVaga(vaga.getIdVagas());
-           excluirDependênciaRecrutador(vaga.getIdVagas());
+           excluirDependenciaRecrutador(vaga.getIdVagas());
         }
         usuarioService.remover();
     }
@@ -244,7 +250,7 @@ public class VagasService {
             throw new RegraDeNegocioException("Vaga não pertence a você");
         }
     }
-    public void excluirDependênciaRecrutador(Integer idVaga) throws RegraDeNegocioException {
+    public void excluirDependenciaRecrutador(Integer idVaga) throws RegraDeNegocioException {
         VagasEntity vaga = vagaRepository.findById(idVaga).orElseThrow(() -> new RegraDeNegocioException("Vaga não encontrado!"));
         if(usuarioService.recuperarIdUsuarioLogado() == vaga.getIdRecrutador().getIdUsuario()){
             vaga.setIdRecrutador(null);
