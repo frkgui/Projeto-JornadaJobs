@@ -60,7 +60,7 @@ public class RecrutadorController {
     })
     @DeleteMapping
     public void deletarRecrutador() throws RegraDeNegocioException{
-        usuarioService.remover();
+        vagasService.finalizarVagasDoRecrutador();
     }
 
     //Analisar Candidatos - Recrutador

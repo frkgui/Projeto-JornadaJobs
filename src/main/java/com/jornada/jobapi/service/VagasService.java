@@ -29,7 +29,6 @@ public class VagasService {
 
     private static final String TIME_ZONE = "America/Sao_Paulo";
 
-
     public VagasService(EmailService emailService, UsuarioService usuarioService, UsuarioMapper usuarioMapper, VagasMapper vagasMapper, VagaRepository vagaRepository, UsuarioRepository usuarioRepository, AuthenticationManager authenticationManager) {
         this.emailService = emailService;
         this.usuarioService = usuarioService;
@@ -84,10 +83,10 @@ public class VagasService {
             vagaRecuperada.setUsuarios(new HashSet<>());
         }
 
-        // Criar uma instância do CargoEntity com o ID do cargo igual a 3
         UsuarioEntity usuarioEntity = new UsuarioEntity();
         usuarioEntity.setIdUsuario(idUser);
-        // Adicionar o cargo à lista de cargos do usuário
+
+        // Adicionar Usuário na vaga
         vagaRecuperada.getUsuarios().add(usuarioEntity);
 
 
@@ -211,9 +210,6 @@ public class VagasService {
     }
 
     public Integer vagaFechada(VagasEntity vaga) throws RegraDeNegocioException {
-
-        //Quero pegar todos os usuários que estão relacionados a vaga, e enviar uma mensagem par aeles separadamente
-        // preciso de ajuda na parte de pegar os usuários
         for (UsuarioEntity usuarioRestante : vaga.getUsuarios()) {
             String mensagem = ("Infelizmente você não foi aceito na seleção da empresa" +vaga.getIdRecrutador().getEmpresaVinculada());
             emailService.enviarEmailComTemplateReprovado(usuarioRestante.getEmail(),mensagem,usuarioRestante.getNome());
@@ -221,5 +217,33 @@ public class VagasService {
         return 1;
     }
 
+    public void finalizarVagasDoRecrutador() throws RegraDeNegocioException {
+        UsuarioEntity recrutador = usuarioService.recuperarUsuarioLogado();
+        List<VagasEntity> vagasDoRecrutador = vagaRepository.findByIdRecrutador(recrutador);
+
+        for (VagasEntity vaga : vagasDoRecrutador) {
+           finalizarVaga(vaga.getIdVagas());
+           excluirDependênciaRecrutador(vaga.getIdVagas());
+        }
+        usuarioService.remover();
+    }
+    public void setarVagaFechado(Integer idVaga) throws RegraDeNegocioException {
+        VagasEntity vaga = vagaRepository.findById(idVaga).orElseThrow(() -> new RegraDeNegocioException("Vaga não encontrado!"));
+        if(usuarioService.recuperarIdUsuarioLogado() == vaga.getIdRecrutador().getIdUsuario()){
+            vaga.setStatus(StatusVagas.FECHADO);
+            vagaRepository.save(vaga);
+        }else{
+            throw new RegraDeNegocioException("Vaga não pertence a você");
+        }
+    }
+    public void excluirDependênciaRecrutador(Integer idVaga) throws RegraDeNegocioException {
+        VagasEntity vaga = vagaRepository.findById(idVaga).orElseThrow(() -> new RegraDeNegocioException("Vaga não encontrado!"));
+        if(usuarioService.recuperarIdUsuarioLogado() == vaga.getIdRecrutador().getIdUsuario()){
+            vaga.setIdRecrutador(null);
+            vagaRepository.save(vaga);
+        }else{
+            throw new RegraDeNegocioException("Vaga não pertence a você");
+        }
+    }
 
 }

@@ -30,7 +30,6 @@ public class UsuarioService {
 
 //    -- Variáveis de instância --
     private final UsuarioMapper usuarioMapper;
-    private final CandidatoMapper candidatoMapper;
     private final UsuarioRepository usuarioRepository;
     private final AuthenticationManager authenticationManager;
 
@@ -38,11 +37,10 @@ public class UsuarioService {
 //    -- Funções gerais --
     public UsuarioService(@Lazy UsuarioRepository usuarioRepository,
                           @Lazy AuthenticationManager authenticationManager,
-                          @Lazy UsuarioMapper usuarioMapper, CandidatoMapper candidatoMapper) {
+                          @Lazy UsuarioMapper usuarioMapper) {
         this.usuarioRepository = usuarioRepository;
         this.authenticationManager = authenticationManager;
         this.usuarioMapper = usuarioMapper;
-        this.candidatoMapper = candidatoMapper;
     }
 
     @Value("${jwt.validade.token}")
@@ -306,7 +304,7 @@ public class UsuarioService {
         Integer idUsuarioLogado = recuperarIdUsuarioLogado();
         UsuarioEntity usuario = usuarioRepository.findByIdUsuario(idUsuarioLogado)
                 .orElseThrow(() -> new RegraDeNegocioException("Usuário não encontrado"));
-
+        
         usuarioRepository.delete(usuario);
     }
 
