@@ -10,6 +10,7 @@ import com.jornada.jobapi.mapper.UsuarioMapper;
 import com.jornada.jobapi.mapper.VagasMapper;
 import com.jornada.jobapi.repository.UsuarioRepository;
 import com.jornada.jobapi.repository.VagaRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
+@Transactional
 @Service
 public class VagasService {
     private final EmailService emailService;
@@ -69,8 +70,8 @@ public class VagasService {
         VagasDTO vagasDTO = vagasMapper.toDTO(vagasEntity);
         return vagasDTO;
     }
-
-    public String candidatarVaga(Integer idVaga) throws RegraDeNegocioException {
+    @Transactional
+    public String candidatarVaga(Integer idVaga,Integer pretensao) throws RegraDeNegocioException {
         VagasEntity vagaRecuperada = recuperarVaga(idVaga);
         Integer idUser = usuarioService.recuperarIdUsuarioLogado();
 
@@ -99,11 +100,12 @@ public class VagasService {
 
 
         vagaRepository.save(vagaRecuperada);
-
+        // Atualizar a pretensão salarial
+        vagaRepository.atualizarPretensaoSalarial(idUser, vagaRecuperada.getIdVagas(), pretensao);
         return ("Candidatura Realizada com sucesso");
     }
 
-    private boolean usuarioJaCandidatado(VagasEntity vaga, Integer idUsuario) {
+    public boolean usuarioJaCandidatado(VagasEntity vaga, Integer idUsuario) {
         return vaga.getUsuarios()
                 .stream()
                 .anyMatch(usuario -> usuario.getIdUsuario().equals(idUsuario));
@@ -150,7 +152,7 @@ public class VagasService {
     }
 
     public VagasEntity recuperarVaga(Integer idVaga) throws RegraDeNegocioException {
-        VagasEntity vagaS = vagaRepository.findById(idVaga).orElseThrow(() -> new RegraDeNegocioException("Vaga não encontrado!"));
+        VagasEntity vagaS = vagaRepository.findById(idVaga).orElseThrow(() -> new RegraDeNegocioException("Vaga não encontrada!"));
         return vagaS;
     }
 
@@ -184,8 +186,13 @@ public class VagasService {
     }
     public Integer escolherCandidato(Integer idVaga, Integer idUsuario) throws RegraDeNegocioException {
         VagasEntity vaga = vagaRepository.findById(idVaga).orElseThrow(() -> new RegraDeNegocioException("Vaga não encontrado!"));
+        if(vaga.getIdRecrutador() == null || usuarioService.recuperarIdUsuarioLogado() != vaga.getIdRecrutador().getIdUsuario()){
+            throw new RegraDeNegocioException("Vaga não pertence a você");
+        }
         UsuarioEntity usuario = usuarioRepository.findById(idUsuario).orElseThrow(() -> new RegraDeNegocioException("Candidato não encontrado!"));
-
+        if (!vaga.getUsuarios().contains(usuario)) {
+            throw new RegraDeNegocioException("Usuário não encontrado");
+        }
         Optional<UsuarioEntity> empresa1 = usuarioRepository.findByIdUsuario(idUsuario);
         Optional<UsuarioEntity> empresa = usuarioRepository.findByIdUsuario(empresa1.get().getEmpresaVinculada());
 
@@ -202,11 +209,13 @@ public class VagasService {
             emailService.enviarEmailComTemplateReprovado(usuarioRestante.getEmail(),mensagem,usuarioRestante.getNome());
         }
 
+        vaga.getUsuarios().add(usuario);
         vaga.setStatus(StatusVagas.FECHADO);
+        vagaRepository.save(vaga);
         return 1;
     }
     public String finalizarVaga(Integer idVaga) throws RegraDeNegocioException {
-        VagasEntity vaga = vagaRepository.findById(idVaga).orElseThrow(() -> new RegraDeNegocioException("Vaga não encontrado!"));
+        VagasEntity vaga = vagaRepository.findById(idVaga).orElseThrow(() -> new RegraDeNegocioException("Vaga não encontrada!"));
         if(usuarioService.recuperarIdUsuarioLogado() == vaga.getIdRecrutador().getIdUsuario()){
             vaga.setStatus(StatusVagas.FECHADO);
             vagaRepository.save(vaga);
@@ -217,7 +226,7 @@ public class VagasService {
         return ("Vaga Fechada");
     }
 
-    public Integer vagaFechada(VagasEntity vaga) throws RegraDeNegocioException {
+    public Integer vagaFechada(VagasEntity vaga) {
         for (UsuarioEntity usuarioRestante : vaga.getUsuarios()) {
             String mensagem = ("Infelizmente você não foi aceito na seleção da empresa" +vaga.getIdRecrutador().getEmpresaVinculada());
             emailService.enviarEmailComTemplateReprovado(usuarioRestante.getEmail(),mensagem,usuarioRestante.getNome());
@@ -228,29 +237,19 @@ public class VagasService {
     public void finalizarVagasDoRecrutador() throws RegraDeNegocioException {
         UsuarioEntity recrutador = usuarioService.recuperarUsuarioLogado();
         List<VagasEntity> vagasDoRecrutador = vagaRepository.findByIdRecrutador(recrutador);
-
         for (VagasEntity vaga : vagasDoRecrutador) {
            finalizarVaga(vaga.getIdVagas());
-           excluirDependênciaRecrutador(vaga.getIdVagas());
+           excluirDependenciaRecrutador(vaga.getIdVagas());
         }
         usuarioService.remover();
     }
-    public void setarVagaFechado(Integer idVaga) throws RegraDeNegocioException {
-        VagasEntity vaga = vagaRepository.findById(idVaga).orElseThrow(() -> new RegraDeNegocioException("Vaga não encontrado!"));
-        if(usuarioService.recuperarIdUsuarioLogado() == vaga.getIdRecrutador().getIdUsuario()){
-            vaga.setStatus(StatusVagas.FECHADO);
-            vagaRepository.save(vaga);
-        }else{
-            throw new RegraDeNegocioException("Vaga não pertence a você");
-        }
-    }
-    public void excluirDependênciaRecrutador(Integer idVaga) throws RegraDeNegocioException {
+    public void excluirDependenciaRecrutador(Integer idVaga) throws RegraDeNegocioException {
         VagasEntity vaga = vagaRepository.findById(idVaga).orElseThrow(() -> new RegraDeNegocioException("Vaga não encontrado!"));
         if(usuarioService.recuperarIdUsuarioLogado() == vaga.getIdRecrutador().getIdUsuario()){
             vaga.setIdRecrutador(null);
             vagaRepository.save(vaga);
         }else{
-            throw new RegraDeNegocioException("Vaga não pertence a você");
+            throw new RegraDeNegocioException("Esta Vaga não pertence a você");
         }
     }
 

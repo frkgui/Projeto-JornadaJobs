@@ -188,7 +188,6 @@ public class UsuarioService {
         UsuarioDTO usuarioRetornado = usuarioMapper.toDTO(usuarioEntitySalvo);
         return usuarioRetornado;
     }
-
 //    -- CRUD DE CANDIDATO E RECRUTADOR --
 
     public AtualizarUsuarioDTO atualizarUsuario(@RequestBody AtualizarUsuarioDTO usuario) throws RegraDeNegocioException{
@@ -257,35 +256,6 @@ public class UsuarioService {
         return empresaDTO;
     }
 
-//    public UsuarioEmpresaDTO atualizarEmpresa(UsuarioEmpresaDTO empresaDTO) throws RegraDeNegocioException {
-//        validarEmpresa(empresaDTO);
-//
-//        Integer idUsuarioLogado = recuperarIdUsuarioLogado();
-//        Optional<UsuarioEntity> entity = usuarioRepository.findByIdUsuario(idUsuarioLogado);
-//
-//        //converter dto para entity
-//        UsuarioEntity usuarioEntityConvertido = usuarioMapper.empresaToEntity(empresaDTO);
-//        //Converter Senha
-//        String senha = usuarioEntityConvertido.getSenha();
-//        String senhaCriptografada = converterSenha(senha);
-//        usuarioEntityConvertido.setSenha(senhaCriptografada);
-//        usuarioEntityConvertido.setIdUsuario(entity.get().getIdUsuario());
-//        usuarioEntityConvertido.setEmail(entity.get().getEmail());
-//        usuarioEntityConvertido.setEmpresaVinculada(entity.get().getEmpresaVinculada());
-//
-//        UsuarioEntity usuarioEntitySalvo = usuarioRepository.save(usuarioEntityConvertido);
-//        //converter entity para dto
-//        UsuarioEmpresaDTO usuarioRetornado = usuarioMapper.empresaToDTO(usuarioEntitySalvo);
-//        return usuarioRetornado;
-////        UsuarioEntity empresaEntity = usuarioRepository.findById(id)
-////                .orElseThrow(() -> new RegraDeNegocioException("Empresa não encontrada"));
-////
-////        empresaEntity.setNome(empresaDTO.getNome());
-////        empresaEntity.setEmail(empresaDTO.getEmail());
-////        empresaEntity = usuarioRepository.save(empresaEntity);
-////
-////        return usuarioMapper.toDTO(empresaEntity);
-//    }
 
     public void validarEmpresa(UsuarioEmpresaDTO empresaDTO) throws RegraDeNegocioException {
         if (empresaDTO.getNome() == null || empresaDTO.getNome().isEmpty()) {
